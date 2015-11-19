@@ -88,125 +88,126 @@
 \icmltitlerunning{Contextual Combinatorial Cascading Bandits}
 
 \begin{document} 
-
-\twocolumn[
-\icmltitle{Contextual Combinatorial Cascading Bandits}
-
-% It is OKAY to include author information, even for blind
-% submissions: the style file will automatically remove it for you
-% unless you've provided the [accepted] option to the icml2015
-% package.
-\icmlauthor{Your Name}{email@yourdomain.edu}
-\icmladdress{Your Fantastic Institute,
-            314159 Pi St., Palo Alto, CA 94306 USA}
-\icmlauthor{Your CoAuthor's Name}{email@coauthordomain.edu}
-\icmladdress{Their Fantastic Institute,
-            27182 Exp St., Toronto, ON M6H 2T1 CANADA}
-
-% You may provide any keywords that you 
-% find helpful for describing your paper; these are used to populate 
-% the "keywords" metadata in the PDF but will not be shown in the document
-\icmlkeywords{boring formatting information, machine learning, ICML}
-
-\vskip 0.3in
-]
-
-\begin{abstract} 
-The purpose of this document is to provide both the basic paper template and
-submission guidelines.
-\end{abstract} 
-
-\section{Introduction}
-
-\section{Related Works}
-
-\section{Contextual Combinatorial Cascading Bandits}
-
-\subsection{Setting}
-
-We model our problem as a contextual combinatorial cascading bandit. Suppose we have $E=\{1,...,L\}$ a finite set of $L$ ground items. Let $\prod^k=\{(a_1,...,a_k): a_1,...,a_k \in E, a_i \neq a_j \text{ for any } i \neq j\}$ be the set of all $k$-tuples of distinct items from $E$. Let $\cS \subset \prod^{\leq K}(E)$ consist of feasible actions with length no more than $K$.
-
-At time $t$, the learning agent is revealed with feature vectors $X_{t,a} \in \RR^d$ for every basic arm $a \in E$, where we have $\norm{X_{t,a}}_2 \leq 1$; this feature vector combines both information of the user and the corresponding basic arm. We use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$, which is called weight for arm $a$ at time $t$, to indicate whether the user on round $t$ will click on the item $a$ or not. Assume $\bw_{t,a}$ are mutually independent and satisfy
-\begin{equation}
+	
+	\twocolumn[
+	\icmltitle{Contextual Combinatorial Cascading Bandits}
+	
+	% It is OKAY to include author information, even for blind
+	% submissions: the style file will automatically remove it for you
+	% unless you've provided the [accepted] option to the icml2015
+	% package.
+	\icmlauthor{Your Name}{email@yourdomain.edu}
+	\icmladdress{Your Fantastic Institute,
+		314159 Pi St., Palo Alto, CA 94306 USA}
+	\icmlauthor{Your CoAuthor's Name}{email@coauthordomain.edu}
+	\icmladdress{Their Fantastic Institute,
+		27182 Exp St., Toronto, ON M6H 2T1 CANADA}
+	
+	% You may provide any keywords that you 
+	% find helpful for describing your paper; these are used to populate 
+	% the "keywords" metadata in the PDF but will not be shown in the document
+	\icmlkeywords{boring formatting information, machine learning, ICML}
+	
+	\vskip 0.3in
+	]
+	
+	\begin{abstract} 
+		The purpose of this document is to provide both the basic paper template and
+		submission guidelines.
+	\end{abstract} 
+	
+	\section{Introduction}
+	
+	\section{Related Works}
+	
+	\section{Contextual Combinatorial Cascading Bandits}
+	
+	\subsection{Setting}
+	
+	We model our problem as a contextual combinatorial cascading bandit. Suppose we have $E=\{1,...,L\}$ a finite set of $L$ ground items. Let $\prod^k=\{(a_1,...,a_k): a_1,...,a_k \in E, a_i \neq a_j \text{ for any } i \neq j\}$ be the set of all $k$-tuples of distinct items from $E$. Let $\cS \subset \prod^{\leq K}(E)$ consist of feasible actions with length no more than $K$.
+	
+	At time $t$, the learning agent is revealed with feature vectors $X_{t,a} \in \RR^d$ for every basic arm $a \in E$, where we have $\norm{X_{t,a}}_2 \leq 1$; this feature vector combines both information of the user and the corresponding basic arm. We use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$, which is called weight for arm $a$ at time $t$, to indicate whether the user on round $t$ will click on the item $a$ or not. Assume $\bw_{t,a}$ are mutually independent and satisfy
+	\begin{equation}
 	\label{eq:expectation}
 	\EE[\bw_{t,a} | X_{t,a}] = \theta_*^{\top} X_{t,a}
-\end{equation}
-where $\theta_*$ is an unknown $d$-dimensional vector with the assumption that $\norm{\theta_*}_2 \leq 1$ and $0 < \theta_*^{\top} x_{t,a} < 1$ for all $t, a$. At time $t$, the learning agent chooses a solution $\bA_t=(\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t) \in \cS$ based on its past observations. The user then checks from the first item and stops if she has checked all items or click on one interesting. Suppose we add position discount $1 \geq\gamma_1 \geq \gamma_2\geq \cdots \geq \gamma_K>0$. If the user clicks on the $k$-th item of $\bA_t$, the reward we receive is $\gamma_k$. At the end of time $t$, the agent observes $\bO_t$ items in $\bA_t$ and receive the reward
-$$
-\br_t = \max_{1 \leq k \leq \abs{\bA_t}} \gamma_k \bw_t(\ba_k^t) = \bigvee_{k=1}^{\abs{A_t}} \gamma_k \bw_t(\ba_k^t),
-$$
-where we use the notation that $\bigvee_{1\leq i\leq n}a_i = \max_{1\leq i\leq n}a_i$. Note that every time $t$, we have observed $\bw_t(\ba_k^t), 1\leq k\leq\bO_t$. 
-
-If we define a function $f$ on $A=(a_1,...,a_{\abs{A}}) \in \cS, w=(w(1),...,w(L))$ by
-\begin{align*}
+	\end{equation}
+	where $\theta_*$ is an unknown $d$-dimensional vector with the assumption that $\norm{\theta_*}_2 \leq 1$ and $0 < \theta_*^{\top} x_{t,a} < 1$ for all $t, a$. At time $t$, the learning agent chooses a solution $\bA_t=(\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t) \in \cS$ based on its past observations. The user then checks from the first item and stops if she has checked all items or click on one interesting. Suppose we add position discount $1 \geq\gamma_1 \geq \gamma_2\geq \cdots \geq \gamma_K>0$. If the user clicks on the $k$-th item of $\bA_t$, the reward we receive is $\gamma_k$. At the end of time $t$, the agent observes $\bO_t$ items in $\bA_t$ and receive the reward
+	$$
+	\br_t = \max_{1 \leq k \leq \abs{\bA_t}} \gamma_k \bw_t(\ba_k^t) = \bigvee_{k=1}^{\abs{A_t}} \gamma_k \bw_t(\ba_k^t),
+	$$
+	where we use the notation that $\bigvee_{1\leq i\leq n}a_i = \max_{1\leq i\leq n}a_i$. Note that every time $t$, we have observed $\bw_t(\ba_k^t), 1\leq k\leq\bO_t$. 
+	
+	If we define a function $f$ on $A=(a_1,...,a_{\abs{A}}) \in \cS, w=(w(1),...,w(L))$ by
+	\begin{align*}
 	& f : \cS \times [0,1]^E \to [0,1]\\
 	& f(A,w) = \sum_{k=1}^{\abs{A}}\gamma_k (\prod_{i=1}^{k-1}(1 -w(a_i)))w(a_k),
-\end{align*}
-then we have $\br_t = f(\bA_t, \bw_t)$ and $\EE[r_t]=f(\bA_t,\theta_*^{\top}X_t)$ where $X_t=(X_{t,1} \cdots X_{t,L})\in\RR^{d\times L}$. Let 
-$$
-A_t^* = \argmax_{A\in \cS} f(A,\theta_*^{\top}X_t).
-$$ 
-The goal of our learning algorithm is to minimize the expected cumulative regret in $T$ steps
-$$
-R(T) = \EE[\sum_{t=1}^T f(A_t^*, \theta_*^{\top}X_t) - f(\bA_t, \theta_*^{\top}X_t)].
-$$
-In the rest of this paper, we denote $\Delta_{t,\bA_t} = f(A_t^*, \theta_*^{\top}X_t) - f(\bA_t, \theta_*^{\top}X_t)$ and $R(T) = \EE[\sum_{t=1}^T \Delta_{t,\bA_t}]$.
-
-Let $\cH_t$ denote all history at the end of time $t$; $\cH_t$ consists of $\{X_s, \bA_s=(\ba_{1}^s,...,\ba_{\abs{\bA_s}}^s), \bO_s, \bw_s(\ba_k^s): k \in[\bO_s], s\in[t] \}$ and $\EE_t[\cdot] = \EE[\cdot | \cH_t]$. By equation (\ref{eq:expectation}), we have $\EE[(\gamma_k\bw_{s,\ba_k^s}) | \cH_{s-1}] = \theta_*^{\top} (\gamma_k X_{s,\ba_k^s})$. By ridge regression of data 
-$$
-\{(\gamma_k X_{s,\ba_k^s}, \gamma_k\bw_{s,\ba_k^s})\}_{k \in[\bO_s], s\in[t]}
-$$
-let $\hat{\theta}_t$ be the $l^2$-regularized least-squares estimate of $\theta_*$ with regularization parameter $\lambda > 0$:
-\begin{equation}
-\hat{\theta}_t = (X^{t,\top}X^{t} + \lambda I)^{-1} X^{t, \top} \bY^t
-\end{equation}
-where $X^t \in \RR^{(\sum_{s=1}^{t}\bO_s) \times d}$ is the matrix whose rows are $\gamma_k X_{s,\ba_k^s}^{\top}$ and $\bY^t$ is the column vector whose elements are $\gamma_k \bw_s(\ba_k^s)$, $k \in[\bO_s], s\in[t]$. Let
-$$
-\bV_t = X^{t,\top}X^{t} + \lambda I = \lambda I + \sum_{s=1}^{t} \sum_{k=1}^{\bO_s} \gamma^{2k-2}X_{s,\ba_k^s}X_{s,\ba_k^s}^{\top}.
-$$
-Then $\bV_t \in \RR^{d \times d}$ is a positive invertible matrix.
-\subsection{Algorithm}
-
-\begin{theorem}[Theorem 2 in \cite{abbasi2011improved}]
-	\label{thm:theta_estimate}
-	Let 
-	$$
-		\beta_{t}(\delta) = \sqrt{\log(\det(\bV_{t})) + 2 \log(\frac{1}{\delta})} + \sqrt{\lambda}.
-	$$
-	Then for any $\delta > 0$, with probability at least $1 - \delta$, for all $t > 0$, we have
-	\begin{equation}
-	\norm{\hat{\theta}_t - \theta_*}_{\bV_{t}} \leq \beta_{t}(\delta).
-	\end{equation}
-\end{theorem}
-
-Our proposed algorithm, ConComCascade, is described in Algorithm \ref{alg:ConComCascade}. First, it computes the upper confidence bounds (UCBs) $\bU_t \in [0,1]^{E}$ on the expected weights of all items in $E$. The UCB of item $a$ at time $t$ is defined as:
-\begin{equation}
-	\bU_t(a) = \min\{\hat{\theta}_{t-1}^{\top}X_{t,a} + \beta_{t-1}(\delta)\norm{X_{t,a}}_{\bV_{t-1}^{-1}}, 1\}.
-\end{equation}
-By theorem \ref{thm:theta_estimate}, it holds that
-\begin{lemma}
-	For any $\delta > 0$, with high probability at least $1 - \delta$, for any $t>0$,
-	$$
-		0 \leq \bU_t(a) - \theta_*^{\top}X_{t,a} \leq 2\beta_{t-1}(\delta)\norm{X_{t,a}}_{\bV_{t-1}^{-1}}.
-	$$
-\end{lemma}
-\begin{proof}
-	\begin{align*}
-	\abs{\hat{\theta}_{t-1}^{\top}X_{t,a} - \theta_*^{\top}X_{t,a}} &\leq \norm{\hat{\theta}_{t-1} - \theta_*}_{\bV_{t-1}} \norm{X_{t,a}}_{\bV_{t-1}^{-1}} \\
-	&\leq \beta_{t}(\delta)\norm{X_{t,a}}_{\bV_{t-1}^{-1}}.
 	\end{align*}
-\end{proof}
-
-\begin{algorithm}
-	\caption{ConComCascade}
-	\label{alg:ConComCascade}
-	\begin{algorithmic}
-		\STATE {//Initialization}
-		\STATE {Parameters: $\delta > 0, \lambda >0, 1\geq \gamma_1\geq \cdots \geq \gamma_K > 0$}
-		\STATE {$\hat{\theta}_0 = 0, \beta_0(\delta) = 0, \bV_0 = \lambda I$}
-		\STATE{}
-		
-		\FORALL {t=1,2,...}
+	then we have $\br_t = f(\bA_t, \bw_t)$ and $\EE[r_t]=f(\bA_t,\theta_*^{\top}X_t)$ where $X_t=(X_{t,1} \cdots X_{t,L})\in\RR^{d\times L}$. Let 
+	$$
+	A_t^* = \argmax_{A\in \cS} f(A,\theta_*^{\top}X_t).
+	$$ 
+	The goal of our learning algorithm is to minimize the expected cumulative regret in $T$ steps
+	$$
+	R(T) = \EE[\sum_{t=1}^T f(A_t^*, \theta_*^{\top}X_t) - f(\bA_t, \theta_*^{\top}X_t)].
+	$$
+	In the rest of this paper, we denote $\Delta_{t,\bA_t} = f(A_t^*, \theta_*^{\top}X_t) - f(\bA_t, \theta_*^{\top}X_t)$ and $R(T) = \EE[\sum_{t=1}^T \Delta_{t,\bA_t}]$.
+	
+	Let $\cH_t$ denote all history at the end of time $t$; $\cH_t$ consists of $\{X_s, \bA_s=(\ba_{1}^s,...,\ba_{\abs{\bA_s}}^s), \bO_s, \bw_s(\ba_k^s): k \in[\bO_s], s\in[t] \}$ and $\EE_t[\cdot] = \EE[\cdot | \cH_t]$. By equation (\ref{eq:expectation}), we have $\EE[(\gamma_k\bw_{s,\ba_k^s}) | \cH_{s-1}] = \theta_*^{\top} (\gamma_k X_{s,\ba_k^s})$. By ridge regression of data 
+	$$
+	\{(\gamma_k X_{s,\ba_k^s}, \gamma_k\bw_{s,\ba_k^s})\}_{k \in[\bO_s], s\in[t]}
+	$$
+	let $\hat{\theta}_t$ be the $l^2$-regularized least-squares estimate of $\theta_*$ with regularization parameter $\lambda > 0$:
+	\begin{equation}
+	\hat{\theta}_t = (X^{t,\top}X^{t} + \lambda I)^{-1} X^{t, \top} \bY^t
+	\end{equation}
+	where $X^t \in \RR^{(\sum_{s=1}^{t}\bO_s) \times d}$ is the matrix whose rows are $\gamma_k X_{s,\ba_k^s}^{\top}$ and $\bY^t$ is the column vector whose elements are $\gamma_k \bw_s(\ba_k^s)$, $k \in[\bO_s], s\in[t]$. Let
+	$$
+	\bV_t = X^{t,\top}X^{t} + \lambda I = \lambda I + \sum_{s=1}^{t} \sum_{k=1}^{\bO_s} \gamma^{2k-2}X_{s,\ba_k^s}X_{s,\ba_k^s}^{\top}.
+	$$
+	Then $\bV_t \in \RR^{d \times d}$ is a positive invertible matrix.
+	\subsection{Algorithm}
+	
+	\begin{theorem}[Theorem 2 in \cite{abbasi2011improved}]
+		\label{thm:theta_estimate}
+		Let 
+		$$
+		\beta_{t}(\delta) = \sqrt{\log(\det(\bV_{t})) + 2 \log(\frac{1}{\delta})} + \sqrt{\lambda}.
+		$$
+		Then for any $\delta > 0$, with probability at least $1 - \delta$, for all $t > 0$, we have
+		\begin{equation}
+		\norm{\hat{\theta}_t - \theta_*}_{\bV_{t}} \leq \beta_{t}(\delta).
+		\end{equation}
+	\end{theorem}
+	
+	Our proposed algorithm, ConComCascade, is described in Algorithm \ref{alg:ConComCascade}. First, it computes the upper confidence bounds (UCBs) $\bU_t \in [0,1]^{E}$ on the expected weights of all items in $E$. The UCB of item $a$ at time $t$ is defined as:
+	\begin{equation}
+	\bU_t(a) = \min\{\hat{\theta}_{t-1}^{\top}X_{t,a} + \beta_{t-1}(\delta)\norm{X_{t,a}}_{\bV_{t-1}^{-1}}, 1\}.
+	\end{equation}
+	By theorem \ref{thm:theta_estimate}, it holds that
+	\begin{lemma}
+		\label{lem:estimateU}
+		For any $\delta > 0$, with high probability at least $1 - \delta$, for any $t>0$,
+		$$
+		0 \leq \bU_t(a) - \theta_*^{\top}X_{t,a} \leq 2\beta_{t-1}(\delta)\norm{X_{t,a}}_{\bV_{t-1}^{-1}}.
+		$$
+	\end{lemma}
+	\begin{proof}
+		\begin{align*}
+		\abs{\hat{\theta}_{t-1}^{\top}X_{t,a} - \theta_*^{\top}X_{t,a}} &\leq \norm{\hat{\theta}_{t-1} - \theta_*}_{\bV_{t-1}} \norm{X_{t,a}}_{\bV_{t-1}^{-1}} \\
+		&\leq \beta_{t}(\delta)\norm{X_{t,a}}_{\bV_{t-1}^{-1}}.
+		\end{align*}
+	\end{proof}
+	
+	\begin{algorithm}
+		\caption{ConComCascade}
+		\label{alg:ConComCascade}
+		\begin{algorithmic}
+			\STATE {//Initialization}
+			\STATE {Parameters: $\delta > 0, \lambda >0, 1\geq \gamma_1\geq \cdots \geq \gamma_K > 0$}
+			\STATE {$\hat{\theta}_0 = 0, \beta_0(\delta) = 0, \bV_0 = \lambda I$}
+			\STATE{}
+			
+			\FORALL {t=1,2,...}
 			\STATE {//Compute UCBs}
 			\STATE {$\forall a\in E: $}
 			\STATE {$\bU_t(a) \leftarrow \min\{\hat{\theta}_{t-1}^{\top}X_{t,a} + \beta_{t-1}(\delta)\norm{X_{t,a}}_{\bV_{t-1}^{-1}}, 1\}$}
@@ -223,68 +224,125 @@ By theorem \ref{thm:theta_estimate}, it holds that
 			\STATE {$Y^t \leftarrow (Y^{t-1,\top}, \gamma_1 \bw(\ba_1^t),  ..., \gamma_{\bO_t} \bw_t(\ba_{\bO_t}^t))^{\top}$}
 			\STATE {$\hat{\theta}_t \leftarrow (X^{t,\top}X^{t} + \lambda I)^{-1} X^{t, \top} \bY^t$}
 			\STATE {$\beta_{t}(\delta) \leftarrow \sqrt{\log(\det(\bV_{t})) + 2 \log(\frac{1}{\delta})} + \sqrt{\lambda}$}
-		
-		\ENDFOR {~~t}
-	\end{algorithmic}
-\end{algorithm}
-
-Let
-\begin{equation}
+			
+			\ENDFOR {~~t}
+		\end{algorithmic}
+	\end{algorithm}
+	
+	
+	\section{Analysis}
+	Let
+	\begin{equation}
 	C_\gamma = \sum_{k=1}^{K} \gamma_k^2.
-\end{equation}
-
-\begin{theorem}
-	For any $\delta > 0$, with probability at least $1 - \delta$, we have
-	\begin{equation}
-		R(T) = O(\frac{d}{f^*}\log(C_\gamma T)\sqrt{KT})
 	\end{equation}
-\end{theorem}
-\begin{proof}
-	With probability at least $1-\delta$,
-	\begin{equation}
-	\begin{split}
-	&R_T =\sum_{t=1}^{T} \EE_{t}[\Delta_{\bA_t}] \\
-	&\leq \sum_{t=1}^{T} \frac{8}{f_t^*} \beta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma^{k-1}X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}\\
-	&\leq \frac{8}{f^*}\beta_T(\delta) \EE[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma^{k-1}X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}]\\
-	&\leq \frac{8}{f^*}\beta_T(\delta) \sqrt{(\sum_{t=1}^T\bO_t) \EE[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\gamma^{2k-2}\norm{X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]}\\
-	&\leq O(\frac{d}{f^*}\log(C_\gamma T)\sqrt{TK})
-	\end{split}
-	\end{equation}
-\end{proof}
-
-\begin{lemma}
-	$1\geq \gamma_1\geq \cdots \geq \gamma_K > 0$. If we have $w \leq w'$, then for any $A$,
-	$$
+	
+	\begin{lemma}
+		\label{lem:increasing} 
+		$1\geq \gamma_1\geq \cdots \geq \gamma_K > 0$. If we have $w \leq w'$ as column vectors in $\RR^L$, then for any $A\in\cS$,
+		$$
 		f(A, w) \leq f(A, w').
-	$$
-\end{lemma}
-\begin{proof}
-	It suffices to prove when $A = \{1,...,m\}, m\leq K$. First, 
-	\begin{align*}
-		& f(A, w)=\sum_{k=1}^m \gamma_k\prod_{i=1}^{k-1}(1-w_i)w_k\\
-		&\geq f(K,w_1,...,w_{K-1},w_K'). 
-	\end{align*}
-	For $f(K, w_1,...,w_k,w_{k+1}',...,w_K')\geq f(K;w_1,...,w_k',...,w_K')$, it is equivalent to prove that $(w_k-w_k')(1-\gamma(w_{k+1}'+(1-w_{k+1}')w_{k+2}'+...))>0$.
-\end{proof}
-
-\begin{lemma}
-	$\sum_{k=1}^K \gamma^{k-1}\prod_{i=1}^{k-1}(1-(a_i+c_i))(a_k + c_k) \leq \sum_{k=1}^K \gamma^{k-1}\prod_{i=1}^{k-1}(1-a_i)a_k + \sum_{k=1}^K \gamma^{k-1}c_k$.
-\end{lemma}
-This lemma can be proved by induction. Need to change definition of Ut to min(Ut,1). So similarly, we can have
-
-\begin{lemma}
-	$E[\Delta_{\bA_t}|\cH_t] \leq \frac{2}{f_t^*} \beta_{t-1}(\delta)\sum_{k=1}^{\min\{\bO_t, \abs{\bA_t}\}}\norm{\gamma^{k-1}X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}$
-\end{lemma}
-
-
-
-% In the unusual situation where you want a paper to appear in the
-% references without citing it in the main text, use \nocite
-\nocite{langley00}
-
-\bibliography{cascade_reference}
-\bibliographystyle{icml2015}
-
+		$$
+	\end{lemma}
+	\begin{proof}
+		Because for $1 \leq k \leq m$,
+		\begin{align*}
+		&~~\gamma_k - \sum_{i=k+1}^m \gamma_i\prod_{j=k+1}^{i-1}(1-w_j)w_i\\
+		&\geq \gamma_k (1 - \sum_{i=k+1}^m \prod_{j=k+1}^{i-1}(1-w_j)w_i) \\
+		&=\gamma_k \prod_{i=k+1}^{m}(1-w_i)\geq 0,
+		\end{align*}
+		then
+		\begin{align*}
+		&~~\gamma_k w_k + (1-w_k)\sum_{i=k+1}^m \gamma_i\prod_{j=k+1}^{i-1}(1-w_j)w_i\\
+		& \leq \gamma_k w_k' + (1-w_k')\sum_{i=k+1}^m \gamma_i\prod_{j=k+1}^{i-1}(1-w_j)w_i.
+		\end{align*}
+		Therefore, 
+		\begin{align*}
+		& f(A; w_1',...,w_{k-1}',w_k,w_{k+1},...,w_m)\\
+		&=\sum_{i=1}^{k-1} \gamma_i\prod_{j=1}^{i-1}(1-w_j')w_i' + \prod_{j=1}^{k-1}(1-w_j')[\gamma_k w_k \\
+		&\qquad +(1-w_k)\sum_{i=k+1}^{m}\gamma_{i}\prod_{j=k+1}^{i-1}(1-w_j)w_i]\\
+		&\leq \sum_{i=1}^{k-1} \gamma_i\prod_{j=1}^{i-1}(1-w_j')w_i' + \prod_{j=1}^{k-1}(1-w_j')[\gamma_k w_k' \\
+		&\qquad +(1-w_k')\sum_{i=k+1}^{m}\gamma_{i}\prod_{j=k+1}^{i-1}(1-w_j)w_i]\\
+		&=f(A; w_1',...,w_{k-1}',w_{k}',w_{k+1},...,w_m).
+		\end{align*}
+		Then we obtain the result.
+	\end{proof}
+	
+	\begin{lemma}
+		\label{lem:estimateTech}
+		Let $0 \leq p_1,...,p_K \leq 1$ and $u_1,...,u_K \geq 0$. Then
+		\begin{align*}
+		&~~\sum_{k=1}^K \gamma_k\prod_{i=1}^{k-1}(1-\min\{p_i+u_i, 1\})\min\{p_k+u_k, 1\} \\
+		& \leq \sum_{k=1}^K \gamma_k\prod_{i=1}^{k-1}(1-p_i)p_k + \sum_{k=1}^K \gamma_k u_k.
+		\end{align*}
+	\end{lemma}
+	\begin{proof}
+		We prove this by induction. It holds obviously for $K=1$.
+		\begin{align*}
+		&~~\sum_{k=1}^{K+1} \gamma_k\prod_{i=1}^{k-1}(1-\min\{p_i+u_i, 1\})\min\{p_k+u_k, 1\} \\
+		&\leq \sum_{k=1}^K \gamma_k\prod_{i=1}^{k-1}(1-\min\{p_i+u_i, 1\})\min\{p_k+u_k, 1\}\\
+		&+\gamma_{K+1}\prod_{i=1}^{K}(1-\min\{p_i+u_i, 1\})\min\{p_{K+1}+u_{K+1}, 1\}\\
+		&\leq \sum_{k=1}^K \gamma_k\prod_{i=1}^{k-1}(1-p_i)p_k + \sum_{k=1}^K \gamma_k u_k\\
+		&+\gamma_{K+1}\prod_{i=1}^{K}(1-p_i)(p_{K+1}+u_{K+1})\\
+		&\leq \sum_{k=1}^{K+1} \gamma_k\prod_{i=1}^{k-1}(1-p_i)p_k + \sum_{k=1}^{K+1} \gamma_k u_k
+		\end{align*}
+	\end{proof}
+	
+	\begin{lemma}
+		With high probability $1-\delta$, $E[\Delta_{\bA_t}|\cH_t] \leq \frac{2}{f_t^*} \beta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma^{k-1}X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}$
+	\end{lemma}
+	\begin{proof}
+		Using $f(\bA_t^*,\bU_t) \leq f(\bA_t,\bU_t)$, then
+		\begin{align*}
+		&\sum_{k=1}^{\abs{A_t^*}}\gamma_k (\prod_{i=1}^{k-1}(1 -\bU_t(a_{t,i}^*)))\bU_t(a_{t,k}^*) \\
+		\leq &\sum_{k=1}^{\abs{\bA_t}}\gamma_k (\prod_{i=1}^{k-1}(1 -\bU_t(\ba_i^t)))\bU_t(\ba_k^t) 
+		\end{align*}
+		By lemma \ref{lem:estimateU} and lemma \ref{lem:increasing}, it holds that
+		\begin{align*}
+		&~~f(A_t^*, \theta_*^{\top}X_t) \\
+		&\leq f(\bA_t, \min\{\theta_*^{\top}X_{t,a}+2\beta_{t-1}(\delta)\norm{X_{t,a}}_{\bV_{t-1}^{-1}},1\}).
+		\end{align*}
+		Therefore by lemma \ref{lem:estimateTech},
+		\begin{align*}
+		&~~f(A_t^*, \theta_*^{\top}X_t) \\
+		&\leq  \sum_{k=1}^{\abs{\bA_t}}\gamma_k (\prod_{i=1}^{k-1}(1 -\theta_*^{\top}X_{t,a_{t,i}^*})\theta_*^{\top}X_{t,a_{t,k}^*} \\
+		&~~ + 2\sum_{k=1}^{\abs{\bA_t}}\gamma_k\beta_{t-1}(\delta)\norm{X_{t,a}}_{\bV_{t-1}^{-1}}\\
+		&=f(\bA_t, \theta_*^{\top}X_t) + 2\beta_{t-1}(\delta)\sum_{k=1}^{\abs{\bA_t}}\gamma_k\norm{X_{t,a}}_{\bV_{t-1}^{-1}},
+		\end{align*}
+		which is equivalent to 
+		$$
+		\Delta_{\bA_t} \leq 2\sum_{k=1}^{\abs{\bA_t}}\gamma_k\beta_{t-1}(\delta)\norm{X_{t,a}}_{\bV_{t-1}^{-1}}.
+		$$
+	\end{proof}
+	
+	\begin{theorem}
+		For any $\delta > 0$, with probability at least $1 - \delta$, we have
+		\begin{equation}
+		R(T) = O(\frac{d}{f^*}\log(C_\gamma T)\sqrt{KT})
+		\end{equation}
+	\end{theorem}
+	\begin{proof}
+		With probability at least $1-\delta$,
+		\begin{equation}
+		\begin{split}
+		&R_T =\sum_{t=1}^{T} \EE_{t}[\Delta_{\bA_t}] \\
+		&\leq \sum_{t=1}^{T} \frac{8}{f_t^*} \beta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma^{k-1}X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}\\
+		&\leq \frac{8}{f^*}\beta_T(\delta) \EE[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma^{k-1}X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}]\\
+		&\leq \frac{8}{f^*}\beta_T(\delta) \sqrt{(\sum_{t=1}^T\bO_t) \EE[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\gamma^{2k-2}\norm{X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]}\\
+		&\leq O(\frac{d}{f^*}\log(C_\gamma T)\sqrt{TK})
+		\end{split}
+		\end{equation}
+	\end{proof}
+	
+	
+	
+	
+	% In the unusual situation where you want a paper to appear in the
+	% references without citing it in the main text, use \nocite
+	\nocite{langley00}
+	
+	\bibliography{cascade_reference}
+	\bibliographystyle{icml2015}
+	
 \end{document} 
 
 
