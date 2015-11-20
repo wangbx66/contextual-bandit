@@ -212,7 +212,10 @@ $$
 \STATE {$\hat{\theta}_0 = 0, \beta_0(\delta) = 0, \bV_0 = \lambda I$}
 \STATE{}
 
-\FORALL {t=1,2,...}
+\FORALL {$t=1,2,\ldots$}
+\STATE {Obtain context $X_{t,a}$ for all $a\in E$}
+\STATE{}
+
 \STATE {//Compute UCBs}
 \STATE {$\forall a\in E: $}
 \STATE {$\bU_t(a) \leftarrow \min\{\hat{\theta}_{t-1}^{\top}X_{t,a} + \beta_{t-1}(\delta)\norm{X_{t,a}}_{\bV_{t-1}^{-1}}, 1\}$}
@@ -220,17 +223,17 @@ $$
 		
 \STATE {//Choose action $\bA_t$ using UCBs $\bU_t$}
 \STATE {$\bA_t=(\ba_1^t,...,\ba_{\abs{\bA_t}}^t) \leftarrow \argmax_{A \in \cS} f(A, \bU_t)$}
-\STATE {Observe $\bO_t, \bw_t(\ba_k^t), k\in[\bO_t]$}
+\STATE {Play $\bA_t$ and observe $\bO_t, \bw_t(\ba_k^t), k\in[\bO_t]$}
 \STATE {}
 			
 \STATE {//Update statistics}
 \STATE {$\bV_{t} \leftarrow \bV_{t-1} + \sum_{k=1}^{\bO_t} \gamma_k^2 X_{t, \ba_k^t}X_{t, \ba_k^t}^{\top}$}
-\STATE {$X^t \leftarrow (X^{t-1, \top}, \gamma_1 X_{t, \ba_1^t},  ..., \gamma_{\bO_t} X_{t, \ba_{\bO_t}^t})^{\top}$}
-\STATE {$Y^t \leftarrow (Y^{t-1,\top}, \gamma_1 \bw(\ba_1^t),  ..., \gamma_{\bO_t} \bw_t(\ba_{\bO_t}^t))^{\top}$}
-\STATE {$\hat{\theta}_t \leftarrow (X^{t,\top}X^{t} + \lambda I)^{-1} X^{t, \top} \bY^t$}
+\STATE {$X^t \leftarrow ((X^{t-1})^\top, \gamma_1 X_{t, \ba_1^t},  ..., \gamma_{\bO_t} X_{t, \ba_{\bO_t}^t})^{\top}$}
+\STATE {$Y^t \leftarrow ((Y^{t-1})^\top, \gamma_1 \bw(\ba_1^t),  ..., \gamma_{\bO_t} \bw_t(\ba_{\bO_t}^t))^{\top}$}
+\STATE {$\hat{\theta}_t \leftarrow ((X^{t})^\top X^{t} + \lambda I)^{-1} (X^{t})^\top \bY^t$}
 \STATE {$\beta_{t}(\delta) \leftarrow \sqrt{\log(\det(\bV_{t})) + 2 \log(\frac{1}{\delta})} + \sqrt{\lambda}$}
 			
-\ENDFOR {~~t}
+\ENDFOR {~~$t$}
 \end{algorithmic}
 \end{algorithm}
 	
