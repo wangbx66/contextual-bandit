@@ -40,6 +40,10 @@
 \usepackage{bm}
 \usepackage{algorithm,algorithmic}
 \usepackage{multirow}
+\newcommand{\EE}{\mathbb{E}}
+\newcommand{\II}{\mathbb{I}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\RR}{\mathbb{R}}
 \newcommand{\bT}{\mathbb{T}}
 \newcommand{\bOne}{\mathbbm{1}}
 \newcommand{\bA}{\mathbf{A}}
@@ -55,10 +59,6 @@
 \newcommand{\cA}{\mathcal{A}}
 \newcommand{\cH}{\mathcal{H}}
 \newcommand{\cS}{\mathcal{S}}
-\newcommand{\EE}{\mathbb{E}}
-\newcommand{\II}{\mathbb{I}}
-\newcommand{\PP}{\mathbb{P}}
-\newcommand{\RR}{\mathbb{R}}
 \newcommand{\argmax}{\mathrm{argmax}}
 \newcommand{\trace}{\mathrm{trace}}
 \newcommand{\abs}[1]{\left| #1 \right|}
@@ -117,23 +117,33 @@ The purpose of this document is to provide both the basic paper template and sub
 	
 \section{Related Works}
 	
-\section{Contextual Combinatorial Cascading Bandits}
-	
-\subsection{Setting}
+\section{Problem Formulation}
 	
 We model our problem as a contextual combinatorial cascading bandit. Suppose we have $E=\{1,...,L\}$ a finite set of $L$ ground items. Let $\prod^k=\{(a_1,...,a_k): a_1,...,a_k \in E, a_i \neq a_j \text{ for any } i \neq j\}$ be the set of all $k$-tuples of distinct items from $E$. Let $\cS \subset \prod^{\leq K}(E)$ consist of feasible actions with length no more than $K$.
 	
-At time $t$, the learning agent is revealed with feature vectors $X_{t,a} \in \RR^d$ for every basic arm $a \in E$, where we have $\norm{X_{t,a}}_2 \leq 1$; this feature vector combines both information of the user and the corresponding basic arm. We use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$, which is called weight for arm $a$ at time $t$, to indicate whether the user on round $t$ will click on the item $a$ or not. Assume $\bw_{t,a}$ are mutually independent and satisfy
+At time $t$, the learning agent is revealed with feature vectors $x_{t,a} \in \RR^{d \times 1}$ for every basic arm $a \in E$, where we have $\norm{x_{t,a}}_2 \leq 1$; this feature vector combines both information of the user and the corresponding basic arm. We use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$, which is called {\it weight} for arm $a$ at time $t$, to indicate the output of the item $a$ at time $t$. Assume $\bw_{t,a}$ are mutually independent and satisfy
 \begin{equation}
 \label{eq:expectation}
-\EE[\bw_{t,a} | X_{t,a}] = \theta_*^{\top} X_{t,a}
+\EE[\bw_{t,a} | x_{t,a}] = \theta_*^{\top} x_{t,a}
 \end{equation}
-where $\theta_*$ is an unknown $d$-dimensional vector with the assumption that $\norm{\theta_*}_2 \leq 1$ and $0 < \theta_*^{\top} x_{t,a} < 1$ for all $t, a$. At time $t$, the learning agent chooses a solution $\bA_t=(\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t) \in \cS$ based on its past observations. The user then checks from the first item and stops if she has checked all items or click on one interesting. Suppose we add position discount $0 \leq \gamma_1,...,\gamma_K\leq \gamma_0 \leq 1$. If the $k$-th item of $\bA_t$ appears blocking, the reward we receive is $\gamma_k$. And if the whole path of $\bA_t$ is unblocked, the received reward is $\gamma_0$. At the end of time $t$, the agent observes $\bO_t$ items in $\bA_t$ and receive the reward
+where $\theta_*$ is an unknown $d$-dimensional vector with the assumption that $\norm{\theta_*}_2 \leq 1$ and $0 \leq \theta_*^{\top} x_{t,a} \leq 1$ for all $t, a$. At time $t$, the learning agent chooses a solution $\bA_t=(\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t) \in \cS$ based on its past observations. At the end of every time $t$, the agent observes weights of the first $\bO_t$ items of $\bA_t$ where 
+$$
+\bO_t \leq \abs{\bA_t}, \bw_t(\ba_k^t) = 1, \forall k < \bO_t, \bw_t(\ba_{\bO_t}^t) = 0
+$$ 
+or 
+$$
+\bO_t = \abs{\bA_t}, \bw_t(\ba_k^t) = 1, \forall k \leq \abs{\bA_t}.
+$$
+We say that item $a$ is {\it observed} if $a = \ba_k^t$ for some $k \leq \bO_t$. 
+
+The agent receives reward $1$ if all items in $\bA_t$ are observed and have weights $1$. Suppose we consider partial reward, $0 \leq \gamma_1 \leq \ldots \leq \gamma_{K-1} \leq 1$, for partial number of observed items with weight $1$: If $\bO_t = 1 < \abs{\bA_t}$, then the agent only observes the weight of the first item of $\bw_t(\ba_1^t)$ and receives zero reward; if $1 < \bO_t < \abs{\bA_t}$, then the agent observes weights of first $\bO_t$ items among which $\bO_t - 1$ items have weights 1 and receives reward $\gamma_{\bO_t - 1}$; if $\bO_t = \abs{\bA_t}$ and $\bw_{\ba_{\abs{\bA_t}}^t} = 0$, then the agent observes $\abs{\bA_t} - 1$ items with weights $1$ and receives reward $\gamma_{\abs{\bA_t} - 1}$. Note that the order of $\bA_t$ affects both the feedback and the reward. In the analysis part, we will show how the order affects the reward.
+
+At the end of time $t$, the agent observes $\bO_t, \bw_t(\ba_k^t), 1\leq k\leq\bO_t$ and receives the reward
 \begin{align*}
 \br_t &= \min_{1 \leq k \leq \abs{\bA_t}} [\gamma_k (1 - \bw_t(\ba_k^t)) +\gamma_0 \bw_t(\ba_k^t)] \\
 &= \bigwedge_{k=1}^{\abs{A_t}} [\gamma_k (1 - \bw_t(\ba_k^t)) +\gamma_0 \bw_t(\ba_k^t)],
 \end{align*}
-where we use the notation that $\bigwedge_{1\leq i\leq n}a_i = \min_{1\leq i\leq n}a_i$. Note that every time $t$, we have observed $\bw_t(\ba_k^t), 1\leq k\leq\bO_t$. 
+where we use the notation that $\bigwedge_{1\leq i\leq n}a_i = \min_{1\leq i\leq n}a_i$. Note that every time $t$, we have observed. 
 	
 If we define a function $f$ on $A=(a_1,...,a_{\abs{A}}) \in \cS, w=(w(1),...,w(L))$ by
 \begin{align*}
@@ -150,6 +160,10 @@ $$
 R(T) = \EE[\sum_{t=1}^T f(A_t^*, \theta_*^{\top}X_t) - f(\bA_t, \theta_*^{\top}X_t)].
 $$
 In the rest of this paper, we denote $\Delta_{t,\bA_t} = f(A_t^*, \theta_*^{\top}X_t) - f(\bA_t, \theta_*^{\top}X_t)$ and $R(T) = \EE[\sum_{t=1}^T \Delta_{t,\bA_t}]$.
+
+\section{Algorithms and Results}
+
+\subsection{Algorithm}
 	
 Let $\cH_t$ denote all history at the end of time $t$; $\cH_t$ consists of $\{X_s, \bA_s=(\ba_{1}^s,...,\ba_{\abs{\bA_s}}^s), \bO_s, \bw_s(\ba_k^s): k \in[\bO_s], s\in[t] \}$ and $\EE_t[\cdot] = \EE[\cdot | \cH_t]$. By equation (\ref{eq:expectation}), we have $\EE[(\gamma_k'\bw_{s,\ba_k^s}) | \cH_{s-1}] = \theta_*^{\top} (\gamma_k' X_{s,\ba_k^s})$. By ridge regression of data 
 $$
@@ -169,8 +183,6 @@ $$
 $$
 Then $\bV_t \in \RR^{d \times d}$ is a positive invertible matrix.
 
-
-\subsection{Algorithm}
 	
 \begin{theorem}[Theorem 2 in \cite{abbasi2011improved}]
 \label{thm:theta_estimate}
@@ -238,7 +250,27 @@ $$
 \end{algorithm}
 	
 	
-\section{Analysis}
+\subsection{Results}
+
+\begin{theorem}
+For any $\delta > 0$, with probability at least $1 - \delta$, we have
+\begin{equation}
+R(T) = O(\frac{d}{f^*}\log(C_\gamma T)\sqrt{KT})
+\end{equation}
+\end{theorem}
+\begin{proof}
+With probability at least $1-\delta$,
+\begin{equation}
+\begin{split}
+&R_T =\sum_{t=1}^{T} \EE_{t}[\Delta_{\bA_t}] \\
+&\leq \sum_{t=1}^{T} 4 \sqrt{\beta_{t-1}(\delta) \EE[\sum_{k=1}^{\bO_t}\norm{\gamma_k' X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}]}\\
+&\leq 4\sqrt{\beta_T(\Delta)} \sum_{t=1}^{T} \sqrt{\bO_t \EE[\sum_{k=1}^{\bO_t}\norm{\gamma_k'^2 X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]}\\
+&\leq 4\sqrt{\beta_T(\Delta)} \sqrt{(\sum_{t=1}^{T} \bO_t) \EE[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k'^2 X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]}  \\
+&\leq O(d^{3/4}\log(C_\gamma T)^{3/4}\sqrt{TK})
+\end{split}
+\end{equation}
+\end{proof}
+
 Let
 \begin{equation}
 C_\gamma = \sum_{k=1}^{K} \gamma_k'^2.
@@ -375,25 +407,6 @@ $$
 E[\Delta_{\bA_t}|\cH_t] \leq 4\sqrt{\beta_{t-1}(\delta) \EE[\sum_{k=1}^{\bO_t}\norm{\gamma_k' X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}]}.
 $$
 \end{corollary}
-	
-\begin{theorem}
-For any $\delta > 0$, with probability at least $1 - \delta$, we have
-\begin{equation}
-R(T) = O(\frac{d}{f^*}\log(C_\gamma T)\sqrt{KT})
-\end{equation}
-\end{theorem}
-\begin{proof}
-With probability at least $1-\delta$,
-\begin{equation}
-\begin{split}
-&R_T =\sum_{t=1}^{T} \EE_{t}[\Delta_{\bA_t}] \\
-&\leq \sum_{t=1}^{T} 4 \sqrt{\beta_{t-1}(\delta) \EE[\sum_{k=1}^{\bO_t}\norm{\gamma_k' X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}]}\\
-&\leq 4\sqrt{\beta_T(\Delta)} \sum_{t=1}^{T} \sqrt{\bO_t \EE[\sum_{k=1}^{\bO_t}\norm{\gamma_k'^2 X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]}\\
-&\leq 4\sqrt{\beta_T(\Delta)} \sqrt{(\sum_{t=1}^{T} \bO_t) \EE[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k'^2 X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]}  \\
-&\leq O(d^{3/4}\log(C_\gamma T)^{3/4}\sqrt{TK})
-\end{split}
-\end{equation}
-\end{proof}
 	
 \begin{lemma} % det(V_t)
 $\det(\bV_t) \leq (\lambda + C_\gamma t/d)^d.$
