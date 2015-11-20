@@ -9,8 +9,52 @@ logger = logging.getLogger('Environment')
 
 from functools import reduce
 
-def movielens_chrono():
+def movielens(candidates, userno=1):
+    logger.info('Initializing environment "Movielens"')
+    records = {}
+    with open('ratings.csv') as fp:
+        r = csv.reader(fp, delimiter=',', quotechar='"')
+        for idx, tpl in enumerate(r):
+            if idx == 0:
+                continue
+            user, movie, rate, _ = tpl
+            if not int(movie) in candidates:
+                continue 
+            try:
+                records[int(user)].append(int(movie))
+            except:
+                records[int(user)] = [int(movie)]
+    with open('tags.csv') as fp:
+        r = csv.reader(fp, delimiter=',', quotechar='"')
+        for idx, tpl in enumerate(r):
+            if idx == 0:
+                continue
+            user, movie, tag, _ = tpl
+            if not int(movie) in candidates:
+                continue
+            try:
+                records[int(user)].append(int(movie))
+            except:
+                records[int(user)] = [(int(movie))]
 
+    total = len(records)
+    # leave those who have viewed at least one candidates
+    eligable_users = set(records.keys())
+    logger.info('#Total eligabli users = {0}'.format(len(eligable_users)))
+    logger.info('#Users participated ea/round = {0}'.format(userno))
+    def environment(recommend):
+        users = random.sample(eligable_users, userno)
+        movies = reduce(set.union, [set(records[user]) for user in users])
+        logger.debug('Received recommendation {0}'.format(recommend))
+        logger.debug('User ctr history {0}'.format(movies))
+        for idx, movie in enumerate(recommend):
+            if movie in movies:
+                return idx
+        return float('Inf')
+    logger.info('Initializing environment "Movielens" done')
+    return environment
+
+def movielens_chrono():
     print('Initializing environment "Movielens-chrono"')
     records = {}
     tts = []
@@ -62,49 +106,4 @@ def movielens_chrono():
                 return idx
         return float('Inf')
     print('Initializing environment "Movielens-chrono" done')
-    return environment
-
-def movielens(candidates, userno=1):
-    logger.info('Initializing environment "Movielens"')
-    records = {}
-    with open('ratings.csv') as fp:
-        r = csv.reader(fp, delimiter=',', quotechar='"')
-        for idx, tpl in enumerate(r):
-            if idx == 0:
-                continue
-            user, movie, rate, _ = tpl
-            if not int(movie) in candidates:
-                continue 
-            try:
-                records[int(user)].append(int(movie))
-            except:
-                records[int(user)] = [int(movie)]
-    with open('tags.csv') as fp:
-        r = csv.reader(fp, delimiter=',', quotechar='"')
-        for idx, tpl in enumerate(r):
-            if idx == 0:
-                continue
-            user, movie, tag, _ = tpl
-            if not int(movie) in candidates:
-                continue
-            try:
-                records[int(user)].append(int(movie))
-            except:
-                records[int(user)] = [(int(movie))]
-
-    total = len(records)
-    # leave those who have viewed at least one candidates
-    eligable_users = set(records.keys())
-    logger.info('#Total eligabli users = {0}'.format(len(eligable_users)))
-    logger.info('#Users participated ea/round = {0}'.format(userno))
-    def environment(recommend):
-        users = random.sample(eligable_users, userno)
-        movies = reduce(set.union, [set(records[user]) for user in users])
-        logger.debug('Received recommendation {0}'.format(recommend))
-        logger.debug('User ctr history {0}'.format(movies))
-        for idx, movie in enumerate(recommend):
-            if movie in movies:
-                return idx
-        return float('Inf')
-    logger.info('Initializing environment "Movielens" done')
     return environment

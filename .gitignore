@@ -2,6 +2,10 @@
 # csv files from movielens
 *.csv
 
+# cch and al files from rocketfuel
+*.cch
+*.al
+
 # [Common Python ignore]
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -52,12 +52,10 @@ def ucb(candidates, K=8, T=150000, verbose=False):
             logger.debug('Reward={0}'.format(reward))
             logger.debug('Score={0}/{1}'.format(score, t))
             if t % 10000 == 0:
-                logger.info('Reward={0}'.format(reward))
                 logger.info('Score={0}/{1}'.format(score, t))
             for k in range(min(c, K)):
                 ob[recc[k]] += 1
                 w[recc[k]] = ((ob[recc[k]] - 1) * w[recc[k]] + (c == k)) / ob[recc[k]]
-        logger.info('Reward={0}'.format(reward))
         logger.info('Score={0}/{1}'.format(score, t))
         print(sorted(u.items()))
         print(sorted(ob.items()))
@@ -75,17 +73,15 @@ def monkey(candidates, K=8, T=150000, verbose=False):
             reward = int(isinstance(c, int))
             score += reward
             if verbose:
-                print('Agent: Reward={0}'.format(reward))
                 print('Agent: Score={0}/{1}'.format(score, t))
             else:
                 if t % 10000 == 0:
-                    print('Agent: Reward={0}'.format(reward))
                     print('Agent: Score={0}/{1}'.format(score, t))
     return agent
 
 from environment import movielens
 candidates = movies_mix_cld_adt()
-environment = movielens(candidates[0] + candidates[1], 5)
+environment = movielens(candidates[0] + candidates[1], 1)
 agent = ucb(candidates)
 agent(environment)
 agent = monkey(candidates)
