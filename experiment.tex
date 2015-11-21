@@ -1,0 +1,45 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage{fullpage}
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{graphicx}
+\usepackage{courier}
+\usepackage{tikz}
+
+\begin{document}
+
+C3UCB Draft \hfill Fall 2015
+
+\vspace*{\baselineskip}
+
+\begin{center}
+  \textbf{Contextual Combinatorial Cascading Bandit Experiment}
+\end{center}
+
+\vspace*{2\baselineskip}
+
+\section{Synthetic dataset}
+
+Let $I=\{e_1,e_2,\dots,e_L\}$ be a set of arms, each associated with a $d$-dimensional vector $x_i$ randomly drawn from $\{x\in R^d : \|x\|_2=1\}$. The expected payoff of an superarm $A\subseteq I$, denoted as $r_A$, will be $\sum_{i:e_i\in A, i\leq O_t}{(\theta_\ast^Tx_i + \epsilon_{i,t})\gamma^i z_i}$, where $\theta_\ast$ s.t. $\|\theta_\ast\|_2=1$ is randomly initiated and holds throughout the experiment, and $\epsilon_{i,t}\sim N(\mu_i,\sigma_i)$ i.i.d. be the fluctuation. In this experiment, the set of avaiable superarms $S$ is $\{A\subseteq I:|A|=k\}$. 
+
+The following approaches are served as baselines:
+
+\begin{enumerate}
+
+  \item The monkey who randomly select $A\in S$ at each round.
+
+  \item Combinatorial Cascading UCB which maintains its upper confidence bound purely by the historical payoff of the superarms selected. The contextual information $x_{i,t}$ is totally ignored so it can only catch the $\epsilon$ part while suffers a lot from noisy. The performance of Combinatorial Cascading UCB will mainly depends on the magnitude of $\mu$.
+  
+  \item Contextual Combinatorial UCB which takes full feedback instead of cascading feedback, which is sureal in some settings in real world. It's expected to perform better than C3UCB, but as long as their regret being comparable, the result is acceptable.
+
+\end{enumerate}
+
+\section{Movielens}
+
+let $Y$ be a matrix in which each entry $y_{ij}\in \{0,1\}$ records the clickthrough history between user $i$ and movie $j$. We split $Y$ into training set and test set $Y=Y_{\text{train}}+Y_{\text{test}}$ by categorizing each entry randomly with probability $\delta$. Let $USV^T=Y_{\text{train}}$ be the SVD decomposition of $Y_{\text{train}}$, the context corresponding to user $i$ and movie $j$ is defined as $U_i^T(V_j, G_j)$, where $G_i$ records the binary indicators of genres.
+
+Upon received a super arm $A\in S$, the reward $\sum_{i:e_i\in I, i\leq O_t}{Y_{\text{test},ij}\gamma^i z_i}$ is returned as well as the terminal of cascade. The result is compared with the same baselines as in the above synthetic dateset experiment.
+
+
+
+\end{document}

@@ -6,6 +6,11 @@
 *.cch
 *.al
 
+# standard tex ignore
+*.aux
+*.bbl
+*.log
+
 # [Common Python ignore]
 # Byte-compiled / optimized / DLL files
 __pycache__/
