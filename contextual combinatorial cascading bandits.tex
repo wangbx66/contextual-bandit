@@ -271,7 +271,7 @@ Our proposed algorithm, ConComCascade, is described in Algorithm \ref{alg:ConCom
 
 Here is our main theorem.
 \begin{theorem}
-Given partial reward parameters $0 = \gamma_0 \leq \gamma_1 \leq \cdots \gamma_{K-1} \leq 1$ and regularization parameter $\lambda \geq C_\gamma$, for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regret of our algorithm, {\it ConComCascade}, satisfies
+Given partial reward parameters $0 = \gamma_0 \leq \gamma_1 \leq \cdots \gamma_{K-1} \leq c f^*$ and regularization parameter $\lambda \geq C_\gamma$ for some constant $\frac{1}{2} < c < 1$, for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regret of our algorithm, {\it ConComCascade}, satisfies
 \begin{equation}
 R(T) = O(\frac{d}{f^*}\log(C_\gamma T)\sqrt{KT}),
 \end{equation}
@@ -281,27 +281,69 @@ f^* &= \min_{1 \leq t \leq T} f_t^*\\
 C_\gamma &= \sum_{k=1}^{K} \gamma_k'^2 = \sum_{k=1}^{K-1} (1 - \gamma_k)^2 = O(K).
 \end{align*}
 \end{theorem}
-\begin{proof}
-With probability at least $1-\delta$,
-\begin{equation}
-\begin{split}
-&R_T =\sum_{t=1}^{T} \EE_{t}[\Delta_{t, \bA_t}] \\
-&\leq \sum_{t=1}^{T} 4 \beta_{t-1}(\delta) \EE[\sum_{k=1}^{\bO_t}\norm{\gamma_k' X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}]\\
-&\leq 4 \beta_T(\delta) \sum_{t=1}^{T} \bO_t \EE[\sum_{k=1}^{\bO_t}\norm{\gamma_k'^2 X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]\\
-&\leq 4 \beta_T(\delta) \sqrt{(\sum_{t=1}^{T} \bO_t) \EE[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k'^2 X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]}  \\
-&\leq O(d\log(C_\gamma T)\sqrt{TK})
-\end{split}
-\end{equation}
-\end{proof}
-	
+
+To prove this theorem, we want to estimate $\EE[\Delta_{t, \bA_t}|\cH_t]$ for every time $t$. If the chosen action $\bA_t$ is not suboptimal, which is equivalent to $\Delta_{t, \bA_t} > 0$, then we must have
+$$
+f(A_t^*, \bU_t) \leq f(\bA_t, \bU_t).
+$$
+From the above relation, we need the following two lemmas to derive an estimate of $\Delta_{t, \bA_t}$ in terms of all elements in $\bA_t$. 
+
 \begin{lemma}
 \label{lem:increasing} 
-If $0= \gamma_0 \leq \gamma_1 \leq ... \leq \gamma_{K-1} \leq 1$ and we have $0 \leq w \leq w' \leq 1$ as column vectors in $\RR^L$, then for any $A\in\cS$,
+Given parameters $0= \gamma_0 \leq \gamma_1 \leq ... \leq \gamma_{K-1} \leq 1$, $f(A, w)$ is increasing with respect to $w$; equivalently, suppose $0 \leq w \leq w' \leq 1$ as column vectors in $\RR^L$, we have for any $A\in\cS$,
 $$
 f(A, w) \leq f(A, w').
 $$
 \end{lemma}
-\begin{proof}
+
+\begin{lemma}
+\label{lem:estimateTech}
+Suppose $0 \leq p_1,...,p_m \leq 1$ and $u_1,...,u_m \geq 0$. Let $w_i = \min\{p_i + u_i, 1\}, 1 \leq i \leq m$. Then
+$$
+f(A^{(m)}, w) \leq f(A^{(m)}, p) + \sum_{k=1}^{m} \gamma_k' u_k,
+$$
+where $A^{(m)} = (1,2,\ldots,m), w = (w_1, \ldots, w_m)$ and $p = (p_1, \ldots, p_m)$.
+\end{lemma}
+
+From lemma \ref{lem:increasing} and $\theta_*^{\top}x_t \leq \bU_t$ by lemma \ref{lem:estimateU}, we can deduce 
+\begin{equation}
+\label{eq:fIncrease}
+f(A_t^*, \theta_*^{\top}x_t) \leq f(A_t^*, \bU_t) \leq f(\bA_t, \bU_t).
+\end{equation}
+Further from lemma \ref{lem:estimateTech}, we can deduce
+\begin{equation}
+\label{eq:fTech}
+f(\bA_t, \bU_t) \leq f(\bA_t, \theta_*^{\top}x_t) + \sum_{k=1}^{\abs{\bA_t}} \gamma_k' u_k
+\end{equation}
+where $u_k = \beta_{t-1}(\delta)\norm{x_{t, \ba_k^t}}_{\bV_{t-1}^{-1}}$. Combining equation (\ref{eq:fIncrease})) and (\ref{eq:fTech})), we can conclude that
+$$
+\Delta_{t, \bA_t} = f(A_t^*, \theta_*^{\top}x_t) - f(\bA_t, \theta_*^{\top}x_t) \leq \sum_{k=1}^{\abs{\bA_t}} \gamma_k' u_k.
+$$
+
+However, this estimate involves all elements of $\bA_t$. Only when the learning agent has observed all elements of $\bA_t$, we can use such an estimate, which means we are able to estimate
+$$
+\EE[\Delta_{t, \bA_t}] = \EE[\Delta_{t, \bA_t}(1/p_{\bA_t}) \bOne\{\Delta_{t, \bA_t} > 0, \bO_t \geq \abs{\bA_t}\}].
+$$
+Problem might happen if $p_{\bA_t}$ is small. Thus we need the following lemma to find a good substitution of $\bA_t$.
+
+\begin{lemma}
+\label{lem:prefixExist}
+Suppose the weights for items in $E$ are $w = (w_a)_{a \in E}$. Let $A = (a_1, ..., a_{\abs{A}})$ be a list and let $p_A$ denote the probability that all of items in $A$ are observed; equivalently, $p_A = \prod_{k=1}^{\abs{A}-1}w(a_i)$. Let $B_k = (a_1, ..., a_k), k \leq \abs{A}$ be a prefix of $A$. Then for any given constant $\frac{1}{2} < c < 1$, there exists a prefix $B$ of $A$ such that
+$$
+p_B \geq c f^* - \gamma_{\abs{B}}, \qquad \Delta_B \geq \frac{1}{2} \Delta_A,
+$$
+where
+$$
+f^* = \max_{A'} f(A', w), \qquad \Delta_{A'} = f^* - f(A', w).
+$$
+\end{lemma}
+
+From this lemma, we can find a prefix $\bB_t$ of $\bA_t$ such that $p_{B_t}$ is large enough and $\Delta_{\bB_t}$ will not be too small. Then follow the above deductions, we can get a good estimate for $\EE[\Delta_{t, \bA_t}|\cH_{t-1}]$ in terms of $\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}$. Once we have estimated $\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}$, we can get an estimate of $R(T)$. We leave all details in the next subsection.
+
+
+\subsection{Proofs}
+
+\begin{proof}[ of lemma \ref{lem:increasing}]
 It suffices to prove that $\cA = [m]$ where $1 \leq m \leq K$. Because for $1 \leq k \leq m$,
 \begin{align*}
 &~~-\gamma_{k-1} + \sum_{i=k+1}^m \gamma_{i-1}(\prod_{j=k+1}^{i-1}w_j')(1- w_i') + \prod_{j=k+1}^{m}w_j'\\
@@ -326,16 +368,8 @@ Therefore,
 \end{align*}
 Then we obtain the result.
 \end{proof}
-	
-\begin{lemma}
-\label{lem:estimateTech}
-Suppose $0 \leq p_1,...,p_m \leq 1$ and $u_1,...,u_m \geq 0$. Let $w_i = \min\{p_i + u_i, 1\}, 1 \leq i \leq m$. Then
-$$
-f(A^{(m)}, w) \leq f(A^{(m)}, p) + \sum_{k=1}^{m} \gamma_k' u_k,
-$$
-where $A^{(m)} = (1,2,\ldots,m), w = (w_1, \ldots, w_m)$ and $p = (p_1, \ldots, p_m)$.
-\end{lemma}
-\begin{proof}
+
+\begin{proof}[ of lemma \ref{lem:estimateTech}]
 We prove this by induction. It holds obviously for $m=1$.
 \begin{align*}
 &~~f(m+1, w)\\
@@ -348,8 +382,22 @@ We prove this by induction. It holds obviously for $m=1$.
 &\leq f(m+1, p) + \sum_{k=1}^{m+1} \gamma_k' u_k
 \end{align*}
 \end{proof}
-	
-Let $p_A$ denote the probability that all of items in $A$ are observed. Then $p_A = \prod_{k=1}^{\abs{A}-1}w(a_i)$.
+
+
+
+\begin{proof}
+With probability at least $1-\delta$,
+\begin{equation}
+\begin{split}
+&R_T =\sum_{t=1}^{T} \EE_{t}[\Delta_{t, \bA_t}] \\
+&\leq \sum_{t=1}^{T} 4 \beta_{t-1}(\delta) \EE[\sum_{k=1}^{\bO_t}\norm{\gamma_k' X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}]\\
+&\leq 4 \beta_T(\delta) \sum_{t=1}^{T} \bO_t \EE[\sum_{k=1}^{\bO_t}\norm{\gamma_k'^2 X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]\\
+&\leq 4 \beta_T(\delta) \sqrt{(\sum_{t=1}^{T} \bO_t) \EE[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k'^2 X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]}  \\
+&\leq O(d\log(C_\gamma T)\sqrt{TK})
+\end{split}
+\end{equation}
+\end{proof}
+
 
 \begin{lemma}
 Suppose $A = (a_1, ..., a_{\abs{A}})$. Let $B_k = (a_1, ..., a_k), k \leq \abs{A}$ be a prefix of $A$. Then we have the following properties.
@@ -482,7 +530,7 @@ Using the fact that $ 2\log(1+u) \geq u$ for any $u \in [0,1]$, we get
 	
 % In the unusual situation where you want a paper to appear in the
 % references without citing it in the main text, use \nocite
-\nocite{langley00}
+%\nocite{langley00}
 	
 \bibliography{cascade_reference}
 \bibliographystyle{icml2015}
