@@ -167,11 +167,13 @@ R(T) = \EE[\sum_{t=1}^T \Delta_{t,\bA_t}].
 $$
 where $\Delta_{t,\bA_t} = f_t^* - f(\bA_t, \theta_*^{\top}x_t)$.
 
+
+
 \section{Algorithms and Results}
 
 \subsection{Algorithm}
 	
-Let $\cH_t$ denote all history at the end of time $t$; $\cH_t$ consists of $\{x_s, \bA_s=(\ba_{1}^s,...,\ba_{\abs{\bA_s}}^s), \bO_s, \bw_s(\ba_k^s), k \in[\bO_s], s\in[t] \}$ and $\EE_t[\cdot] = \EE[\cdot | \cH_t]$. Let
+Let $\cH_t$ denote all history at the end of time $t$; $\cH_t$ consists of $\{x_s, \bA_s=(\ba_{1}^s,...,\ba_{\abs{\bA_s}}^s), \bO_s, \bw_s(\ba_k^s), k \in[\bO_s], s\in[t] \}$ and define $\EE_t[\cdot] = \EE[\cdot | \cH_t]$. Here we abuse the notation $\abs{\bA_s}$ to denote the number of elements in the list $\bA_s$. Let
 $$
 \gamma_k' = 1 - \gamma_{k-1}, ~~~1 \leq k \leq K.
 $$
@@ -181,12 +183,11 @@ $$
 $$
 By ridge regression of data 
 $$
-\{(\gamma_k' X_{s,\ba_k^s}, \gamma_k'\bw_{s,\ba_k^s})\}_{k \in[\bO_s], s\in[t]}
+\{(\gamma_k' X_{s,\ba_k^s}, \gamma_k'\bw_{s,\ba_k^s})\}_{k \in[\bO_s], s\in[t]},
 $$
-where
-let $\hat{\theta}_t$ be the $l^2$-regularized least-squares estimate of $\theta_*$ with regularization parameter $\lambda > 0$:
+we get a $l^2$-regularized least-squares estimate of $\theta_*$ with regularization parameter $\lambda > 0$:
 \begin{equation}
-\hat{\theta}_t = (\bX_t^{\top}\bX_t + \lambda I)^{-1} \bX_t^{\top} \bY_t
+\hat{\theta}_t = (\bX_t^{\top}\bX_t + \lambda I)^{-1} \bX_t^{\top} \bY_t,
 \end{equation}
 where $\bX_t \in \RR^{(\sum_{s=1}^{t}\bO_s) \times d}$ is the matrix whose rows are $\gamma_k' x_{s,\ba_k^s}^{\top}$ and $\bY_t$ is the column vector whose elements are $\gamma_k' \bw_s(\ba_k^s)$, $k \in[\bO_s], s\in[t]$. Let
 $$
@@ -194,8 +195,9 @@ $$
 $$
 Then $\bV_t \in \RR^{d \times d}$ is a positive invertible matrix.
 
+Next we build on a good estimate of differences between $\hat{\theta}_t$ and $\theta_*$ by Theorem 2 in \cite{abbasi2011improved}, which states the following results.
 	
-\begin{theorem}[Theorem 2 in \cite{abbasi2011improved}]
+\begin{theorem}[\cite{abbasi2011improved}]
 \label{thm:theta_estimate}
 Let 
 $$
@@ -203,18 +205,20 @@ $$
 $$
 Then for any $\delta > 0$, with probability at least $1 - \delta$, for all $t > 0$, we have
 \begin{equation}
+\label{eq:estimateTheta}
 \norm{\hat{\theta}_t - \theta_*}_{\bV_{t}} \leq \beta_{t}(\delta).
 \end{equation}
 \end{theorem}
-	
-Our proposed algorithm, ConComCascade, is described in Algorithm \ref{alg:ConComCascade}. First, it computes the upper confidence bounds (UCBs) $\bU_t \in [0,1]^{E}$ on the expected weights of all items in $E$. The UCB of item $a$ at time $t$ is defined as:
+
+This theorem states that with high probability, the estimate $\hat{\theta}$ lies in the ellipsoid centered at $\theta_*$  with confidence radius $\beta_t(\delta)$ under $\bV_t$ norm. Building on this, we can define an upper confidence bound of the expected weight of item $a$ by
 \begin{equation}
 \bU_t(a) = \min\{\hat{\theta}_{t-1}^{\top}x_{t,a} + \beta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}, 1\}.
 \end{equation}
-By theorem \ref{thm:theta_estimate}, it holds that
+
+The fact that $\bU_t(a)$ is an upper confidence bound of $\theta_*^{\top}x_{t,a}$ is proved in the following lemma.
 \begin{lemma}
 \label{lem:estimateU}
-For any $\delta > 0$, with high probability at least $1 - \delta$, for any $t>0$,
+When (\ref{eq:estimateTheta}) holds for time $t$, we have
 $$
 0 \leq \bU_t(a) - \theta_*^{\top}x_{t,a} \leq 2\beta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}.
 $$
@@ -225,7 +229,9 @@ $$
 &\leq \beta_{t}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}.
 \end{align*}
 \end{proof}
-	
+
+Our proposed algorithm, ConComCascade, is described in Algorithm \ref{alg:ConComCascade}. First, it computes the upper confidence bounds (UCBs) $\bU_t \in [0,1]^{E}$ on the expected weights of all items in $E$. Second, it recommends the output $\bA_t$ by the offline oracle with estimated weights $\bU_t$. Third, play $\bA_t$ and observes all feedback of items until first $0$ weight come out; the learning agent observes $\bO_t$ items and $\bw_t(\ba_k^t), 1 \leq k \leq \bO_t$, where $\bw_t(\ba_{\bO_t}^t) = 0, \bw_t(\ba_k^t) = 1, 1 \leq k < \bO_t$ or $\bw_t(\ba_k^t) = 1, 1 \leq k \leq \bO_t = \abs{\bA_t}$. Then, the learning agent update $\bV_t, \bX_t, \bY_t$ in order to get a newer estimate $\hat{\theta}_t$ of $\theta_*$ and new confidence radius $\beta_t(\delta)$. In this part, we use the notation $[A; B]$ to denote a matrix $\begin{pmatrix} A\\ B\end{pmatrix}$.
+
 \begin{algorithm}
 \caption{ConComCascade}
 \label{alg:ConComCascade}
@@ -248,7 +254,7 @@ $$
 \STATE {$\bA_t=(\ba_1^t,...,\ba_{\abs{\bA_t}}^t) \leftarrow \argmax_{A \in \cS} f(A, \bU_t)$}
 \STATE {Play $\bA_t$ and observe $\bO_t, \bw_t(\ba_k^t), k\in[\bO_t]$}
 \STATE {}
-			
+
 \STATE {//Update statistics}
 \STATE {$\bV_{t} \leftarrow \bV_{t-1} + \sum_{k=1}^{\bO_t} \gamma_k^2 x_{t, \ba_k^t}x_{t, \ba_k^t}^{\top}$}
 \STATE {$\bX_t \leftarrow [\bX_{t-1}^\top; ~\gamma_1' x_{t, \ba_1^t}^{\top};  ~\ldots; ~\gamma_{\bO_t}' x_{t, \ba_{\bO_t}^t}^{\top}]$}
@@ -260,14 +266,20 @@ $$
 \end{algorithmic}
 \end{algorithm}
 	
-	
+
 \subsection{Results}
 
+Here is our main theorem.
 \begin{theorem}
-For any $\delta > 0$, with probability at least $1 - \delta$, we have
+Given partial reward parameters $0 = \gamma_0 \leq \gamma_1 \leq \cdots \gamma_{K-1} \leq 1$ and regularization parameter $\lambda \geq C_\gamma$, for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regret of our algorithm, {\it ConComCascade}, satisfies
 \begin{equation}
-R(T) = O(\frac{d}{f^*}\log(C_\gamma T)\sqrt{KT})
+R(T) = O(\frac{d}{f^*}\log(C_\gamma T)\sqrt{KT}),
 \end{equation}
+where
+\begin{align*}
+f^* &= \min_{1 \leq t \leq T} f_t^*\\
+C_\gamma &= \sum_{k=1}^{K} \gamma_k'^2 = \sum_{k=1}^{K-1} (1 - \gamma_k)^2 = O(K).
+\end{align*}
 \end{theorem}
 \begin{proof}
 With probability at least $1-\delta$,
@@ -276,16 +288,11 @@ With probability at least $1-\delta$,
 &R_T =\sum_{t=1}^{T} \EE_{t}[\Delta_{t, \bA_t}] \\
 &\leq \sum_{t=1}^{T} 4 \beta_{t-1}(\delta) \EE[\sum_{k=1}^{\bO_t}\norm{\gamma_k' X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}]\\
 &\leq 4 \beta_T(\delta) \sum_{t=1}^{T} \bO_t \EE[\sum_{k=1}^{\bO_t}\norm{\gamma_k'^2 X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]\\
-&\leq 4 \beta_T(\Delta) \sqrt{(\sum_{t=1}^{T} \bO_t) \EE[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k'^2 X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]}  \\
+&\leq 4 \beta_T(\delta) \sqrt{(\sum_{t=1}^{T} \bO_t) \EE[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k'^2 X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]}  \\
 &\leq O(d\log(C_\gamma T)\sqrt{TK})
 \end{split}
 \end{equation}
 \end{proof}
-
-Let
-\begin{equation}
-C_\gamma = \sum_{k=1}^{K} \gamma_k'^2.
-\end{equation}
 	
 \begin{lemma}
 \label{lem:increasing} 
