@@ -257,8 +257,8 @@ Our proposed algorithm, ConComCascade, is described in Algorithm \ref{alg:ConCom
 
 \STATE {//Update statistics}
 \STATE {$\bV_{t} \leftarrow \bV_{t-1} + \sum_{k=1}^{\bO_t} \gamma_k^2 x_{t, \ba_k^t}x_{t, \ba_k^t}^{\top}$}
-\STATE {$\bX_t \leftarrow [\bX_{t-1}^\top; ~\gamma_1' x_{t, \ba_1^t}^{\top};  ~\ldots; ~\gamma_{\bO_t}' x_{t, \ba_{\bO_t}^t}^{\top}]$}
-\STATE {$\bY_t \leftarrow [\bY_{t-1}^\top; ~\gamma_1' \bw(\ba_1^t); ~\ldots; ~\gamma_{\bO_t}' \bw_t(\ba_{\bO_t}^t)^{\top}]$}
+\STATE {$\bX_t \leftarrow [\bX_{t-1}; ~\gamma_1' x_{t, \ba_1^t}^{\top};  ~\ldots; ~\gamma_{\bO_t}' x_{t, \ba_{\bO_t}^t}^{\top}]$}
+\STATE {$\bY_t \leftarrow [\bY_{t-1}; ~\gamma_1' \bw(\ba_1^t); ~\ldots; ~\gamma_{\bO_t}' \bw_t(\ba_{\bO_t}^t)]$}
 \STATE {$\hat{\theta}_t \leftarrow (\bX_t^\top \bX_t + \lambda I)^{-1} \bX_{t}^\top \bY_t$}
 \STATE {$\beta_{t}(\delta) \leftarrow \sqrt{\log(\det(\bV_{t})) + 2 \log(\frac{1}{\delta})} + \sqrt{\lambda}$}
 			
@@ -271,9 +271,10 @@ Our proposed algorithm, ConComCascade, is described in Algorithm \ref{alg:ConCom
 
 Here is our main theorem.
 \begin{theorem}
+\label{thm:main}
 Given partial reward parameters $0 = \gamma_0 \leq \gamma_1 \leq \cdots \gamma_{K-1} \leq c f^*$ and regularization parameter $\lambda \geq C_\gamma$ for some constant $\frac{1}{2} < c < 1$, for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regret of our algorithm, {\it ConComCascade}, satisfies
 \begin{equation}
-R(T) = O(\frac{d}{f^*}\log(C_\gamma T)\sqrt{KT}),
+R(T) = O(d^{3/4}\log^{3/4}(C_\gamma T)\sqrt{KT}),
 \end{equation}
 where
 \begin{align*}
@@ -282,43 +283,20 @@ C_\gamma &= \sum_{k=1}^{K} \gamma_k'^2 = \sum_{k=1}^{K-1} (1 - \gamma_k)^2 = O(K
 \end{align*}
 \end{theorem}
 
-To prove this theorem, we want to estimate $\EE[\Delta_{t, \bA_t}|\cH_t]$ for every time $t$. If the chosen action $\bA_t$ is not suboptimal, which is equivalent to $\Delta_{t, \bA_t} > 0$, then we must have
+To prove this theorem, we could start from estimating $\EE[\Delta_{t, \bA_t}|\cH_t]$ for every time $t$. In fact, we can derive the following lemma.
+\begin{lemma}
+\label{lem:DeltaEstimate}
+For any time $t$, if $f(A_t^*, \bU_t) \leq f(A, \bU_t)$ where $A = (a_1, \ldots, a_{\abs{A}})$, then we have
+$$
+\Delta_{t,A} \leq \sum_{k=1}^{\abs{A}} \gamma_k' \beta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}}.
+$$
+\end{lemma}
+
+Then if the chosen action $\bA_t$ is not suboptimal, which means
 $$
 f(A_t^*, \bU_t) \leq f(\bA_t, \bU_t).
 $$
-From the above relation, we need the following two lemmas to derive an estimate of $\Delta_{t, \bA_t}$ in terms of all elements in $\bA_t$. 
-
-\begin{lemma}
-\label{lem:increasing} 
-Given parameters $0= \gamma_0 \leq \gamma_1 \leq ... \leq \gamma_{K-1} \leq 1$, $f(A, w)$ is increasing with respect to $w$; equivalently, suppose $0 \leq w \leq w' \leq 1$ as column vectors in $\RR^L$, we have for any $A\in\cS$,
-$$
-f(A, w) \leq f(A, w').
-$$
-\end{lemma}
-
-\begin{lemma}
-\label{lem:estimateTech}
-Suppose $0 \leq p_1,...,p_m \leq 1$ and $u_1,...,u_m \geq 0$. Let $w_i = \min\{p_i + u_i, 1\}, 1 \leq i \leq m$. Then
-$$
-f(A^{(m)}, w) \leq f(A^{(m)}, p) + \sum_{k=1}^{m} \gamma_k' u_k,
-$$
-where $A^{(m)} = (1,2,\ldots,m), w = (w_1, \ldots, w_m)$ and $p = (p_1, \ldots, p_m)$.
-\end{lemma}
-
-From lemma \ref{lem:increasing} and $\theta_*^{\top}x_t \leq \bU_t$ by lemma \ref{lem:estimateU}, we can deduce 
-\begin{equation}
-\label{eq:fIncrease}
-f(A_t^*, \theta_*^{\top}x_t) \leq f(A_t^*, \bU_t) \leq f(\bA_t, \bU_t).
-\end{equation}
-Further from lemma \ref{lem:estimateTech}, we can deduce
-\begin{equation}
-\label{eq:fTech}
-f(\bA_t, \bU_t) \leq f(\bA_t, \theta_*^{\top}x_t) + \sum_{k=1}^{\abs{\bA_t}} \gamma_k' u_k
-\end{equation}
-where $u_k = \beta_{t-1}(\delta)\norm{x_{t, \ba_k^t}}_{\bV_{t-1}^{-1}}$. Combining equation (\ref{eq:fIncrease})) and (\ref{eq:fTech})), we can conclude that
-$$
-\Delta_{t, \bA_t} = f(A_t^*, \theta_*^{\top}x_t) - f(\bA_t, \theta_*^{\top}x_t) \leq \sum_{k=1}^{\abs{\bA_t}} \gamma_k' u_k.
-$$
+Then we can derive an estimate of $\Delta_{t, \bA_t}$, however, in terms of all elements in $\bA_t$. 
 
 However, this estimate involves all elements of $\bA_t$. Only when the learning agent has observed all elements of $\bA_t$, we can use such an estimate, which means we are able to estimate
 $$
@@ -338,12 +316,19 @@ f^* = \max_{A'} f(A', w), \qquad \Delta_{A'} = f^* - f(A', w).
 $$
 \end{lemma}
 
-From this lemma, we can find a prefix $\bB_t$ of $\bA_t$ such that $p_{B_t}$ is large enough and $\Delta_{\bB_t}$ will not be too small. Then follow the above deductions, we can get a good estimate for $\EE[\Delta_{t, \bA_t}|\cH_{t-1}]$ in terms of $\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}$. Once we have estimated $\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}$, we can get an estimate of $R(T)$. We leave all details in the next subsection.
+From this lemma, we can find a prefix $\bB_t$ of $\bA_t$ such that $p_{B_t}$ is large enough and $\Delta_{\bB_t}$ will not be too small. Then follow the above deductions, we can get a good estimate for $\EE[\Delta_{t, \bA_t}|\cH_{t-1}]$ in terms of $\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}$. Once we have estimated $\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}$ and $\bete_{t-1}(\delta)$, we can get an estimate for $\EE[\Delta_{t, \bA_t}|\cH_{t-1}]$, thus for $R(T)$. We leave all details in the next subsection.
 
 
 \subsection{Proofs}
 
-\begin{proof}[ of lemma \ref{lem:increasing}]
+\begin{lemma}
+\label{lem:increasing} 
+Given parameters $0= \gamma_0 \leq \gamma_1 \leq ... \leq \gamma_{K-1} \leq 1$, $f(A, w)$ is increasing with respect to $w$; equivalently, suppose $0 \leq w \leq w' \leq 1$ as column vectors in $\RR^L$, we have for any $A\in\cS$,
+$$
+f(A, w) \leq f(A, w').
+$$
+\end{lemma}
+\begin{proof}
 It suffices to prove that $\cA = [m]$ where $1 \leq m \leq K$. Because for $1 \leq k \leq m$,
 \begin{align*}
 &~~-\gamma_{k-1} + \sum_{i=k+1}^m \gamma_{i-1}(\prod_{j=k+1}^{i-1}w_j')(1- w_i') + \prod_{j=k+1}^{m}w_j'\\
@@ -369,7 +354,15 @@ Therefore,
 Then we obtain the result.
 \end{proof}
 
-\begin{proof}[ of lemma \ref{lem:estimateTech}]
+\begin{lemma}
+\label{lem:estimateTech}
+Suppose $0 \leq p_1,...,p_m \leq 1$ and $u_1,...,u_m \geq 0$. Let $w_i = \min\{p_i + u_i, 1\}, 1 \leq i \leq m$. Then
+$$
+f(A^{(m)}, w) \leq f(A^{(m)}, p) + \sum_{k=1}^{m} \gamma_k' u_k,
+$$
+where $A^{(m)} = (1,2,\ldots,m), w = (w_1, \ldots, w_m)$ and $p = (p_1, \ldots, p_m)$.
+\end{lemma}
+\begin{proof}
 We prove this by induction. It holds obviously for $m=1$.
 \begin{align*}
 &~~f(m+1, w)\\
@@ -383,21 +376,22 @@ We prove this by induction. It holds obviously for $m=1$.
 \end{align*}
 \end{proof}
 
-
-
-\begin{proof}
-With probability at least $1-\delta$,
+\begin{proof}[ of lemma \ref{lem:DeltaEstimate}]
+From lemma \ref{lem:increasing} and $\theta_*^{\top}x_t \leq \bU_t$ by lemma \ref{lem:estimateU}, we can deduce 
 \begin{equation}
-\begin{split}
-&R_T =\sum_{t=1}^{T} \EE_{t}[\Delta_{t, \bA_t}] \\
-&\leq \sum_{t=1}^{T} 4 \beta_{t-1}(\delta) \EE[\sum_{k=1}^{\bO_t}\norm{\gamma_k' X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}]\\
-&\leq 4 \beta_T(\delta) \sum_{t=1}^{T} \bO_t \EE[\sum_{k=1}^{\bO_t}\norm{\gamma_k'^2 X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]\\
-&\leq 4 \beta_T(\delta) \sqrt{(\sum_{t=1}^{T} \bO_t) \EE[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k'^2 X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]}  \\
-&\leq O(d\log(C_\gamma T)\sqrt{TK})
-\end{split}
+\label{eq:fIncrease}
+f(A_t^*, \theta_*^{\top}x_t) \leq f(A_t^*, \bU_t) \leq f(\bA_t, \bU_t).
 \end{equation}
+Further from lemma \ref{lem:estimateTech}, we can deduce
+\begin{equation}
+\label{eq:fTech}
+f(\bA_t, \bU_t) \leq f(\bA_t, \theta_*^{\top}x_t) + \sum_{k=1}^{\abs{\bA_t}} \gamma_k' u_k
+\end{equation}
+where $u_k = \beta_{t-1}(\delta)\norm{x_{t, \ba_k^t}}_{\bV_{t-1}^{-1}}$. Combining equation (\ref{eq:fIncrease})) and (\ref{eq:fTech})), we can conclude that
+$$
+\Delta_{t, \bA_t} = f(A_t^*, \theta_*^{\top}x_t) - f(\bA_t, \theta_*^{\top}x_t) \leq \sum_{k=1}^{\abs{\bA_t}} \gamma_k' u_k.
+$$
 \end{proof}
-
 
 \begin{lemma}
 Suppose $A = (a_1, ..., a_{\abs{A}})$. Let $B_k = (a_1, ..., a_k), k \leq \abs{A}$ be a prefix of $A$. Then we have the following properties.
@@ -525,6 +519,19 @@ Using the fact that $ 2\log(1+u) \geq u$ for any $u \in [0,1]$, we get
 &\leq 2\sum_{s=1}^t\log(1 + \sum_{k=1}^{\bO_s} \norm{\gamma_k' x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2)\\
 &\leq 2(\log(\det(\bV_t)) - \log(\det(\lambda I))) < 2\log(\det(\bV_t))
 \end{align*}
+\end{proof}
+
+\begin{proof}[ of theorem \ref{thm:main}]
+With probability at least $1-\delta$,
+\begin{equation}
+\begin{split}
+&R_T =\sum_{t=1}^{T} \EE_{t}[\Delta_{t, \bA_t}] \\
+&\leq \sum_{t=1}^{T} 4 \beta_{t-1}(\delta) \EE[\sum_{k=1}^{\bO_t}\norm{\gamma_k' X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}]\\
+&\leq 4 \beta_T(\delta) \sum_{t=1}^{T} \bO_t \EE[\sum_{k=1}^{\bO_t}\norm{\gamma_k'^2 X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]\\
+&\leq 4 \beta_T(\delta) \sqrt{(\sum_{t=1}^{T} \bO_t) \EE[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k'^2 X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]}  \\
+&\leq O(d\log(C_\gamma T)\sqrt{TK})
+\end{split}
+\end{equation}
 \end{proof}
 	
 	
