@@ -13,16 +13,19 @@ class ucb_settings:
     def __init__():
         pass
 
-def monkey_context(L=20, K=4, d=10, gamma=0.95, ):
+def monkey_context(L=20, K=4, d=10, gamma=0.95, v=0.3):
     logger.info('Initializing environment "Monkey Contextual"')
     arms = [idx for idx in range(L)]
-    theta = {arm:np.random.uniform(0, 1, d) for arm in arms}
+    x = {arm:np.random.uniform(0, 1, d) for arm in arms}
+    theta = np.random.uniform(0, 1, d)
 
-    arm = [0]
+    xt = {arm:x[arm] for arm in x}
     def environment(recommend=None):
         if recommend == None:
-            arm = [np.random.choice(arms)]
-            return arm[0], theta[arm[0]]
+            xt = {arm:x[arm] + np.random.uniform(-v, v, d) for arm in x}
+            return xt
+        else:
+            p = [theta.dot(xt[arm]) for arm in recommend]
     
 
 
