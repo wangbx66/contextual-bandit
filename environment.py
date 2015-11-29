@@ -10,10 +10,10 @@ logger = logging.getLogger('Environment')
 from functools import reduce
 
 class ucb_settings:
-    def __init__():
-        pass
+    def __init__(**s):
+        self.__dict__ = s
 
-def monkey_context(L=20, K=4, d=10, gamma=0.95, v=0.3):
+def monkey_context(L=20, K=4, d=10, gamma=0.95, v=0.3, eps=0.1, disj=False):
     logger.info('Initializing environment "Monkey Contextual"')
     arms = [idx for idx in range(L)]
     x = {arm:np.random.uniform(0, 1, d) for arm in arms}
@@ -25,8 +25,13 @@ def monkey_context(L=20, K=4, d=10, gamma=0.95, v=0.3):
             xt = {arm:x[arm] + np.random.uniform(-v, v, d) for arm in x}
             return xt
         else:
-            p = [theta.dot(xt[arm]) for arm in recommend]
-    
+            for C, arm in enumerate(recomend): 
+                p = theta.dot(xt[arm]) + np.random.normal(0, eps)
+                if (np.random.uniform(0, 1) < p) ^ disj:
+                    return gamma ^ C * int(not disj), C
+            return int(not disj), np.inf
+
+    return environment, ucb_setting(arms=arms, K=K, d=d, gamma=gamma)
 
 
 def movielens(candidates, userno=1):
