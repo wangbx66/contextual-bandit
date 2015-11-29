@@ -283,12 +283,36 @@ C_\gamma &= \sum_{k=1}^{K} \gamma_k'^2 = \sum_{k=1}^{K-1} (1 - \gamma_k)^2 = O(K
 \end{align*}
 \end{theorem}
 
-To prove this theorem, we could start from estimating $\EE[\Delta_{t, \bA_t}|\cH_t]$ for every time $t$. In fact, we can derive the following lemma.
+Suppose the reward function is disjunctive. At every time $t$, the forecaster recommends a list $\bA_t$. Then the user checks from the first item to the end. The weight $\bw_t(a)$ denote whether the user click on item $a$ or not. The user stops if she clicks on one item of $\bA_t$ or she has checked all items of $\bA_t$. If the user clicks on the first item, then the learning agent receives reward $1$. If the user clicks on the $k$-th reward of $\bA_t$, then the reward is $\gamma_k$. If the user doesn't click on any item, then the reward is $0$. Here we further assume $\gamma_2 \geq \gamma_3 \geq \ldots \geq \gamma_K$. If we define a function $f_{\vee}$ on $A = (a_1, \ldots, a_{\abs{A}}) \in \cS$ and $w = (w(1), \ldots, w(L))$ by
+\begin{align*}
+&f_{\vee} : \cS \times [0,1]^E \to [0,1]\\
+&f_{\vee}(A,w) = \sum_{k=1}^{\abs{A}}\gamma_k (\prod_{i=1}^{k-1} (1 - w(a_i)) w(a_k).
+\end{align*}
+Here we use notation that $\gamma_1 = 1$. Then the expected reward of $\bA_t$ is $f_{\vee}(\bA_t, \theta_*^{\top}x_t)$.
+
+Then we have a relationship between $f$ and $f_{\vee}$
+\begin{equation}
+\label{eq:relation}
+\begin{split}
+&f_{\vee}(A, w; 1, \gamma_2, \ldots, \gamma_K) \\
+&~~= 1 - f(A, 1 - w; 0, 1-\gamma_2, \ldots, 1-\gamma_K)
+\end{split}
+\end{equation}
+If $\gamma$ is decreasing, then $1 - \gamma$ is increasing. Thus we have $1 - \gamma$ a feasible parameters for $f$. Then we could have a similar result for disjunctive case.
+\begin{theorem}
+Disjunctive case
+\end{theorem}
+
+To prove theorem \ref{thm:main}, we could start from estimating $\EE[\Delta_{t, \bA_t}|\cH_t]$ for every time $t$. In fact, we can derive the following lemma.
 \begin{lemma}
 \label{lem:DeltaEstimate}
 For any time $t$, if $f(A_t^*, \bU_t) \leq f(A, \bU_t)$ where $A = (a_1, \ldots, a_{\abs{A}})$, then we have
 $$
 \Delta_{t,A} \leq \sum_{k=1}^{\abs{A}} \gamma_k' \beta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}}.
+$$
+If $f_{\vee}(A_t^*, \bU_t) \leq f_{\vee}(A, \bU_t)$ where $A = (a_1, \ldots, a_{\abs{A}})$, then we have
+$$
+\Delta_{t,A} \leq \sum_{k=1}^{\abs{A}} \gamma_k \beta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}}.
 $$
 \end{lemma}
 
@@ -327,6 +351,10 @@ Given parameters $0= \gamma_0 \leq \gamma_1 \leq ... \leq \gamma_{K-1} \leq 1$, 
 $$
 f(A, w) \leq f(A, w').
 $$
+By relation (\ref{eq:relation}), it also holds that
+$$
+f_{\vee}(A, w) \leq f_{\vee}(A, w').
+$$
 \end{lemma}
 \begin{proof}
 It suffices to prove that $\cA = [m]$ where $1 \leq m \leq K$. Because for $1 \leq k \leq m$,
@@ -360,7 +388,11 @@ Suppose $0 \leq p_1,...,p_m \leq 1$ and $u_1,...,u_m \geq 0$. Let $w_i = \min\{p
 $$
 f(A^{(m)}, w) \leq f(A^{(m)}, p) + \sum_{k=1}^{m} \gamma_k' u_k,
 $$
-where $A^{(m)} = (1,2,\ldots,m), w = (w_1, \ldots, w_m)$ and $p = (p_1, \ldots, p_m)$.
+where $A^{(m)} = (1,2,\ldots,m), w = (w_1, \ldots, w_m)$ and $p = (p_1, \ldots, p_m)$, $\gamma$ is increasing. It also holds that
+$$
+f_{\vee}(A^{(m)}, w) \leq f_{\vee}(A^{(m)}, p) + \sum_{k=1}^m \gamma_k u_k,
+$$
+for any positive sequence $\gamma$.
 \end{lemma}
 \begin{proof}
 We prove this by induction. It holds obviously for $m=1$.
@@ -373,6 +405,10 @@ We prove this by induction. It holds obviously for $m=1$.
 &\leq f(m, p) +  \sum_{k=1}^{m} \gamma_k' u_k + (\gamma_{m} - 1) (1 - p_{m+1}) \prod_{k=1}^{m} p_k\\
 &~~ + (1 - \gamma_{m}) u_{m+1}\\
 &\leq f(m+1, p) + \sum_{k=1}^{m+1} \gamma_k' u_k
+\end{align*}
+\begin{align*}
+&~~f_{\vee}(A^{(m+1)}, w) = f_{\vee}(A^{(m)}, w) + \gamma_{m+1}\prod_{k=1}^m(1 - w_k) w_{m+1}\\
+&= f_{\vee}(A^{(m)}, w) +  \gamma_{m+1} \prod_{k=1}^m(1 - p_k) (p_{m+1} + u_{m+1})
 \end{align*}
 \end{proof}
 
@@ -400,7 +436,8 @@ Suppose $A = (a_1, ..., a_{\abs{A}})$. Let $B_k = (a_1, ..., a_k), k \leq \abs{A
 \item[(2)] $f(B_{k+1}, w) \leq f(B_k, w)$;
 \item[(3)] $p_{B_{k+1}} \leq p_{B_k}$;
 \item[(4)] $f(B_k, w) \leq p_{B_{k+1}} + \gamma_{k}$.
-\end{itemize}	
+\end{itemize}
+It also holds that $p_{A} \geq \gamma_{\abs{A}} - f_{\vee}(A, w)$.
 \end{lemma}
 
 \begin{proof}
