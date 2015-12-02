@@ -146,26 +146,25 @@ Let $\cS \subseteq \cup_{k=1}^K \prod^{k}$ be the set of feasible actions with l
 Also for base arms, should we call them base arms, or items? their outcome as weights, or reward? It is fine to use up to two
 terms interchangibly, but if so, we need to say it clearly at the first time the term is referred to.
 Otherwise, we stick to one term.}
-At time $t$, feature vectors $x_{t,a} \in \RR^{d \times 1}$ with $\norm{x_{t,a}}_2 \leq 1$ for every basic arm $a \in E$ are revealed to the learning agent; the feature vectors combine both the information of the user and the corresponding basic arm. Then the learning agent recommends a feasible solution $\bA_t=(\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t) \in \cS$ to the user. 
-\wei{Why using $\ba_{1}^t$, not $a_1^t$?}
-Starting from the first item, the user checks the items one by one. The checking process stops if the user clicks on one item or has checked all items without clicking anyone. We use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ to indicate whether the user has clicked on item $a$ or not at time $t$. 
+\shuai{I have unified all terms by {\em base arms}, {\em actions} and {\em the learning agent}}
+At time $t$, feature vectors $x_{t,a} \in \RR^{d \times 1}$ with $\norm{x_{t,a}}_2 \leq 1$ for every base arm $a \in E$ are revealed to the learning agent; the feature vectors combine both the information of the user and the corresponding base arm. Then the learning agent recommends a feasible action $\bA_t=(\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t) \in \cS$ to the user. 
+\wei{Why using $\ba_{1}^t$, not $a_1^t$?} \shuai{I think $a_1^t$ is a random variable because $\bA_t$ is random. Is it making sense?}
+Starting from the first item, the user checks the items one by one. The checking process stops if the user clicks on one item or has checked all items without clicking anyone. We use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ as the {\em weight} of base arm $a$ at time $t$ to indicate whether the user has clicked on $a$ or not. 
 
 Assume $\bw_{t,a}$'s are mutually independent and satisfy
 \begin{equation}
 \label{eq:expectation}
 \EE[\bw_{t,a} | x_{t,a}] = \theta_{\ast}^{\top} x_{t,a},
 \end{equation}
-where $\theta_{\ast}$ is an unknown $d$-dimensional vector with the assumption that $\norm{\theta_{\ast}}_2 \leq 1$ and $0 \leq \theta_{\ast}^{\top} x_{t,a} \leq 1$ for all $t, a$. At the end of every time $t$, the agent observes the first $\bO_t$ items of $\bA_t$ where 
+where $\theta_{\ast}$ is an unknown $d$-dimensional vector with the assumption that $\norm{\theta_{\ast}}_2 \leq 1$ and $0 \leq \theta_{\ast}^{\top} x_{t,a} \leq 1$ for all $t, a$. \wei{The above definition of $\bO_t$ looks indirect to me. What about "For some $k=1,2,\ldots, |\bA_t|$, $\bO_t = k$, if for all $j< k$, $\bw_t(\ba_j^t)=0$ and $\bw_t(\ba_k^t)=1$.} \shuai{I have modified accordingly.} For some $k=1,2,\ldots, \abs{\bA_t}$, 
 $$
-\bO_t \leq \abs{\bA_t}, \bw_t(\ba_k^t) = \begin{cases} 0, ~~k < \bO_t \\ 1, ~~k = \bO_t \end{cases}
-$$ 
-\wei{The above definition of $\bO_t$ looks indirect to me. What about "For some $k=1,2,\ldots, |\bA_t|$, $\bO_t = k$
-	if for all $j< k$, $\bw_t(\ba_j^t)=0$ and $\bw_t(\ba_k^t)=1$.}
+\bO_t = k, \text{ if } \bw_t(\ba_j^t)=0, \forall\, j < k \text{ and } \bw_t(\ba_k^t) = 1,
+$$
 or 
 $$
-\bO_t = \abs{\bA_t}, \bw_t(\ba_k^t) = 0, ~~ \forall\, k \leq \abs{\bA_t}.
+\bO_t = \abs{\bA_t}, \text{ if }\bw_t(\ba_j^t) = 0, ~~ \forall\, j \leq \abs{\bA_t}.
 $$
-We say that item $a$ is {\it observed} if $a = \ba_k^t$ for some $k \leq \bO_t$. 
+At the end of every time $t$, the agent observes the first $\bO_t$ items of $\bA_t$. We say that item $a$ is {\it observed} if $a = \ba_k^t$ for some $k \leq \bO_t$. 
 
 The agent receives some reward if the user clicks on some item. Suppose we consider the position discount: if the user clicks on the $k$-th item, then the learning agent receives reward $0 \leq \gamma_k \leq 1$. Usually the importance of the positions is decreasing: the first position is most important. So it is a reasonable assumption that
 $$
@@ -193,22 +192,20 @@ R(T) = \EE[\sum_{t=1}^T R(t, \bA_t)].
 $$
 where $R(t, \bA_t) = f_t^{\ast} - f(\bA_t, \theta_{\ast}^{\top}x_t)$.
 
-The above formulation is on disjuctive objective, that is, at a time step the agent stops as soon as she reveals a base arm
-	at a position $k$ in the sequence with weight $1$ and she receives reward $\gamma_k$ as the result.
-Similarly, we could also consider the case of conjunctive objective. We use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ to indicate the {\it weight} of item $a$ at time $t$ satisfying equation (\ref{eq:expectation})). The learning agent observes all items until the first one with weight $0$. Suppose we also consider partial reward: if the $k$-th item is the first item with weight $0$, then the learning agent receives reward $\gamma_k'$; if all items have weight $1$, the learning agent receives reward $1$. The more items the learning agent reveals, the more reward the agent should receive. It is reasonable to assume that
+The above formulation is on disjuctive objective, that is, at a time step the agent stops as soon as she reveals a base arm at a position $k$ in the sequence with weight $1$ and she receives reward $\gamma_k$ as the result. Similarly, we could also consider the case of conjunctive objective. We also use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ to indicate the weight of item $a$ at time $t$ satisfying equation (\ref{eq:expectation})). The learning agent observes all items until the first one with weight $0$. Suppose we also consider partial reward: if the $k$-th item is the first item with weight $0$, then the learning agent receives reward $\gamma_k'$; if all items have weight $1$, the learning agent receives reward $1$. The more items the learning agent reveals, the more reward the agent should receive. It is reasonable to assume that
 $$
 0 = \gamma'_1 \leq \gamma'_2 \leq \cdots \leq \gamma'_K \leq 1.
 $$
 At the end of time $t$, the learning agent observes $\bO_t, \bw_t(\ba_k^t), k \leq \bO_t$ and receives reward
-\wei{For the following, why using $\gamma_{\bO_t - 1}'$ and $\gamma_{k - 1}'$ instead of
-	$\gamma_{\bO_t}'$ and $\gamma_{k}'$. It is inconsistent with the above description, and I think the latter makes sense.}
+\wei{For the following, why using $\gamma_{\bO_t - 1}'$ and $\gamma_{k - 1}'$ instead of $\gamma_{\bO_t}'$ and $\gamma_{k}'$. It is inconsistent with the above description, and I think the latter makes sense.} 
+\shuai{This is an earlier version. I have modified it and all others.}
 \begin{align*}
 \br_{\wedge, t} &= \begin{cases}
-\gamma_{\bO_t - 1}'  &\text{if } \bw_t(\ba_{\bO_t}^t) = 0,\\
+\gamma_{\bO_t}'  &\text{if } \bw_t(\ba_{\bO_t}^t) = 0,\\
 1 &\text{if } \bw_t(\ba_{\bO_t}^t) = 1,
 \end{cases}\\
 &=\begin{cases}
-\gamma_{k - 1}'  &\text{if } \bw_t(\ba_{i}^t) = 1, i < k, \bw_t(\ba_{k}^t) = 0,\\
+\gamma_{k}'  &\text{if } \bw_t(\ba_{i}^t) = 1, i < k, \bw_t(\ba_{k}^t) = 0,\\
 1 &\text{if } \bw_t(\ba_{i}^t) = 1, i\leq \abs{\bA_t}.
 \end{cases}
 \end{align*}
@@ -244,7 +241,7 @@ where $R_{\wedge}(t, \bA_t) = f_{\wedge, t}^{\ast} - f_{\wedge}(\bA_t, \theta_{\
 
 \subsection{Algorithm}
 	
-Let $\cH_t$ denote all history at the end of time $t$; $\cH_t$ consists of $\{x_s, \bA_s = (\ba_{1}^s,...,\ba_{\abs{\bA_s}}^s), \bO_s, \bw_s(\ba_k^s), k \in[\bO_s], s\in[t] \}$ and define $\EE_t[\cdot] = \EE[\cdot | \cH_t]$. Here we abuse the notation $\abs{\bA_s}$ to denote the number of elements in the list $\bA_s$. By equation (\ref{eq:expectation}), we have 
+Let $\cH_t$ denote all history at the end of time $t$; $\cH_t$ consists of $\{x_s, \bA_s = (\ba_{1}^s,...,\ba_{\abs{\bA_s}}^s), \bO_s, \bw_s(\ba_k^s), k \in[\bO_s], s\in[t] \}$ and define $\EE_t[\cdot] = \EE[\cdot | \cH_t]$. Here we abuse the notation $\abs{\bA_s}$ to denote the number of base arms in the action $\bA_s$. By equation (\ref{eq:expectation}), we have 
 $$
 \EE[(\gamma_k \bw_{s,\ba_k^s}) | \cH_{s-1}] = \theta_*^{\top} (\gamma_k x_{s,\ba_k^s}).
 $$
@@ -252,7 +249,7 @@ Using the ridge regression of data
 $$
 \{(\gamma_k X_{s,\ba_k^s}, \gamma_k \bw_{s,\ba_k^s})\}_{k \in[\bO_s], s\in[t]},
 $$
-we get a $l^2$-regularized least-squares estimate of $\theta_*$ with regularization parameter $\lambda > 0$:
+we get an $l^2$-regularized least-squares estimate of $\theta_*$ with regularization parameter $\lambda > 0$:
 \begin{equation}
 \hat{\theta}_t = (\bX_t^{\top}\bX_t + \lambda I)^{-1} \bX_t^{\top} \bY_t,
 \end{equation}
@@ -277,12 +274,12 @@ Then for any $\delta > 0$, with probability at least $1 - \delta$, for all $t > 
 \end{equation}
 \end{theorem}
 
-This theorem states that with high probability, the estimate $\hat{\theta}$ lies in the ellipsoid centered at $\theta_*$  with confidence radius $\beta_t(\delta)$ under $\bV_t$ norm. Building on this, we can define an upper confidence bound of the expected weight of item $a$ by
+This theorem states that with high probability, the estimate $\hat{\theta}$ lies in the ellipsoid centered at $\theta_*$  with confidence radius $\beta_t(\delta)$ under $\bV_t$ norm. Building on this, we can define an upper confidence bound of the expected weight of base arm $a$ by
 \begin{equation}
 \bU_t(a) = \min\{\hat{\theta}_{t-1}^{\top}x_{t,a} + \beta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}, 1\}.
 \end{equation}
 
-The fact that $\bU_t(a)$ is an upper confidence bound of $\theta_*^{\top}x_{t,a}$ is proved in the following lemma.
+The fact that $\bU_t(a)$ is an upper confidence bound of expected weight $\theta_*^{\top}x_{t,a}$ is proved in the following lemma.
 \begin{lemma}
 \label{lem:estimateU}
 When (\ref{eq:estimateTheta}) holds for time $t$, we have
@@ -297,7 +294,7 @@ $$
 \end{align*}
 \end{proof}
 
-Our proposed algorithm, ConComCascade, is described in Algorithm \ref{alg:ConComCascade}. First, it computes the upper confidence bounds (UCBs) $\bU_t \in [0,1]^{E}$ on the expected weights of all items in $E$. Second, it recommends the output $\bA_t$ by the offline oracle with estimated weights $\bU_t$. Third, play $\bA_t$ and observes all feedback of items until first $0$ weight come out; the learning agent observes $\bO_t$ items and $\bw_t(\ba_k^t), k \in [\bO_t]$, where 
+Our proposed algorithm, ConComCascade, is described in Algorithm \ref{alg:ConComCascade}. First, it computes the upper confidence bounds (UCBs) $\bU_t \in [0,1]^{E}$ on the expected weights of all base arms in $E$. Second, it recommends an action $\bA_t$ by the offline oracle with estimated weights $\bU_t$. Third, play $\bA_t$ and observes all feedback of base arms until first $0$ weight come out; the learning agent observes $\bO_t$ base arms and $\bw_t(\ba_k^t), k \in [\bO_t]$, where 
 $$
 \bw_t(\ba_{k}^t) = \begin{cases} 0, ~~k < \bO_t\\ 1, ~~k = \bO_t\end{cases}
 $$ 
@@ -348,35 +345,16 @@ Then, the learning agent update $\bV_t, \bX_t, \bY_t$ in order to get a newer es
 Here is our main theorem.
 \begin{theorem}
 \label{thm:main}
-Given partial reward parameters $0 = \gamma_0 \leq \gamma_1 \leq \cdots \gamma_{K-1} \leq c f^*$ and regularization parameter $\lambda \geq C_\gamma$ for some constant $\frac{1}{2} < c < 1$, for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regret of our algorithm, {\it ConComCascade}, satisfies
-\begin{equation}
-R(T) = O(d^{3/4}\log^{3/4}(C_\gamma T)\sqrt{KT}),
-\end{equation}
+Suppose $1 = \gamma_1 \geq \gamma_2 \geq \cdots \gamma_{K} \geq c f^*$ for some constant $c > 1$ and $\gamma_k' = 1 - \gamma_k, \gamma'_K \geq \frac{1}{4}f_{\wedge}^{\ast}$. Let regularization parameter satisfy $\lambda \geq C_\gamma$. Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regrets of our algorithm, {\em ConComCascade} for both conjunctive and disjunctive objectives, satisfy
+\begin{align}
+&R(T) = O(\frac{d}{c-1} \log(C_\gamma T) \sqrt{KT}),\\
+&R_{\wedge}(T) = O(\frac{d}{f_{\wedge}^{\ast}} \log(C_\gamma T) \sqrt{KT}).
+\end{align}
 where
 \begin{align*}
 f^* &= \min_{1 \leq t \leq T} f_t^*\\
 C_\gamma &= \sum_{k=1}^{K} \gamma_k'^2 = \sum_{k=1}^{K-1} (1 - \gamma_k)^2 = O(K).
 \end{align*}
-\end{theorem}
-
-Suppose the reward function is disjunctive. At every time $t$, the forecaster recommends a list $\bA_t$. Then the user checks from the first item to the end. The weight $\bw_t(a)$ denote whether the user click on item $a$ or not. The user stops if she clicks on one item of $\bA_t$ or she has checked all items of $\bA_t$. If the user clicks on the first item, then the learning agent receives reward $1$. If the user clicks on the $k$-th reward of $\bA_t$, then the reward is $\gamma_k$. If the user doesn't click on any item, then the reward is $0$. Here we further assume $\gamma_2 \geq \gamma_3 \geq \ldots \geq \gamma_K$. If we define a function $f_{\vee}$ on $A = (a_1, \ldots, a_{\abs{A}}) \in \cS$ and $w = (w(1), \ldots, w(L))$ by
-\begin{align*}
-&f_{\vee} : \cS \times [0,1]^E \to [0,1]\\
-&f_{\vee}(A,w) = \sum_{k=1}^{\abs{A}}\gamma_k (\prod_{i=1}^{k-1} (1 - w(a_i)) w(a_k).
-\end{align*}
-Here we use notation that $\gamma_1 = 1$. Then the expected reward of $\bA_t$ is $f_{\vee}(\bA_t, \theta_*^{\top}x_t)$.
-
-Then we have a relationship between $f$ and $f_{\vee}$
-\begin{equation}
-\label{eq:relation}
-\begin{split}
-&f_{\vee}(A, w; 1, \gamma_2, \ldots, \gamma_K) \\
-&~~= 1 - f(A, 1 - w; 0, 1-\gamma_2, \ldots, 1-\gamma_K)
-\end{split}
-\end{equation}
-If $\gamma$ is decreasing, then $1 - \gamma$ is increasing. Thus we have $1 - \gamma$ a feasible parameters for $f$. Then we could have a similar result for disjunctive case.
-\begin{theorem}
-Disjunctive case
 \end{theorem}
 
 To prove theorem \ref{thm:main}, we could start from estimating $\EE[\Delta_{t, \bA_t}|\cH_t]$ for every time $t$. In fact, we can derive the following lemma.
@@ -423,13 +401,9 @@ From this lemma, we can find a prefix $\bB_t$ of $\bA_t$ such that $p_{B_t}$ is 
 
 \begin{lemma}
 \label{lem:increasing} 
-Given $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_K \geq 0$, $f(A, w)$ is increasing with respect to $w$; equivalently, suppose $0 \leq w \leq w' \leq 1$ as column vectors in $\RR^L$, we have for any $A \in \prod^{\leq K}(E)$,
+Suppose $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$ and $0 \leq \gamma_1' \leq \cdots \leq \gamma_K' \leq 1$. Then $f(A, w)$ and $f_{\wedge}(A, w)$ are increasing with respect to $w$; equivalently, if $0 \leq w \leq w' \leq 1$ as column vectors in $\RR^L$, then for any $A \in \prod^{\leq K}(E)$, it holds that
 $$
-f(A, w) \leq f(A, w').
-$$
-By relation (\ref{eq:ConDisRelation}), it also holds that
-$$
-f_{\wedge}(A, w) \leq f_{\wedge}(A, w').
+f(A, w) \leq f(A, w'), ~~ f_{\wedge}(A, w) \leq f_{\wedge}(A, w').
 $$
 \end{lemma}
 \begin{proof}
@@ -437,7 +411,7 @@ It suffices to prove when $A = (1, \ldots, m)$, where $1 \leq m \leq K$. Because
 \begin{align*}
 &\gamma_{k} - \sum_{i=k+1}^m \gamma_i \prod_{j = k + 1}^{i - 1} (1 - w_j') w_i'\\
 \geq &~\gamma_k [1 - \sum_{i=k+1}^m \prod_{j=k+1}^{i-1}(1 - w_j') w_i']\\
-\geq &~\gamma_{k-1} \cdot 0 = 0,
+\geq &~\gamma_{k} \cdot 0 = 0,
 \end{align*}
 then
 \begin{align*}
@@ -453,16 +427,17 @@ Therefore,
 &\qquad \cdot [\gamma_k w_k' + (1 - w_k')\sum_{i=k+1}^m \gamma_i \prod_{j=k+1}^{i-1}(1 - w_j') w_i']\\
 &=f(A; w_1, \ldots, w_{k-1}, w_{k}', \ldots, w_m').
 \end{align*}
+By letting $\gamma_k = 1 - \gamma_k'$ and the relation (\ref{eq:ConDisRelation}), the increasing property of $f_{\wedge}$ is obtained directly.
 \end{proof}
 
 \begin{lemma}
 \label{lem:estimateTech}
-Suppose $0 \leq p_1, \ldots, p_m \leq 1$ and $u_1, \ldots, u_m \geq 0$. Let $w_i = \min\{p_i + u_i, 1\}, 1 \leq i \leq m$. Then
+Suppose $0 \leq \gamma_k, \gamma_k' \leq 1, k \in [K]$. Let $0 \leq p_1, \ldots, p_m \leq 1$, $u_1, \ldots, u_m \geq 0$ and $w_i = \min\{p_i + u_i, 1\}, 1 \leq i \leq m$. Then
 \begin{align*}
-f(A^{(m)}, w) &\leq f(A^{(m)}, p) + \sum_{k=1}^{m} \gamma_k u_k,\\
-f_{\wedge}(A^{(m)}, w) &\leq f_{\wedge}(A^{(m)}, p) + \sum_{k=1}^{m} \gamma_k u_k,
+&f(A^{(m)}, w) \leq f(A^{(m)}, p) + \sum_{k=1}^{m} \gamma_k u_k,\\
+&f_{\wedge}(A^{(m)}, w) \leq f_{\wedge}(A^{(m)}, p) + \sum_{k=1}^{m} (1 - \gamma_k') u_k,
 \end{align*}
-for any positive $\gamma_k, \gamma_k'$ with $\gamma_k' = 1 - \gamma_k$, where $A^{(m)} = (1, 2, \ldots, m), w = (w_1, \ldots, w_m)$ and $p = (p_1, \ldots, p_m)$. Notice that the parameters involved in the conclusions are $\gamma_k, k \in [m]$ while the parameters used in the definition of $f_{\wedge}$ are $\gamma_k', k \in [m]$.
+where $A^{(m)} = (1, 2, \ldots, m), w = (w_1, \ldots, w_m)$ and $p = (p_1, \ldots, p_m)$.
 \end{lemma}
 \begin{proof}
 We prove this by induction. It holds obviously for $m = 1$.
@@ -481,42 +456,45 @@ We prove this by induction. It holds obviously for $m = 1$.
 &= f_{\wedge}(A^{(m)}, w) - (1 - \gamma_{m+1}') (\prod_{k=1}^{m} w_k) (1 - w_{m+1})\\
 &\leq f_{\wedge}(A^{(m)}, w) - (1 - \gamma_{m+1}') (\prod_{k=1}^{m} p_k) (1 - w_{m+1})\\
 &\leq f_{\wedge}(A^{(m)}, w) -(1 - \gamma_{m+1}') (\prod_{k=1}^{m} p_k)  (1 - p_{m+1} - u_{m+1})\\
-&\leq f_{\wedge}(A^{(m)}, p) +  \sum_{k=1}^{m} \gamma_k u_k \\
+&\leq f_{\wedge}(A^{(m)}, p) +  \sum_{k=1}^{m} (1 - \gamma_k') u_k \\
 &\qquad - (1 - \gamma_{m+1}') (1 - p_{m+1}) \prod_{k=1}^{m} p_k + (1 - \gamma_{m+1}') u_{m+1}\\
-&\leq f_{\wedge}(A^{(m+1)}, p) + \sum_{k=1}^{m+1} \gamma_k u_k
+&\leq f_{\wedge}(A^{(m+1)}, p) + \sum_{k=1}^{m+1} (1 - \gamma_k') u_k
 \end{align*}
 \end{proof}
 
 \begin{proof}[ of lemma \ref{lem:DeltaEstimate}]
-Using lemma \ref{lem:increasing} and lemma \ref{lem:estimateU}, we can deduce 
+By lemma \ref{lem:estimateU}, $\theta_{\ast}^{\top}x_t \leq \bU_t$. Then by lemma \ref{lem:increasing},
 $$
 f_t^{\ast} = f(A_t^{\ast}, \theta_{\ast}^{\top}x_t) \leq f(A_t^{\ast}, \bU_t).
 $$
-Using lemma \ref{lem:estimateU} and lemma \ref{lem:estimateTech}, we can deduce
+By lemma \ref{lem:estimateTech} and the definition of $\bU_t$ (\ref{eq:defU}),
 $$
-f(\bA_t, \bU_t) \leq f(\bA_t, \theta_{\ast}^{\top}x_t) + \sum_{k=1}^{\abs{\bA_t}} \gamma_k \beta_{t-1}(\delta)\norm{x_{t, \ba_k^t}}_{\bV_{t-1}^{-1}}.
+f(A, \bU_t) \leq f(A, \theta_{\ast}^{\top}x_t) + \sum_{k=1}^{\abs{A}} \gamma_k \beta_{t-1}(\delta)\norm{x_{t, a_k^t}}_{\bV_{t-1}^{-1}}.
 $$
-Combining the above two inequalities with $f(A_t^{\ast}, \bU_t) \leq f(\bA_t, \bU_t)$, we can conclude that
+Because $f(A_t^{\ast}, \bU_t) \leq f(A, \bU_t)$, then 
 $$
-\Delta_{t, \bA_t} = f_t^{\ast} - f(\bA_t, \theta_{\ast}^{\top}x_t) \leq \sum_{k=1}^{\abs{\bA_t}} \gamma_k \beta_{t-1}(\delta)\norm{x_{t, \ba_k^t}}_{\bV_{t-1}^{-1}}.
+f_t^{\ast} \leq f(A, \theta_{\ast}^{\top}x_t) + \sum_{k=1}^{\abs{A}} \gamma_k \beta_{t-1}(\delta)\norm{x_{t, a_k^t}}_{\bV_{t-1}^{-1}}.
 $$
-The result for the disjunctive objective is similar.
+Therefore,
+$$
+\Delta_{t, A} = f_t^{\ast} - f(A, \theta_{\ast}^{\top}x_t) \leq \sum_{k=1}^{\abs{A}} \gamma_k \beta_{t-1}(\delta)\norm{x_{t, a_k^t}}_{\bV_{t-1}^{-1}}.
+$$
+The result for the disjunctive case can be deduced similarly.
 \end{proof}
 
 \begin{lemma}
 \label{lem:prefixRelation}
-Suppose $A = (a_1, ..., a_{\abs{A}})$. For the conjunctive objective, it holds that
+Suppose $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$ and $0 \leq \gamma_1' \leq \cdots \leq \gamma_K' \leq 1$. Let $A = (a_1, ..., a_{\abs{A}})$. For the conjunctive case, it holds that
 $$
 p_A \geq 1 - \frac{f(A, w)}{\gamma_{\abs{A}}}.
 $$
-Let $B_k = (a_1, ..., a_k), k \leq \abs{A}$ be a prefix of $A$. Then for the disjunctive objective, we have the following properties.
+Let $B_k = (a_1, ..., a_k), k \leq \abs{A}$ be a prefix of $A$. Then for the disjunctive case and $k < \abs{A}$, we have the following properties:
 \begin{itemize}
 \item[(1)] $f_{\wedge}(A, w) \leq \gamma_{\abs{A}}' + (1 - \gamma_{\abs{A}}') p_{\wedge, A}$;
 \item[(2)] $f_{\wedge}(B_{k+1}, w) \leq f_{\wedge}(B_k, w)$;
 \item[(3)] $p_{\wedge, B_{k+1}} \leq p_{\wedge, B_k}$;
-\item[(4)] $f_{\wedge}(B_k, w) \leq \gamma_{k+1}' + (1 - \gamma_{k+1}') p_{B_{k+1}}, ~k < \abs{A}$,
+\item[(4)] $f_{\wedge}(B_k, w) \leq \gamma_{k+1}' + (1 - \gamma_{k+1}') p_{B_{k+1}}$.
 \end{itemize}
-where $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_K \geq 0$ and $0 = \gamma_1' \leq \gamma_2' \leq \cdots \leq \gamma_K' \leq 1$.
 \end{lemma}
 
 \begin{proof}
@@ -532,16 +510,15 @@ f_{\wedge}(A, w) &\leq \gamma_m'(1 - p_{\wedge, A} w_m) + p_{\wedge, A} w_m \\
 &\leq \gamma_m' + (1 - \gamma_m') p_{\wedge, A};
 \end{align*}
 
-
 \item[(2)]
 \begin{align*}
-&f(B_k, w) - f(B_{k+1}, w)\\
+&f_{\wedge}(B_k, w) - f_{\wedge}(B_{k+1}, w)\\
 &=\prod_{i=1}^{k}w_i - \gamma_{k+1}' (\prod_{i=1}^{k}w_i) (1 - w_{k+1}) - (\prod_{i=1}^{k}w_i) w_{k+1}\\
 &=(1 - \gamma_{k+1}') (\prod_{i=1}^{k}w_i) (1 - w_{k+1}) \geq 0;
 \end{align*}
 
 \item[(3)]
-obvious;
+$p_{\wedge, B_{k+1}} = \prod_{i=1}^{k} w_i \leq \prod_{i=1}^{k-1} w_i = p_{\wedge, B_k}$;
 
 \item[(4)]
 \begin{align*}
@@ -553,24 +530,35 @@ f_{\wedge}(B_k, w) &\leq \gamma_{k}' (1 - p_{B_{k+1}}) + p_{B_{k+1}}\\
 \end{proof}
 
 \begin{lemma}
-Suppose $A = (a_1, ..., a_{\abs{A}})$. For the time $t$ and the disjunctive objective, there exists a prefix $B$ of $A$ such that 
+Suppose $0 \leq \gamma_1' \leq \cdots \leq \gamma_K' \leq 1$. Let $A = (a_1, ..., a_{\abs{A}})$. For the time $t$ and the disjunctive objective, there exists a prefix $B$ of $A$ such that 
 $$
-p_{B} \geq \frac{1}{2}f_{\wedge, t}^{\ast} - \gamma_{\abs{B}}', \qquad \Delta_{\wedge, t, B} \geq \frac{1}{2}\Delta_{\wedge, t, A}.
+p_{\wedge, B} \geq \frac{1}{2}f_{\wedge, t}^{\ast} - \gamma_{\abs{B}}', \qquad \Delta_{\wedge, t, B} \geq \frac{1}{2}\Delta_{\wedge, t, A}.
 $$ 
 \end{lemma}
 \begin{proof}
-Notice that $f_{\wedge, t}^{\ast} \leq 1$. If $p_{A} \geq \frac{1}{2}f_{\wedge, t}^{\ast} - \gamma_{\abs{A}}'$, then the lemma is proved. 
+If $f_{\wedge}(A, w) \geq \frac{1}{2} f_{\wedge, t}^{\ast}$, then by lemma \ref{lem:prefixRelation},
+$$
+p_{A} \geq \frac{1}{2}f_{\wedge, t}^{\ast} - \gamma_{\abs{A}}'.
+$$
 
-Suppose this does not hold. By lemma \ref{lem:prefixRelation}, we have $[f_{\wedge}(B_k,w), \gamma_k' + (1 - \gamma_k')p_{B_k}]$ is an interval and the intersection between interval $[f_{\wedge}(B_k,w), \gamma_k' + (1 - \gamma_k')p_{B_k}]$ and interval $[f_{\wedge}(B_{k+1},w), \gamma_{k+1}' + (1 - \gamma_{k+1}')p_{B_{k+1}}]$ in not empty. Notice when $k=\abs{A}$, $f_{\wedge}(B_k,w) = f_{\wedge}(A, w)$ and when $k = 1$, $\gamma_k' + (1 - \gamma_k')p_{B_k} = 1$. So we have
+Suppose $f_{\wedge}(A, w) \leq \frac{1}{2} f_{\wedge, t}^{\ast}$. Let
 $$
-[f_{\wedge}(A,w), 1] = \bigcup_{k=1}^{\abs{A}} [f_{\wedge}(B_k,w), \gamma_k' + (1 - \gamma_k')p_{B_k}].
+x_k = f_{\wedge}(B_k,w), ~~ y_k = \gamma_k' + (1 - \gamma_k')p_{\wedge, B_k}, ~~I_k = [x_k, y_k]
 $$
-Then there exists a $k$ such that $f(B_k,w) \leq \frac{1}{2}f_{\wedge, t}^{\ast} \leq \gamma_k' + (1 - \gamma_k')p_{B_k}$. Therefore, the results are derived.
+Then by lemma \ref{lem:prefixRelation}, we have $x_k \leq y_k$, $x_{k+1} \leq x_k \leq y_{k+1}$. Therefore, $I_k$ is indeed an interval and $I_k \cap I_{k+1} \neq \emptyset$. Also, $x_{\abs{A}} = f_{\wedge}(A, w)$ and $y_1 = 1$. Thus
+$$
+[f_{\wedge}(A,w), 1] = \bigcup_{k=1}^{\abs{A}} I_k.
+$$
+Then there exists a $k$ such that $\frac{1}{2}f_{\wedge, t}^{\ast} \in I_k$:
+$$
+f_{\wedge}(B_k,w) \leq \frac{1}{2}f_{\wedge, t}^{\ast} \leq \gamma_k' + (1 - \gamma_k')p_{\wedge, B_k}
+$$
+Therefore, the results are derived.
 \end{proof}
 
 
 \begin{proposition}
-Suppose the equation (\ref{eq:estimateTheta}) holds for any time $t$ and $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_K \geq 0, \gamma_k' = 1 - \gamma_k$. If we have
+Let $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$ and $\gamma_k' = 1 - \gamma_k$. Suppose the equation (\ref{eq:estimateTheta}) holds for any time $t$. If we have
 $$
 \gamma_K \geq (1+\frac{1}{n_0})f^{\ast}, \qquad \gamma_K' \geq \frac{1}{4} f_{\wedge}^{\ast}
 $$
@@ -582,19 +570,21 @@ for some positive integer $n_0$, then
 where $f^{\ast} = \max_{t} f_t^{\ast}, f_{\wedge}^{\ast} = \max_{t} f_{\wedge, t}^{\ast}$.
 \end{proposition}
 \begin{proof}
-The conjunctive case can be derived directly. For the disjunctive case, there exists a prefix $\bB_t$ of $\bA_t$ such that $p_{\bB_t} \geq \frac{1}{4}f_t^*$ and $\Delta_{\bB_t} \geq \frac{1}{2}\Delta_A$. Then we have
+For the conjunctive case, $p_{\bA_t} \geq \frac{1}{n_0 + 1}$ by lemma \ref{lem:prefixRelation} and the result can be derived directly. 
+
+For the disjunctive case, there exists a prefix $\bB_t$ of $\bA_t$ such that $p_{\wedge, \bB_t} \geq \frac{1}{4}f_{\wedge, t}^*$ and $\Delta_{\wedge, \bB_t} \geq \frac{1}{2}\Delta_{\wedge, A}$. Then we have
 $$
-\EE[\Delta_{\wedge, t, \bA_t} | \cH_{t-1}] \leq \frac{8}{f_t^*} \EE[\Delta_{\wedge, t, \bB_t} \bOne\{\Delta_{\wedge, t, \bB_t} > 0, \bO_t \geq \abs{\bB_t}\}
+\EE[\Delta_{\wedge, t, \bA_t} | \cH_{t-1}] \leq \frac{8}{f_{\wedge, t}^*} \EE[\Delta_{\wedge, t, \bB_t} \bOne\{\Delta_{\wedge, t, \bB_t} > 0, \bO_t \geq \abs{\bB_t}\}
 $$
-Using $f(\bA_t^*,\bU_t) \leq f(\bA_t,\bU_t) \leq f(\bB_t,\bU_t)$, lemma \ref{lem:estimateU} and lemma \ref{lem:increasing}, it holds that
+Because 
 $$
-f(\bA_t^*, \theta_*^{\top}X_t) \leq f(\bB_t,\bU_t).
+f_{\wedge}(A_t^*, \theta_*^{\top}X_t) \leq f_{\wedge}(A_t^*,\bU_t) \leq f_{\wedge}(\bA_t,\bU_t) \leq f_{\wedge}(\bB_t,\bU_t)
 $$
-Then by lemma \ref{lem:estimateTech}
+by lemma \ref{lem:increasing} and
 $$
-f(\bB_t,\bU_t) \leq f(\bB_t, \theta_*^{\top}x_t) + \sum_{k=1}^{\abs{\bB_t}}\gamma_k'\beta_{t-1}(\delta)\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}.
+f_{\wedge}(\bB_t,\bU_t) \leq f_{\wedge}(\bB_t, \theta_*^{\top}x_t) + \sum_{k=1}^{\abs{\bB_t}}\gamma_k\beta_{t-1}(\delta)\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}.
 $$
-Therefore,
+by lemma \ref{lem:estimateTech}, we have
 $$
 \Delta_{\bB_t} \leq \sum_{k=1}^{\abs{\bB_t}}\beta_{t-1}(\delta)\norm{\gamma_k' x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}.
 $$
@@ -607,9 +597,9 @@ $\det(\bV_t) \leq (\lambda + C_\gamma t/d)^d.$
 We have $\det(\bV_t) \leq (\trace(\bV_t)/d)^d$ and
 \begin{align*}
 &\trace(\bV_t)\\
-& = \trace(\lambda I) + \sum_{s=1}^t \sum_{k=1}^{\min\{\bO_s,\abs{\bA_s}\}} \gamma_k'^2 \trace(x_{s,\ba_k^s} x_{s,\ba_k^s}^{\top})\\	
-& = d \lambda + \sum_{s=1}^t \sum_{k=1}^{\min\{\bO_s,\abs{\bA_s}\}} \gamma_k'^2 \norm{x_{s,\ba_k^s}}_2^2\\
-& \leq d \lambda + \sum_{s=1}^t\sum_{k=1}^{K}\gamma_k'^2=d\lambda + tC_\gamma.
+& = \trace(\lambda I) + \sum_{s=1}^t \sum_{k=1}^{\bO_s} \gamma_k^2 \trace(x_{s,\ba_k^s} x_{s,\ba_k^s}^{\top})\\	
+& = d \lambda + \sum_{s=1}^t \sum_{k=1}^{\bO_s} \gamma_k^2 \norm{x_{s,\ba_k^s}}_2^2\\
+& \leq d \lambda + \sum_{s=1}^t\sum_{k=1}^{K}\gamma_k^2 = d \lambda + t C_\gamma.
 \end{align*}
 \end{proof}
 
@@ -622,52 +612,64 @@ $$
 \begin{proof}
 Denote the eigenvalues of $I + \sum_{i=1}^n x_i x_i^{\top}$ by $1+\alpha_1,...,1+\alpha_d$ with $\alpha_j \geq 0$, $1\leq j\leq d$. Then
 \begin{align*}
-&\det(I + \sum_{i=1}^n x_i x_i^{\top})\\
-&= \prod_{j=1}^d (1 + \alpha_j)\geq 1 +\sum_{j=1}^d \alpha_j =1-d + \sum_{i=1}^d (1+\alpha_i) \\
+&\det(I + \sum_{i=1}^n x_i x_i^{\top})= \prod_{j=1}^d (1 + \alpha_j)\\
+&\geq 1 +\sum_{j=1}^d \alpha_j =1-d + \sum_{i=1}^d (1+\alpha_i) \\
 &=1-d + \trace(I + \sum_{i=1}^n x_i x_i^{\top})= 1-d + d + \sum_{i=1}^n \norm{x_i}_2^2\\
 &=1 + \sum_{i=1}^n \norm{x_i}_2^2.
 \end{align*}
 \end{proof}
 
 \begin{lemma}
-If $\lambda \geq C_\gamma$, it holds that
+If $\lambda \geq C_\gamma$, then
 $$
-\sum_{s=1}^t \sum_{k=1}^{\min\{\bO_s, \abs{\bA_s}\}} \norm{\gamma_k' x_{s,\ba_{k}^s}}_{\bV_{s-1}^{-1}}^2 \leq 2\log(\det(\bV_t)).
+\sum_{s=1}^t \sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_{k}^s}}_{\bV_{s-1}^{-1}}^2 \leq 2\log(\det(\bV_t)).
 $$
 \end{lemma}
 \begin{proof}
 \begin{align*}
-&\det(\bV_t) = \det(\bV_{t-1} + \sum_{k=1}^{\bO_t} (\gamma_k' X_{t,\ba_k^{t}})(\gamma_k' X_{t, \ba_k^{t}}^{\top}))\\
+&\det(\bV_t) = \det(\bV_{t-1} + \sum_{k=1}^{\bO_t} (\gamma_k X_{t,\ba_k^{t}})(\gamma_k X_{t, \ba_k^{t}}^{\top}))\\
 &=\det(\bV_{t-1})\\
-&~~~~\det(I + \sum_{k=1}^{\bO_t} \gamma_k'\bV_{t-1}^{-1/2}x_{t,\ba_{k}^{t}} (\gamma_k' \bV_{t-1}^{-1/2}x_{t,\ba_{k}^{t}})^{\top})\\
-&\geq \det(\bV_{t-1}) (1 + \sum_{k=1}^{\bO_t} \norm{\gamma^{k-1}x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2)\\
-&\geq \det(\lambda I)\prod_{s=1}^{t}(1 + \sum_{k=1}^{\bO_s} \norm{\gamma^{k-1}x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2)
+&~~~\cdot \det(I + \sum_{k=1}^{\bO_t} \gamma_k \bV_{t-1}^{-1/2}x_{t,\ba_{k}^{t}} (\gamma_k \bV_{t-1}^{-1/2}x_{t,\ba_{k}^{t}})^{\top})\\
+&\geq \det(\bV_{t-1}) (1 + \sum_{k=1}^{\bO_t} \norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2)\\
+&\geq \det(\lambda I)\prod_{s=1}^{t}(1 + \sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2)
 \end{align*}
 Because
 $$
-\norm{\gamma_k' x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2 \leq \norm{\gamma_k' x_{s,\ba_k^s}}_2^2/\lambda_{\min}(\bV_{s-1}) \leq \gamma_k'^2 /\lambda,
+\norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2 \leq \norm{\gamma_k x_{s,\ba_k^s}}_2^2/\lambda_{\min}(\bV_{s-1}) \leq \gamma_k^2 /\lambda,
 $$
 we have 
 $$
-\sum_{k=1}^{\bO_s} \norm{\gamma_k' x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2 \leq \frac{1}{\lambda} \sum_{k=1}^{K} \gamma_k'^2 = C_\gamma /\lambda \leq 1
+\sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2 \leq \frac{1}{\lambda} \sum_{k=1}^{K} \gamma_k^2 = C_\gamma /\lambda \leq 1
 $$
 Using the fact that $ 2\log(1+u) \geq u$ for any $u \in [0,1]$, we get
 \begin{align*}
-&\sum_{s=1}^t \sum_{k=1}^{\bO_s}\norm{\gamma_k' x_{s,\ba_{k}^s}}_{\bV_{s-1}^{-1}}^2 \\
-&\leq 2\sum_{s=1}^t\log(1 + \sum_{k=1}^{\bO_s} \norm{\gamma_k' x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2)\\
+&\sum_{s=1}^t \sum_{k=1}^{\bO_s}\norm{\gamma_k x_{s,\ba_{k}^s}}_{\bV_{s-1}^{-1}}^2 \\
+&\leq 2\sum_{s=1}^t\log(1 + \sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2)\\
 &\leq 2(\log(\det(\bV_t)) - \log(\det(\lambda I))) < 2\log(\det(\bV_t))
 \end{align*}
 \end{proof}
 
 \begin{proof}[ of theorem \ref{thm:main}]
-With probability at least $1-\delta$,
+Suppose inequality (\ref{eq:estimateTheta}) holds for all time $t$. 
+
+For the conjunctive case,
 \begin{equation}
 \begin{split}
-&R_T =\sum_{t=1}^{T} \EE_{t}[\Delta_{t, \bA_t}] \\
-&\leq \sum_{t=1}^{T} 4 \beta_{t-1}(\delta) \EE[\sum_{k=1}^{\bO_t}\norm{\gamma_k' X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}]\\
-&\leq 4 \beta_T(\delta) \sum_{t=1}^{T} \bO_t \EE[\sum_{k=1}^{\bO_t}\norm{\gamma_k'^2 X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]\\
-&\leq 4 \beta_T(\delta) \sqrt{(\sum_{t=1}^{T} \bO_t) \EE[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k'^2 X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]}  \\
-&\leq O(d\log(C_\gamma T)\sqrt{TK})
+&R(T) =\sum_{t=1}^{T} \EE_{t}[\Delta_{t, \bA_t}] \\
+&\leq \sum_{t=1}^{T} (n_0 + 1) \beta_{t-1}(\delta) \EE[\sum_{k=1}^{\bO_t}\norm{\gamma_k X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}]\\
+&\leq (n_0 + 1) \beta_T(\delta) \sqrt{(\sum_{t=1}^{T} \bO_t) \EE[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]}  \\
+&\leq O(n_0 d \log(C_\gamma T)\sqrt{TK}).
+\end{split}
+\end{equation}
+
+For the disjunctive case, 
+\begin{equation}
+\begin{split}
+&R(T) =\sum_{t=1}^{T} \EE_{t}[\Delta_{\wedge, t, \bA_t}] \\
+&\leq \EE[\sum_{t=1}^{T} \frac{8}{f_{\wedge}^{\ast}} \beta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}] \\
+&\leq \frac{8}{f_{\wedge}^{\ast}} \beta_{T}(\delta) \EE[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}]\\
+&\leq \frac{8}{f_{\wedge}^{\ast}} \beta_{T}(\delta) \EE[\sqrt{(\sum_{t=1}^{T} \bO_t) (\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2)}]\\
+&\leq O(\frac{d}{f_{\wedge}^{\ast}}\log(C_\gamma T)\sqrt{TK}).
 \end{split}
 \end{equation}
 \end{proof}
