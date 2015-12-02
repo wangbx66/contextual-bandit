@@ -40,6 +40,11 @@
 \usepackage{bm}
 \usepackage{algorithm,algorithmic}
 \usepackage{multirow}
+\usepackage{ifthen}
+\usepackage[usenames]{color}
+\usepackage[usenames,dvipsnames]{xcolor}
+
+
 \newcommand{\EE}{\mathbb{E}}
 \newcommand{\II}{\mathbb{I}}
 \newcommand{\PP}{\mathbb{P}}
@@ -72,15 +77,29 @@
 \newtheorem{example}[theorem]{Example}
 \newenvironment{proof}{\noindent {\textbf{Proof. }}}{$\Box$ \medskip}
 
+\newcommand{\compilehidecomments}{false}
+
+% Macro for comments:
+\ifthenelse{ \equal{\compilehidecomments}{true} }{%
+	\newcommand{\wei}[1]{}
+	\newcommand{\yang}[1]{}
+	\newcommand{\yajun}[1]{}
+}{
+\newcommand{\wei}[1]{{\color{blue!50!black}  [\text{Wei:} #1]}}
+\newcommand{\shuai}[1]{{\color{brown!60!black} [\text{Shuai:} #1]}}
+\newcommand{\shengyu}[1]{{\color{green!50!black} [\text{Shengyu:} #1]}}
+}
+
+
 % Employ the following version of the ``usepackage'' statement for
 % submitting the draft version of the paper for review.  This will set
 % the note in the first column to ``Under review.  Do not distribute.''
-\usepackage{icml2015} 
+%\usepackage{icml2015} 
 
 % Employ this version of the ``usepackage'' statement after the paper has
 % been accepted, when creating the final version.  This will set the
 % note in the first column to ``Proceedings of the...''
-%\usepackage[accepted]{icml2015}
+\usepackage[accepted]{icml2015}
 
 
 % The \icmltitle you define below is probably too long as a header.
@@ -119,22 +138,32 @@ The purpose of this document is to provide both the basic paper template and sub
 	
 \section{Problem Formulation}
 
-We model our problem as a contextual combinatorial cascading bandit. Suppose we have $E=\{1,...,L\}$ a finite set of $L$ ground items. Let $\prod^k=\{(a_1,...,a_k): a_1,...,a_k \in E, a_i \neq a_j \text{ for any } i \neq j\}$ be the set of all $k$-tuples of distinct items from $E$. Let $\cS \subset \prod^{\leq K}(E)$ consist of feasible actions with length no more than $K$.
+We formulate the problem of {\em contextual combinatorial cascading bandit} as follows. Suppose we have a finite set of $L$ ground items,  $E=\{1,...,L\}$, also referred to as {\em base arms}. 
+Let $\prod^k=\{(a_1,...,a_k): a_1,...,a_k \in E, a_i \neq a_j \text{ for any } i \neq j\}$ be the set of all $k$-tuples of distinct items from $E$. We also refer to each of such tuples as an {\em action}.
+Let $\cS \subseteq \cup_{k=1}^K \prod^{k}$ be the set of feasible actions with length no more than $K$.
 
-At time $t$, feature vectors $x_{t,a} \in \RR^{d \times 1}$ with $\norm{x_{t,a}}_2 \leq 1$ for every basic arm $a \in E$ are revealed to the learning agent; the feature vectors combine both the information of the user and the corresponding basic arm. Then the learning agent recommends a feasible solution $\bA_t=(\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t) \in \cS$ to the user. Starting from the first item, the user checks the items one by one. The checking process stops if the user clicks on one item or has checked all items without clicking anyone. We use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ to indicate whether the user has clicked on item $a$ or not at time $t$. 
+\wei{We should unify terms, such as agent, user, player, etc. Also I suggest to refer to the agent as she, her.
+Also for base arms, should we call them base arms, or items? their outcome as weights, or reward? It is fine to use up to two
+terms interchangibly, but if so, we need to say it clearly at the first time the term is referred to.
+Otherwise, we stick to one term.}
+At time $t$, feature vectors $x_{t,a} \in \RR^{d \times 1}$ with $\norm{x_{t,a}}_2 \leq 1$ for every basic arm $a \in E$ are revealed to the learning agent; the feature vectors combine both the information of the user and the corresponding basic arm. Then the learning agent recommends a feasible solution $\bA_t=(\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t) \in \cS$ to the user. 
+\wei{Why using $\ba_{1}^t$, not $a_1^t$?}
+Starting from the first item, the user checks the items one by one. The checking process stops if the user clicks on one item or has checked all items without clicking anyone. We use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ to indicate whether the user has clicked on item $a$ or not at time $t$. 
 
-Assume $\bw_{t,a}$ are mutually independent and satisfy
+Assume $\bw_{t,a}$'s are mutually independent and satisfy
 \begin{equation}
 \label{eq:expectation}
-\EE[\bw_{t,a} | x_{t,a}] = \theta_{\ast}^{\top} x_{t,a}
+\EE[\bw_{t,a} | x_{t,a}] = \theta_{\ast}^{\top} x_{t,a},
 \end{equation}
 where $\theta_{\ast}$ is an unknown $d$-dimensional vector with the assumption that $\norm{\theta_{\ast}}_2 \leq 1$ and $0 \leq \theta_{\ast}^{\top} x_{t,a} \leq 1$ for all $t, a$. At the end of every time $t$, the agent observes the first $\bO_t$ items of $\bA_t$ where 
 $$
 \bO_t \leq \abs{\bA_t}, \bw_t(\ba_k^t) = \begin{cases} 0, ~~k < \bO_t \\ 1, ~~k = \bO_t \end{cases}
 $$ 
+\wei{The above definition of $\bO_t$ looks indirect to me. What about "For some $k=1,2,\ldots, |\bA_t|$, $\bO_t = k$
+	if for all $j< k$, $\bw_t(\ba_j^t)=0$ and $\bw_t(\ba_k^t)=1$.}
 or 
 $$
-\bO_t = \abs{\bA_t}, \bw_t(\ba_k^t) = 0, ~~ k \leq \abs{\bA_t}.
+\bO_t = \abs{\bA_t}, \bw_t(\ba_k^t) = 0, ~~ \forall\, k \leq \abs{\bA_t}.
 $$
 We say that item $a$ is {\it observed} if $a = \ba_k^t$ for some $k \leq \bO_t$. 
 
@@ -151,9 +180,9 @@ where we use the notation that $\bigvee_{k=1}^n a_k = \max_{1 \leq k \leq n} a_k
 Now let us introduce a function $f$ on $A = (a_1,...,a_{\abs{A}}) \in \cS, w = (w(1),...,w(L))$ by
 \begin{align*}
 &f : \cS \times [0,1]^E \to [0,1]\\
-&f(A,w) = \sum_{k = 1}^{\abs{A}} \gamma_{k} \prod_{i=1}^{k-1} (1 - w(a_i)) w(a_k),
+&f(A,w) = \sum_{k = 1}^{\abs{A}} \gamma_{k} \prod_{i=1}^{k-1} (1 - w(a_i)) w(a_k).
 \end{align*}
-then we have $\br_t = f(\bA_t, \bw_t)$ and $\EE[\br_t] = f(\bA_t, \theta_{\ast}^{\top}x_t)$ where $x_t = (x_{t,1}, \cdots, x_{t,L}) \in \RR^{d \times L}$. Let 
+Then we have $\br_t = f(\bA_t, \bw_t)$ and $\EE[\br_t] = f(\bA_t, \theta_{\ast}^{\top}x_t)$ where $x_t = (x_{t,1}, \cdots, x_{t,L}) \in \RR^{d \times L}$. Let 
 \begin{align*}
 A_t^{\ast} &= \argmax_{A\in \cS} f(A,\theta_{\ast}^{\top}x_t),\\
 f_t^{\ast} &= f(A_t^{\ast}, \theta_{\ast}^{\top}x_t).
@@ -164,11 +193,15 @@ R(T) = \EE[\sum_{t=1}^T R(t, \bA_t)].
 $$
 where $R(t, \bA_t) = f_t^{\ast} - f(\bA_t, \theta_{\ast}^{\top}x_t)$.
 
-Similarly, we could also consider the case of conjunctive objective. We use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ to indicate the {\it weight} of item $a$ at time $t$ satisfying equation (\ref{eq:expectation})). The learning agent observes all items until the first one with weight $0$. Suppose we also consider partial reward: if the $k$-th item is the first item with weight $0$, then the learning agent receives reward $\gamma_k'$; if all items have weight $1$, the learning agent receives reward $1$. The more items, the more reward the learning agent should receive. It is reasonable to assume that
+The above formulation is on disjuctive objective, that is, at a time step the agent stops as soon as she reveals a base arm
+	at a position $k$ in the sequence with weight $1$ and she receives reward $\gamma_k$ as the result.
+Similarly, we could also consider the case of conjunctive objective. We use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ to indicate the {\it weight} of item $a$ at time $t$ satisfying equation (\ref{eq:expectation})). The learning agent observes all items until the first one with weight $0$. Suppose we also consider partial reward: if the $k$-th item is the first item with weight $0$, then the learning agent receives reward $\gamma_k'$; if all items have weight $1$, the learning agent receives reward $1$. The more items the learning agent reveals, the more reward the agent should receive. It is reasonable to assume that
 $$
-0 = \gamma_1 \leq \gamma_2 \leq \cdots \leq \gamma_K \leq 1.
+0 = \gamma'_1 \leq \gamma'_2 \leq \cdots \leq \gamma'_K \leq 1.
 $$
 At the end of time $t$, the learning agent observes $\bO_t, \bw_t(\ba_k^t), k \leq \bO_t$ and receives reward
+\wei{For the following, why using $\gamma_{\bO_t - 1}'$ and $\gamma_{k - 1}'$ instead of
+	$\gamma_{\bO_t}'$ and $\gamma_{k}'$. It is inconsistent with the above description, and I think the latter makes sense.}
 \begin{align*}
 \br_{\wedge, t} &= \begin{cases}
 \gamma_{\bO_t - 1}'  &\text{if } \bw_t(\ba_{\bO_t}^t) = 0,\\
