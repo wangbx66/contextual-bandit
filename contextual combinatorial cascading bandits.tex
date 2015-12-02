@@ -196,13 +196,13 @@ The above formulation is on disjuctive objective, that is, at a time step the ag
 $$
 0 = \gamma'_1 \leq \gamma'_2 \leq \cdots \leq \gamma'_K \leq 1.
 $$
-At the end of time $t$, the learning agent observes $\bO_t, \bw_t(\ba_k^t), k \leq \bO_t$ and receives reward
+At the end of time $t$, the learning agent observes $\bO_{\wedge, t}, \bw_t(\ba_k^t), k \leq \bO_{\wedge, t}$ and receives reward
 \wei{For the following, why using $\gamma_{\bO_t - 1}'$ and $\gamma_{k - 1}'$ instead of $\gamma_{\bO_t}'$ and $\gamma_{k}'$. It is inconsistent with the above description, and I think the latter makes sense.} 
 \shuai{This is an earlier version. I have modified it and all others.}
 \begin{align*}
 \br_{\wedge, t} &= \begin{cases}
-\gamma_{\bO_t}'  &\text{if } \bw_t(\ba_{\bO_t}^t) = 0,\\
-1 &\text{if } \bw_t(\ba_{\bO_t}^t) = 1,
+\gamma_{\bO_{\wedge, t}}'  &\text{if } \bw_t(\ba_{\bO_{\wedge, t}}^t) = 0,\\
+1 &\text{if } \bw_t(\ba_{\bO_{\wedge, t}}^t) = 1,
 \end{cases}\\
 &=\begin{cases}
 \gamma_{k}'  &\text{if } \bw_t(\ba_{i}^t) = 1, i < k, \bw_t(\ba_{k}^t) = 0,\\
@@ -257,7 +257,7 @@ where $\bX_t \in \RR^{(\sum_{s=1}^{t}\bO_s) \times d}$ is the matrix whose rows 
 $$
 \bV_t = \bX_t^{\top} \bX_t + \lambda I = \lambda I + \sum_{s=1}^{t} \sum_{k=1}^{\bO_s} \gamma_k^2 x_{s,\ba_k^s}x_{s,\ba_k^s}^{\top}.
 $$
-Then $\bV_t \in \RR^{d \times d}$ is a positive invertible matrix. The above notifications hold for both disjunctive and conjunctive objectives.
+Then $\bV_t \in \RR^{d \times d}$ is a positive invertible matrix. In the following, we will mainly use notations for disjunctive objective when the two cases are similar.
 
 Next we build on a good estimate of differences between $\hat{\theta}_t$ and $\theta_*$ by Theorem 2 in \cite{abbasi2011improved}, which states the following results.
 	
@@ -345,15 +345,22 @@ Then, the learning agent update $\bV_t, \bX_t, \bY_t$ in order to get a newer es
 Here is our main theorem.
 \begin{theorem}
 \label{thm:main}
-Suppose $1 = \gamma_1 \geq \gamma_2 \geq \cdots \gamma_{K} \geq c f^*$ for some constant $c > 1$ and $\gamma_k' = 1 - \gamma_k, \gamma'_K \geq \frac{1}{4}f_{\wedge}^{\ast}$. Let regularization parameter satisfy $\lambda \geq C_\gamma$. Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regrets of our algorithm, {\em ConComCascade} for both conjunctive and disjunctive objectives, satisfy
+Suppose $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_{K} \geq 0$ and $\gamma_k' = 1 - \gamma_k, \gamma'_K \geq \frac{1}{4}f_{\wedge}^{\ast}$. Let regularization parameter satisfy $\lambda \geq C_\gamma$. Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regrets of our algorithm, {\em ConComCascade} for both conjunctive and disjunctive objectives, satisfy
 \begin{align}
-&R(T) = O(\frac{d}{c-1} \log(C_\gamma T) \sqrt{KT}),\\
+&R(T) = O(\frac{d}{p^*} \log(C_\gamma T) \sqrt{KT}),\\
 &R_{\wedge}(T) = O(\frac{d}{f_{\wedge}^{\ast}} \log(C_\gamma T) \sqrt{KT}).
 \end{align}
 where
 \begin{align*}
-f^* &= \min_{1 \leq t \leq T} f_t^*\\
-C_\gamma &= \sum_{k=1}^{K} \gamma_k'^2 = \sum_{k=1}^{K-1} (1 - \gamma_k)^2 = O(K).
+&f^* = \min_{1 \leq t \leq T} f_t^{\ast},\\
+&f_{\wedge}^* = \min_{1 \leq t \leq T} f_{\wedge, t}^{\ast},\\
+&C_\gamma = \sum_{k=1}^{K} \gamma_k^2 = \sum_{k=1}^{K-1} (1 - \gamma_k')^2 = O(K),
+\end{align*}
+and $p_{t, \bA_t}$ and $p_{\wedge, t, \bA_t}$ are probabilities that all base arms of $\bA_t$ have been observed
+\begin{align*}
+&p_{t, \bA_t} = \PP(\bO_t \geq \abs{\bA_t}) = \prod_{k=1}^{\abs{\bA_t}-1} (1 - \theta_{\ast}^{\top} x_{t, \ba_k^t}),\\
+&p_{\wedge, t, \bA_t} = \PP(\bO_{\wedge, t} \geq \abs{\bA_t}) = \prod_{k=1}^{\abs{\bA_t}-1} (\theta_{\ast}^{\top} x_{t, \ba_k^t}),\\
+&p^* = \min_{1 \leq t \leq T} \min_{A \in \cS} ~ p_{t, A}.
 \end{align*}
 \end{theorem}
 
@@ -366,35 +373,32 @@ $$
 $$
 if $f_{\wedge}(A_t^*, \bU_t) \leq f_{\wedge}(A, \bU_t)$, then we have
 $$
-\Delta_{t,A} \leq \sum_{k=1}^{\abs{A}} \gamma_k \beta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}}.
+\Delta_{\wedge, t,A} \leq \sum_{k=1}^{\abs{A}} \gamma_k \beta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}}.
 $$
 \end{lemma}
 
 So if the chosen action $\bA_t$ is not suboptimal, which means
 $$
-f(A_t^*, \bU_t) \leq f(\bA_t, \bU_t).
+f(A_t^*, \bU_t) \leq f(\bA_t, \bU_t), ~~ f_{\wedge}(A_t^*, \bU_t) \leq f_{\wedge}(\bA_t, \bU_t).
 $$
-Then we can derive an estimate of $\Delta_{t, \bA_t}$, however, in terms of all elements in $\bA_t$. 
+Then we can derive an estimate of $\Delta_{t, \bA_t}$ and $\Delta_{\wedge, t, \bA_t}$, however, in terms of all base arms in $\bA_t$. Only when the learning agent has observed all base arms of $\bA_t$, we can use such an estimate, which means we are able to estimate
+\begin{align*}
+&~~\EE_t[\Delta_{t, \bA_t}] \\
+&= \EE[\Delta_{t, \bA_t}(1/p_{t, \bA_t}) \bOne\{\Delta_{t, \bA_t} > 0, \bO_t \geq \abs{\bA_t}\}],\\
+&~~\EE_t[\Delta_{\wedge, t, \bA_t}] \\
+&= \EE[\Delta_{\wedge, t, \bA_t}(1/p_{\wedge, t, \bA_t}) \bOne\{\Delta_{\wedge, t, \bA_t} > 0, \bO_{\wedge, t} \geq \abs{\bA_t}\}].
+\end{align*}
 
-However, this estimate involves all elements of $\bA_t$. Only when the learning agent has observed all elements of $\bA_t$, we can use such an estimate, which means we are able to estimate
-$$
-\EE[\Delta_{t, \bA_t}] = \EE[\Delta_{t, \bA_t}(1/p_{\bA_t}) \bOne\{\Delta_{t, \bA_t} > 0, \bO_t \geq \abs{\bA_t}\}].
-$$
-Problem might happen if $p_{\bA_t}$ is small. Thus we need the following lemma to find a good substitution of $\bA_t$.
+In real problems involved with recommendations, the click rate is a very small number. Thus for the problem with disjunctive objective, $p^*$ is relatively high and can be regarded as a constant. So we have $p_{t, \bA_t} \geq p^*$. For the problem with conjunctive objective, $p_{\wedge, t, \bA_t}$ might be small. Thus we need the following lemma to find a good substitution of $\bA_t$.
 
 \begin{lemma}
 \label{lem:prefixExist}
-Suppose the weights for items in $E$ are $w = (w_a)_{a \in E}$. Let $A = (a_1, ..., a_{\abs{A}})$ be a list and let $p_A$ denote the probability that all of items in $A$ are observed; equivalently, $p_A = \prod_{k=1}^{\abs{A}-1}w(a_i)$. Let $B_k = (a_1, ..., a_k), k \leq \abs{A}$ be a prefix of $A$. Then for any given constant $\frac{1}{2} < c < 1$, there exists a prefix $B$ of $A$ such that
+Let $B_k = (\ba_1^t, \ldots, \ba_k^t), k \leq \abs{A}$ be a prefix of $\bA_t$. Then there exists a prefix $\bB_t$ of $\bA_t$ such that
 $$
-p_B \geq c f^* - \gamma_{\abs{B}}, \qquad \Delta_B \geq \frac{1}{2} \Delta_A,
-$$
-where
-$$
-f^* = \max_{A'} f(A', w), \qquad \Delta_{A'} = f^* - f(A', w).
+p_{\wedge, t, \bB_t} \geq \frac{1}{2} f_{\wedge, t}^* - \gamma_{\abs{\bB_t}}, \qquad \Delta_{\wedge, t, \bB_t} \geq \frac{1}{2} \Delta_{\wedge, t, \bA_t}.
 $$
 \end{lemma}
-
-From this lemma, we can find a prefix $\bB_t$ of $\bA_t$ such that $p_{B_t}$ is large enough and $\Delta_{\bB_t}$ will not be too small. Then follow the above deductions, we can get a good estimate for $\EE[\Delta_{t, \bA_t}|\cH_{t-1}]$ in terms of $\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}$. Once we have estimated $\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}$ and $\beta_{t-1}(\delta)$, we can get an estimate for $\EE[\Delta_{t, \bA_t}|\cH_{t-1}]$, thus for $R(T)$. We leave all details in the next subsection.
+From this lemma, we can use the prefix $\bB_t$ to substitue $\bA_t$ because $p_{\wedge, t, \bB_t}$ is large enough and $\Delta_{\wedge, t, \bB_t}$ will not be too small. Then follow the above deductions, we can get a good estimate for $\EE[\Delta_{\wedge, t, \bA_t}|\cH_{t-1}]$ in terms of $\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}$. Once we have estimated $\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}$ and $\beta_{t-1}(\delta)$, we can get an estimate for $\EE[\Delta_{\wedge, t, \bA_t}|\cH_{t-1}]$, thus for $R_{\wedge}(T)$. We leave all details in the next subsection.
 
 
 \subsection{Proofs}
