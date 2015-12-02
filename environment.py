@@ -7,32 +7,43 @@ import random
 import logging
 logger = logging.getLogger('Environment')
 
+seed = int(time.time())
+np.random.seed(seed)
+logger.info('Numpy Random seed = {0}'.format(seed))
+
 from functools import reduce
 
-class ucb_settings:
-    def __init__(**s):
-        self.__dict__ = s
+def uni(x):
+    return x/np.sqrt((x*x).sum())
 
-def monkey_context(L=20, K=4, d=10, gamma=0.95, v=0.3, eps=0.1, disj=False):
+class ucb_settings:
+    def __init__(self, **s):
+        self.__dict__ = s
+        
+    def __str__(self):
+        return '\n'.join([str(k) + ' ' + str(v) for k, v in self.__dict__.items()])
+
+def monkey_context(L=20, K=4, d=10, gamma=0.95, v=0.3, eps=0.1, v=0.35, disj=False):
     logger.info('Initializing environment "Monkey Contextual"')
     arms = [idx for idx in range(L)]
     x = {arm:np.random.uniform(0, 1, d) for arm in arms}
-    theta = np.random.uniform(0, 1, d)
-
+    theta = v * uni(np.random.uniform(0, 1, d))
     xt = {arm:x[arm] for arm in x}
     def environment(recommend=None):
         if recommend == None:
-            xt = {arm:x[arm] + np.random.uniform(-v, v, d) for arm in x}
+            for arm in xt:
+                xt[arm] = uni(x[arm] + np.random.uniform(-v, v, d))
             return xt
         else:
-            for C, arm in enumerate(recomend): 
+            assert(len(recommend) <= K)
+            for C, arm in enumerate(recommend): 
                 p = theta.dot(xt[arm]) + np.random.normal(0, eps)
+                print('proba', p)
                 if (np.random.uniform(0, 1) < p) ^ disj:
-                    return gamma ^ C * int(not disj), C
-            return int(not disj), np.inf
-
-    return environment, ucb_setting(arms=arms, K=K, d=d, gamma=gamma)
-
+                    return gamma ** C * int(not disj), C
+            return int(disj), np.inf
+    logger.info('Initialized environment "Monkey Contextual"')
+    return environment, ucb_settings(arms=arms, K=K, d=d, gamma=gamma)
 
 def movielens(candidates, userno=1):
     logger.info('Initializing environment "Movielens"')

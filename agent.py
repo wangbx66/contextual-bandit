@@ -7,12 +7,11 @@ import matplotlib.pyplot as plt
 
 import time
 import random
-seed = time.time()
-random.seed(seed)
+
 import logging
 logging.basicConfig(format='%(name)s-%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger('Agent')
-logger.info('Random seed = {0}'.format(seed))
+
 
 def movies_mix_cld_adt(L=200):
     children, adults = set(), set()
@@ -79,11 +78,22 @@ def monkey(candidates, K=8, T=150000, verbose=False):
                     print('Agent: Score={0}/{1}'.format(score, t))
     return agent
 
-from environment import movielens
-candidates = movies_mix_cld_adt()
-environment = movielens(candidates[0] + candidates[1], 1)
-agent = ucb(candidates)
-agent(environment)
-agent = monkey(candidates)
-agent(environment)
+from environment import monkey_context
+e, s = monkey_context()
+delta = 
+lamb = 
+theta = np.zeros(s.d)
+beta = 0
+V = lamb * np.eye(s.d)
+X = np.zeros
+for i in range (100):
+    c = e()
+    U = {min(arm:theta.dot(c[arm]) + beta * c[arm].T.dot(np.linalg.inv(V)).dot(c[arm]), 1) fro arm in s.arms}
+    recc = [p[1] for p in heapq.nlargest(s.K, [(U[arm], arm) for arm in arms])]
+    r, C = e(recc)
+    if np.isinf(C):
+    
+    V += sum([s.gamma ** (2*k) * c[recc[k]].dot(c[recc[k]].T) for k in range(C+1)])
+    X = np.concatenate([gamma ** k * c[recc[k]] for k in range(C+1)])
+    print(r, C)
 
