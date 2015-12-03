@@ -3,6 +3,7 @@ import csv
 import heapq
 
 import numpy as np
+from scipy.spatial.distance import cosine
 import matplotlib.pyplot as plt
 
 import time
@@ -11,7 +12,6 @@ import random
 import logging
 logging.basicConfig(format='%(name)s-%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger('Agent')
-
 
 def movies_mix_cld_adt(L=200):
     children, adults = set(), set()
@@ -78,22 +78,44 @@ def monkey(candidates, K=8, T=150000, verbose=False):
                     print('Agent: Score={0}/{1}'.format(score, t))
     return agent
 
-from environment import monkey_context
-e, s = monkey_context()
-delta = 
-lamb = 
-theta = np.zeros(s.d)
-beta = 0
-V = lamb * np.eye(s.d)
-X = np.zeros
-for i in range (100):
-    c = e()
-    U = {min(arm:theta.dot(c[arm]) + beta * c[arm].T.dot(np.linalg.inv(V)).dot(c[arm]), 1) fro arm in s.arms}
-    recc = [p[1] for p in heapq.nlargest(s.K, [(U[arm], arm) for arm in arms])]
-    r, C = e(recc)
-    if np.isinf(C):
-    
-    V += sum([s.gamma ** (2*k) * c[recc[k]].dot(c[recc[k]].T) for k in range(C+1)])
-    X = np.concatenate([gamma ** k * c[recc[k]] for k in range(C+1)])
-    print(r, C)
+def contextual_cascading_monkey(T=100000):
+    def agent(environment):
+        e, s = environment
+        score = 0
+        for t in range(1, T):
+            recc = random.sample(s.arms, s.K)
+            r, _ = e(recc)
+            score += r
+            if t % 10000 == 0:
+                print('Agent: Score={0}/{1}'.format(score, t))
+    return agent
+        
+def contextual_cascading_sherry(environment, T=100000):
+    e, s = environment()
+    delta = 0.9
+    lamb = 0.1
+    theta = np.zeros(s.d)
+    beta = 0
+    V = lamb * np.eye(s.d)
+    ldV = np.log(np.linalg.det(V))
+    X = np.zeros((1, s.d))
+    Y = np.zeros(1)
+    score = [0]
+    for i in range (1, T):
+        x = e()
+        U = {arm:min(theta.dot(x[arm]) + beta * x[arm].dot(np.linalg.inv(V)).dot(x[arm]), 1) for arm in s.arms}
+        recc = [p[1] for p in heapq.nlargest(s.K, [(U[arm], arm) for arm in s.arms])]
+        r, c = e(recc)
+        V += sum([s.gamma ** (2*k) * np.outer(x[recc[k]], x[recc[k]]) for k in range(min(s.K, c+1))])
+        X = np.concatenate([X] + [s.gamma ** k * x[recc[k]].reshape(1, s.d) for k in range(min(s.K, c+1))])
+        Y = np.concatenate([Y] + [s.gamma ** k * (k == c) * np.ones(1) for k in range(min(s.K, c+1))])
+        theta = np.linalg.inv(X.T.dot(X) + lamb * np.eye(s.d)).dot(X.T.dot(Y))
+        beta = np.sqrt(np.log(np.linalg.det(V))- ldV - 2 * np.log(delta)) + np.sqrt(lamb)
+        score.append(score[-1] + r)
+    return score, cosine(s.theta, theta) 
+
+from environment import contextual_cascading_monkey
+environment = contextual_cascading_monkey
+agent = contextual_cascading_sherry
+exploit, explore = agent(environment)
 
