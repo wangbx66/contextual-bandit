@@ -145,19 +145,19 @@ The purpose of this document is to provide both the basic paper template and sub
 
 We formulate the problem of {\em contextual combinatorial cascading bandit} as follows. Suppose we have a finite set of $L$ ground items,  $E=\{1,...,L\}$, also referred to as {\em base arms}. 
 Let $\prod^k=\{(a_1,...,a_k): a_1,...,a_k \in E, a_i \neq a_j \text{ for any } i \neq j\}$ be the set of all $k$-tuples of distinct items from $E$. We also refer to each of such tuples as an {\em action}.
-Let $\cS \subseteq \cup_{k=1}^K \prod^{k}$ be the set of feasible actions with length no more than $K$.
+Let $\cS \subseteq \cup_{k=1}^K \prod^{k}$ be the set of feasible actions with length no more than $K$. As a convention, we use boldface symbols to represent all random variables.
 
 At time $t$, feature vectors $x_{t,a} \in \RR^{d \times 1}$ with $\norm{x_{t,a}}_2 \leq 1$ for every base arm $a \in E$ are revealed to the learning agent; the feature vectors combine both the information of the user and the corresponding base arm. Then the learning agent recommends a feasible action $\bA_t=(\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t) \in \cS$ to the user. 
 \wei{Why using $\ba_{1}^t$, not $a_1^t$?} \shuai{I think $a_1^t$ is a random variable because $\bA_t$ is random. Is it making sense?}
 Starting from the first item, the user checks the items one by one. The checking process stops if the user clicks on one item or has checked all items without clicking anyone. We use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ as the {\em weight} of base arm $a$ at time $t$ to indicate whether the user has clicked on $a$ or not. 
 
-Assume $\bw_{t,a}$'s are mutually independent and satisfy
+Let $\cH_t$ denote all history before the learning agent chooses action at time $t$; $\cH_t$ contains all information and observations at time $s < t$ and context information at time $t$. Given history $\cH_t$, we assume $\bw_{t,a}$'s are mutually independent and satisfy
 \wei{Is this given $x_{t,a}$ accurate? $x_{t,a}$  is not a probabilistic event. Also, are we assuming $\bw_{t,a}$'s are
 		also independent of all other events, such as the event before time $t$? We should make it clear.
 Perhaps we should put the history definition here?}
 \begin{equation}
 \label{eq:expectation}
-\EE[\bw_{t,a} | x_{t,a}] = \theta_{\ast}^{\top} x_{t,a},
+\EE[\bw_{t,a} | \cH_t] = \theta_{\ast}^{\top} x_{t,a},
 \end{equation}
 where $\theta_{\ast}$ is an unknown $d$-dimensional vector with the assumption that $\norm{\theta_{\ast}}_2 \leq 1$ and $0 \leq \theta_{\ast}^{\top} x_{t,a} \leq 1$ for all $t, a$. 
 We define random variable $\bO_t$ as the number of observed base arms in $\bA_t$, that is,
@@ -245,13 +245,13 @@ where $R_{\wedge}(t, \bA_t) = f_{\wedge, t}^{\ast} - f_{\wedge}(\bA_t, \theta_{\
 
 \subsection{Algorithm}
 	
-Let $\cH_t$ denote all history at the end of time $t$; $\cH_t$ consists of $\{x_s, \bA_s = (\ba_{1}^s,...,\ba_{\abs{\bA_s}}^s), \bO_s, \bw_s(\ba_k^s), k \in[\bO_s], s\in[t] \}$ and define $\EE_t[\cdot] = \EE[\cdot | \cH_t]$. Here we abuse the notation $\abs{\bA_s}$ to denote the number of base arms in the action $\bA_s$. By Equation \eqref{eq:expectation}, we have 
+Because $\cH_t$ denotes all history before time $t$ and context information of time $t$, $\cH_t$ consists of $\{x_s, \bA_s = (\ba_{1}^s,...,\ba_{\abs{\bA_s}}^s), \bO_s, \bw_s(\ba_k^s), k \in[\bO_s], s<t, x_t \}$ and define $\EE_t[\cdot] = \EE[\cdot | \cH_t]$. Here we abuse the notation $\abs{\bA_s}$ to denote the number of base arms in the action $\bA_s$. By Equation \eqref{eq:expectation}, we have 
 $$
-\EE[(\gamma_k \bw_{s,\ba_k^s}) | \cH_{s-1}] = \theta_*^{\top} (\gamma_k x_{s,\ba_k^s}).
+\EE[(\gamma_k \bw_{s,\ba_k^s}) | \cH_{s}] = \theta_*^{\top} (\gamma_k x_{s,\ba_k^s}).
 $$
 Using the ridge regression of data 
 $$
-\{(\gamma_k X_{s,\ba_k^s}, \gamma_k \bw_{s,\ba_k^s})\}_{k \in[\bO_s], s\in[t]},
+\{(\gamma_k x_{s,\ba_k^s}, \gamma_k \bw_{s,\ba_k^s})\}_{k \in[\bO_s], s\in[t]},
 $$
 we get an $l^2$-regularized least-squares estimate of $\theta_*$ with regularization parameter $\lambda > 0$:
 \begin{equation}
@@ -388,9 +388,9 @@ $$
 Then we can derive an estimate of $\Delta_{t, \bA_t}$ and $\Delta_{\wedge, t, \bA_t}$, however, in terms of all base arms in $\bA_t$. Only when the learning agent has observed all base arms of $\bA_t$, we can use such an estimate, which means we are able to estimate
 \begin{align*}
 &~~\EE_t[\Delta_{t, \bA_t}] \\
-&= \EE[\Delta_{t, \bA_t}(1/p_{t, \bA_t}) \bOne\{\Delta_{t, \bA_t} > 0, \bO_t \geq \abs{\bA_t}\}],\\
+&= \EE_t[\Delta_{t, \bA_t}(1/p_{t, \bA_t}) \bOne\{\Delta_{t, \bA_t} > 0, \bO_t \geq \abs{\bA_t}\}],\\
 &~~\EE_t[\Delta_{\wedge, t, \bA_t}] \\
-&= \EE[\Delta_{\wedge, t, \bA_t}(1/p_{\wedge, t, \bA_t}) \bOne\{\Delta_{\wedge, t, \bA_t} > 0, \bO_{\wedge, t} \geq \abs{\bA_t}\}].
+&= \EE_t[\Delta_{\wedge, t, \bA_t}(1/p_{\wedge, t, \bA_t}) \bOne\{\Delta_{\wedge, t, \bA_t} > 0, \bO_{\wedge, t} \geq \abs{\bA_t}\}].
 \end{align*}
 
 In real problems involved with recommendations, the click rate is a very small number. Thus for the problem with disjunctive objective, $p^*$ is relatively high and can be regarded as a constant. So we have $p_{t, \bA_t} \geq p^*$. For the problem with conjunctive objective, $p_{\wedge, t, \bA_t}$ might be small. Thus we need the following lemma to find a good substitution of $\bA_t$.
@@ -492,11 +492,14 @@ The result for the disjunctive case can be deduced similarly.
 
 \begin{lemma}
 \label{lem:prefixRelation}
-Suppose $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$ and $0 \leq \gamma_1' \leq \cdots \leq \gamma_K' \leq 1$. Let $A = (a_1, ..., a_{\abs{A}})$. For the conjunctive case, it holds that
-$$
-p_A \geq 1 - \frac{f(A, w)}{\gamma_{\abs{A}}}.
-$$
-Let $B_k = (a_1, ..., a_k), k \leq \abs{A}$ be a prefix of $A$. Then for the disjunctive case and $k < \abs{A}$, we have the following properties:
+Suppose 
+% $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$ and 
+$0 \leq \gamma_1' \leq \cdots \leq \gamma_K' \leq 1$. Let $A = (a_1, ..., a_{\abs{A}})$. 
+% For the conjunctive case, it holds that
+% $$
+% p_A \geq 1 - \frac{f(A, w)}{\gamma_{\abs{A}}}.
+% $$
+Let $B_k = (a_1, ..., a_k), k \leq \abs{A}$ be a prefix of $A$. Then for the problem with disjunctive objective and $k < \abs{A}$, we have the following properties:
 \begin{itemize}
 \item[(1)] $f_{\wedge}(A, w) \leq \gamma_{\abs{A}}' + (1 - \gamma_{\abs{A}}') p_{\wedge, A}$;
 \item[(2)] $f_{\wedge}(B_{k+1}, w) \leq f_{\wedge}(B_k, w)$;
@@ -506,11 +509,11 @@ Let $B_k = (a_1, ..., a_k), k \leq \abs{A}$ be a prefix of $A$. Then for the dis
 \end{lemma}
 
 \begin{proof}
-It suffices to prove these properties when $A = A^{(m)}$ and $w = (w_1, \ldots, w_m)$. First, for the conjunctive objective,
-$$
-f(A, w) \geq \gamma_{m} (1 - p_{A} + p_{A} w_{m}) \geq \gamma_{m} (1 - p_{A}).
-$$
-Then for the disjunctive objective,
+% It suffices to prove these properties when $A = A^{(m)}$ and $w = (w_1, \ldots, w_m)$. First, for the conjunctive objective,
+% $$
+% f(A, w) \geq \gamma_{m} (1 - p_{A} + p_{A} w_{m}) \geq \gamma_{m} (1 - p_{A}).
+% $$
+% Then for the disjunctive objective,
 \begin{itemize}
 \item[(1)]
 \begin{align*}
@@ -566,23 +569,31 @@ Therefore, the results are derived.
 
 
 \begin{proposition}
-Let $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$ and $\gamma_k' = 1 - \gamma_k$. Suppose the equation (\ref{eq:estimateTheta}) holds for any time $t$. If we have
+Let $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$ and $\gamma_k' = 1 - \gamma_k$. Suppose the equation (\ref{eq:estimateTheta}) holds for all time $t$. Then
 $$
-\gamma_K \geq (1+\frac{1}{n_0})f^{\ast}, \qquad \gamma_K' \geq \frac{1}{4} f_{\wedge}^{\ast}
+E[\Delta_{t, \bA_t}|\cH_t] \leq \frac{1}{p^*} \beta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}
 $$
-for some positive integer $n_0$, then
+If we have
+% $$
+% \gamma_K \geq (1+\frac{1}{n_0})f^{\ast}, \qquad 
+% $$
+$$
+\gamma_K' \geq \frac{1}{4} f_{\wedge}^{\ast},
+$$
+then
 \begin{align*}
-&E[\Delta_{t, \bA_t}|\cH_t] \leq (n_0+1) \beta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}},\\
+% &E[\Delta_{t, \bA_t}|\cH_t] \leq (n_0+1) \beta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}},\\
 &E[\Delta_{\wedge, t, \bA_t}|\cH_t] \leq \frac{8}{f_{\wedge}^{\ast}} \beta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}},
 \end{align*}
 where $f^{\ast} = \max_{t} f_t^{\ast}, f_{\wedge}^{\ast} = \max_{t} f_{\wedge, t}^{\ast}$.
 \end{proposition}
 \begin{proof}
-For the conjunctive case, $p_{\bA_t} \geq \frac{1}{n_0 + 1}$ by lemma \ref{lem:prefixRelation} and the result can be derived directly. 
+For the conjunctive case,  $p_{\bA_t} \geq p^*$ by definition and the result can be derived directly.
+% $p_{\bA_t} \geq \frac{1}{n_0 + 1}$ by lemma \ref{lem:prefixRelation} and the result can be derived directly. 
 
 For the disjunctive case, there exists a prefix $\bB_t$ of $\bA_t$ such that $p_{\wedge, \bB_t} \geq \frac{1}{4}f_{\wedge, t}^*$ and $\Delta_{\wedge, \bB_t} \geq \frac{1}{2}\Delta_{\wedge, A}$. Then we have
 $$
-\EE[\Delta_{\wedge, t, \bA_t} | \cH_{t-1}] \leq \frac{8}{f_{\wedge, t}^*} \EE[\Delta_{\wedge, t, \bB_t} \bOne\{\Delta_{\wedge, t, \bB_t} > 0, \bO_t \geq \abs{\bB_t}\}
+\EE_t[\Delta_{\wedge, t, \bA_t}] \leq \frac{8}{f_{\wedge, t}^*} \EE_t[\Delta_{\wedge, t, \bB_t} \bOne\{\Delta_{\wedge, t, \bB_t} > 0, \bO_t \geq \abs{\bB_t}\}
 $$
 Because 
 $$
@@ -594,7 +605,7 @@ f_{\wedge}(\bB_t,\bU_t) \leq f_{\wedge}(\bB_t, \theta_*^{\top}x_t) + \sum_{k=1}^
 $$
 by lemma \ref{lem:estimateTech}, we have
 $$
-\Delta_{\bB_t} \leq \sum_{k=1}^{\abs{\bB_t}}\beta_{t-1}(\delta)\norm{\gamma_k' x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}.
+\Delta_{\wedge, t, \bB_t} \leq \sum_{k=1}^{\abs{\bB_t}}\beta_{t-1}(\delta)\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}.
 $$
 \end{proof}
 	
@@ -664,9 +675,9 @@ For the conjunctive case,
 \begin{equation}
 \begin{split}
 &R(T) =\sum_{t=1}^{T} \EE_{t}[\Delta_{t, \bA_t}] \\
-&\leq \sum_{t=1}^{T} (n_0 + 1) \beta_{t-1}(\delta) \EE[\sum_{k=1}^{\bO_t}\norm{\gamma_k X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}]\\
-&\leq (n_0 + 1) \beta_T(\delta) \sqrt{(\sum_{t=1}^{T} \bO_t) \EE[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]}  \\
-&\leq O(n_0 d \log(C_\gamma T)\sqrt{TK}).
+&\leq \EE[\sum_{t=1}^{T} \frac{1}{p^*} \EE_t[\beta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}]]\\
+&\leq \EE[\sum_{t=1}^{T} \frac{1}{p^*} \beta_T(\delta) \sqrt{(\sum_{t=1}^{T} \bO_t) \EE[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]} ]  \\
+&\leq O(\frac{d}{p^*} \log(C_\gamma T)\sqrt{TK}).
 \end{split}
 \end{equation}
 
@@ -674,9 +685,9 @@ For the disjunctive case,
 \begin{equation}
 \begin{split}
 &R(T) =\sum_{t=1}^{T} \EE_{t}[\Delta_{\wedge, t, \bA_t}] \\
-&\leq \EE[\sum_{t=1}^{T} \frac{8}{f_{\wedge}^{\ast}} \beta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}] \\
-&\leq \frac{8}{f_{\wedge}^{\ast}} \beta_{T}(\delta) \EE[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}]\\
-&\leq \frac{8}{f_{\wedge}^{\ast}} \beta_{T}(\delta) \EE[\sqrt{(\sum_{t=1}^{T} \bO_t) (\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2)}]\\
+&\leq \EE[\sum_{t=1}^{T} \frac{8}{f_{\wedge}^{\ast}} \EE_t[\beta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}] \\
+&\leq \EE[\frac{8}{f_{\wedge}^{\ast}} \beta_{T}(\delta) \sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}]\\
+&\leq \EE[\frac{8}{f_{\wedge}^{\ast}} \beta_{T}(\delta) \sqrt{(\sum_{t=1}^{T} \bO_t) \EE_t[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k X_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2]}]\\
 &\leq O(\frac{d}{f_{\wedge}^{\ast}}\log(C_\gamma T)\sqrt{TK}).
 \end{split}
 \end{equation}
