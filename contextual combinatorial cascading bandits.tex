@@ -26,6 +26,12 @@
 % following usepackage line and replace \usepackage{icml2015} with
 % \usepackage[nohyperref]{icml2015} above.
 \usepackage{hyperref}
+\hypersetup{
+	colorlinks   = true, %Colours links instead of ugly boxes
+	urlcolor     = blue, %Colour for external hyperlinks
+	linkcolor    = blue, %Colour of internal links
+	citecolor   = blue %Colour of citations
+}
 
 % Packages hyperref and algorithmic misbehave sometimes.  We can fix
 % this with the following command.
@@ -33,7 +39,6 @@
 
 % my settings
 \usepackage{amssymb,amsfonts,amsmath,bbm}
-\usepackage{hyperref}
 \usepackage{mathrsfs}
 \usepackage[all]{xy}
 \usepackage{empheq}
@@ -142,21 +147,21 @@ We formulate the problem of {\em contextual combinatorial cascading bandit} as f
 Let $\prod^k=\{(a_1,...,a_k): a_1,...,a_k \in E, a_i \neq a_j \text{ for any } i \neq j\}$ be the set of all $k$-tuples of distinct items from $E$. We also refer to each of such tuples as an {\em action}.
 Let $\cS \subseteq \cup_{k=1}^K \prod^{k}$ be the set of feasible actions with length no more than $K$.
 
-\wei{We should unify terms, such as agent, user, player, etc. Also I suggest to refer to the agent as she, her.
-Also for base arms, should we call them base arms, or items? their outcome as weights, or reward? It is fine to use up to two
-terms interchangibly, but if so, we need to say it clearly at the first time the term is referred to.
-Otherwise, we stick to one term.}
-\shuai{I have unified all terms by {\em base arms}, {\em actions} and {\em the learning agent}}
 At time $t$, feature vectors $x_{t,a} \in \RR^{d \times 1}$ with $\norm{x_{t,a}}_2 \leq 1$ for every base arm $a \in E$ are revealed to the learning agent; the feature vectors combine both the information of the user and the corresponding base arm. Then the learning agent recommends a feasible action $\bA_t=(\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t) \in \cS$ to the user. 
 \wei{Why using $\ba_{1}^t$, not $a_1^t$?} \shuai{I think $a_1^t$ is a random variable because $\bA_t$ is random. Is it making sense?}
 Starting from the first item, the user checks the items one by one. The checking process stops if the user clicks on one item or has checked all items without clicking anyone. We use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ as the {\em weight} of base arm $a$ at time $t$ to indicate whether the user has clicked on $a$ or not. 
 
 Assume $\bw_{t,a}$'s are mutually independent and satisfy
+\wei{Is this given $x_{t,a}$ accurate? $x_{t,a}$  is not a probabilistic event. Also, are we assuming $\bw_{t,a}$'s are
+		also independent of all other events, such as the event before time $t$? We should make it clear.
+Perhaps we should put the history definition here?}
 \begin{equation}
 \label{eq:expectation}
 \EE[\bw_{t,a} | x_{t,a}] = \theta_{\ast}^{\top} x_{t,a},
 \end{equation}
-where $\theta_{\ast}$ is an unknown $d$-dimensional vector with the assumption that $\norm{\theta_{\ast}}_2 \leq 1$ and $0 \leq \theta_{\ast}^{\top} x_{t,a} \leq 1$ for all $t, a$. \wei{The above definition of $\bO_t$ looks indirect to me. What about "For some $k=1,2,\ldots, |\bA_t|$, $\bO_t = k$, if for all $j< k$, $\bw_t(\ba_j^t)=0$ and $\bw_t(\ba_k^t)=1$.} \shuai{I have modified accordingly.} For some $k=1,2,\ldots, \abs{\bA_t}$, 
+where $\theta_{\ast}$ is an unknown $d$-dimensional vector with the assumption that $\norm{\theta_{\ast}}_2 \leq 1$ and $0 \leq \theta_{\ast}^{\top} x_{t,a} \leq 1$ for all $t, a$. 
+We define random variable $\bO_t$ as the number of observed base arms in $\bA_t$, that is,
+	for some $k=1,2,\ldots, \abs{\bA_t}$, 
 $$
 \bO_t = k, \text{ if } \bw_t(\ba_j^t)=0, \forall\, j < k \text{ and } \bw_t(\ba_k^t) = 1,
 $$
@@ -192,13 +197,12 @@ R(T) = \EE[\sum_{t=1}^T R(t, \bA_t)].
 $$
 where $R(t, \bA_t) = f_t^{\ast} - f(\bA_t, \theta_{\ast}^{\top}x_t)$.
 
-The above formulation is on disjuctive objective, that is, at a time step the agent stops as soon as she reveals a base arm at a position $k$ in the sequence with weight $1$ and she receives reward $\gamma_k$ as the result. Similarly, we could also consider the case of conjunctive objective. We also use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ to indicate the weight of item $a$ at time $t$ satisfying equation (\ref{eq:expectation})). The learning agent observes all items until the first one with weight $0$. Suppose we also consider partial reward: if the $k$-th item is the first item with weight $0$, then the learning agent receives reward $\gamma_k'$; if all items have weight $1$, the learning agent receives reward $1$. The more items the learning agent reveals, the more reward the agent should receive. It is reasonable to assume that
+The above formulation is on disjuctive objective, that is, at a time step the agent stops as soon as she reveals a base arm at a position $k$ in the sequence with weight $1$ and she receives reward $\gamma_k$ as the result. Similarly, we could also consider the case of conjunctive objective. We also use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ to indicate the weight of item $a$ at time $t$ satisfying Equation \eqref{eq:expectation}). The learning agent observes all items until the first one with weight $0$. Suppose we also consider partial reward: if the $k$-th item is the first item with weight $0$, then the learning agent receives reward $\gamma_k'$; if all items have weight $1$, the learning agent receives reward $1$. The more items the learning agent reveals, the more reward the agent should receive. It is reasonable to assume that
 $$
 0 = \gamma'_1 \leq \gamma'_2 \leq \cdots \leq \gamma'_K \leq 1.
 $$
 At the end of time $t$, the learning agent observes $\bO_{\wedge, t}, \bw_t(\ba_k^t), k \leq \bO_{\wedge, t}$ and receives reward
-\wei{For the following, why using $\gamma_{\bO_t - 1}'$ and $\gamma_{k - 1}'$ instead of $\gamma_{\bO_t}'$ and $\gamma_{k}'$. It is inconsistent with the above description, and I think the latter makes sense.} 
-\shuai{This is an earlier version. I have modified it and all others.}
+	$\br_{\wedge, t}$:
 \begin{align*}
 \br_{\wedge, t} &= \begin{cases}
 \gamma_{\bO_{\wedge, t}}'  &\text{if } \bw_t(\ba_{\bO_{\wedge, t}}^t) = 0,\\
@@ -241,7 +245,7 @@ where $R_{\wedge}(t, \bA_t) = f_{\wedge, t}^{\ast} - f_{\wedge}(\bA_t, \theta_{\
 
 \subsection{Algorithm}
 	
-Let $\cH_t$ denote all history at the end of time $t$; $\cH_t$ consists of $\{x_s, \bA_s = (\ba_{1}^s,...,\ba_{\abs{\bA_s}}^s), \bO_s, \bw_s(\ba_k^s), k \in[\bO_s], s\in[t] \}$ and define $\EE_t[\cdot] = \EE[\cdot | \cH_t]$. Here we abuse the notation $\abs{\bA_s}$ to denote the number of base arms in the action $\bA_s$. By equation (\ref{eq:expectation}), we have 
+Let $\cH_t$ denote all history at the end of time $t$; $\cH_t$ consists of $\{x_s, \bA_s = (\ba_{1}^s,...,\ba_{\abs{\bA_s}}^s), \bO_s, \bw_s(\ba_k^s), k \in[\bO_s], s\in[t] \}$ and define $\EE_t[\cdot] = \EE[\cdot | \cH_t]$. Here we abuse the notation $\abs{\bA_s}$ to denote the number of base arms in the action $\bA_s$. By Equation \eqref{eq:expectation}, we have 
 $$
 \EE[(\gamma_k \bw_{s,\ba_k^s}) | \cH_{s-1}] = \theta_*^{\top} (\gamma_k x_{s,\ba_k^s}).
 $$
