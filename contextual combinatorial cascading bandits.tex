@@ -289,7 +289,7 @@ This theorem states that with high probability, the estimate $\hat{\theta}$ lies
 The fact that $\bU_t(a)$ is an upper confidence bound of expected weight $\theta_*^{\top}x_{t,a}$ is proved in the following lemma.
 \begin{lemma}
 \label{lem:estimateU}
-When (\ref{eq:estimateTheta}) holds for time $t$, we have
+When Eq.\eqref{eq:estimateTheta} holds for time $t-1$, we have
 $$
 0 \leq \bU_t(a) - \theta_{\ast}^{\top}x_{t,a} \leq 2\beta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}.
 $$
@@ -297,7 +297,7 @@ $$
 \begin{proof}
 \begin{align*}
 \abs{\hat{\theta}_{t-1}^{\top}x_{t,a} - \theta_{\ast}^{\top}x_{t,a}} &\leq \norm{\hat{\theta}_{t-1} - \theta_{\ast}}_{\bV_{t-1}} \norm{x_{t,a}}_{\bV_{t-1}^{-1}} \\
-&\leq \beta_{t}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}.
+&\leq \beta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}.
 \end{align*}
 \end{proof}
 
@@ -309,31 +309,32 @@ or
 $$
 \bw_t(\ba_k^t) = 1, k \leq \bO_t = \abs{\bA_t}.
 $$
-Then, the learning agent update $\bV_t, \bX_t, \bY_t$ in order to get a newer estimate $\hat{\theta}_t$ of $\theta_*$ and new confidence radius $\beta_t(\delta)$. In this part, we use the notation $[A; B]$ to denote a matrix $\begin{pmatrix} A\\ B\end{pmatrix}$.
+Then, the learning agent update $\bV_t, \bX_t, \bY_t$ in order to get a newer estimate $\hat{\theta}_t$ of $\theta_*$ and new confidence radius $\beta_t(\delta)$. In this part, we use the notation $[A; B]$ to denote the matrix obtained by stack A and B vertically like
+ $\begin{pmatrix} A\\ B\end{pmatrix}$.
 
 \begin{algorithm}
 \caption{ConComCascade}
 \label{alg:ConComCascade}
 \begin{algorithmic}[1]
 \STATE {//Initialization}
-\STATE {Parameters: $\delta > 0, \lambda \geq C_\gamma$}
 \STATE {Parameters: $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_K \geq 0$}
-\STATE {$\hat{\theta}_0 = 0, \beta_0(\delta) = 1, \bV_0 = \lambda I$}
-\STATE{}
+\STATE {Parameters: $\delta > 0, \lambda \geq C_\gamma = \sum_{k=1}^{K} \gamma_k^2$}
+\STATE {$\hat{\theta}_0 = 0, \beta_0(\delta) = 1, \bV_0 = \lambda I, \bX_0=\emptyset, \bY_0=\emptyset$}
+%\STATE{}
 
 \FORALL {$t=1,2,\ldots$}
 \STATE {Obtain context $x_{t,a}$ for all $a\in E$}
-\STATE{}
+%\STATE{}
 
 \STATE {//Compute UCBs}
 \STATE {$\forall a\in E: $}
 \STATE {$\bU_t(a) \leftarrow \min\{\hat{\theta}_{t-1}^{\top}x_{t,a} + \beta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}, 1\}$}
-\STATE {}
+%\STATE {}
 		
 \STATE {//Choose action $\bA_t$ using UCBs $\bU_t$}
 \STATE {$\bA_t=(\ba_1^t,...,\ba_{\abs{\bA_t}}^t) \leftarrow \argmax_{A \in \cS} f(A, \bU_t)$}
 \STATE {Play $\bA_t$ and observe $\bO_t, \bw_t(\ba_k^t), k\in[\bO_t]$}
-\STATE {}
+%\STATE {}
 
 \STATE {//Update statistics}
 \STATE {$\bV_{t} \leftarrow \bV_{t-1} + \sum_{k=1}^{\bO_t} \gamma_k^2 x_{t, \ba_k^t}x_{t, \ba_k^t}^{\top}$}
