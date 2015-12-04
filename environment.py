@@ -16,6 +16,8 @@ from functools import reduce
 import colorama
 colorama.init()
 
+from movielens import contextual_movielens_rng
+
 def red(s):
     return(colorama.Fore.RED + s.__str__() + colorama.Fore.WHITE)
 
@@ -71,7 +73,10 @@ def contextual_full_monkey(s=contextual_monkey_rng()):
     logger.info('Initializing environment "Contextual Full Monkey" complete')
     return environment, ucb_settings(arms=s.arms, L=s.L, K=s.K, d=s.d, gamma=s.gamma, theta=s.theta)
 
-def movielens(candidates, userno=1):
+def contextual_cascading_movielens(s=contextual_movielens_rng()):
+    pass
+
+def movielens_dep(candidates, userno=1):
     logger.info('Initializing environment "Movielens"')
     records = {}
     with open('ratings.csv') as fp:
