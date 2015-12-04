@@ -145,16 +145,14 @@ The purpose of this document is to provide both the basic paper template and sub
 
 We formulate the problem of {\em contextual combinatorial cascading bandit} as follows. Suppose we have a finite set of $L$ ground items,  $E=\{1,...,L\}$, also referred to as {\em base arms}. 
 Let $\prod^k=\{(a_1,...,a_k): a_1,...,a_k \in E, a_i \neq a_j \text{ for any } i \neq j\}$ be the set of all $k$-tuples of distinct items from $E$. We also refer to each of such tuples as an {\em action}.
-Let $\cS \subseteq \cup_{k=1}^K \prod^{k}$ be the set of feasible actions with length no more than $K$. As a convention, we use boldface symbols to represent all random variables.
+Let $\cS \subseteq \cup_{k=1}^K \prod^{k}$ be the set of feasible actions with length no more than $K$. 
+As a convention, we always use boldface symbols to represent random variables.
 
 At time $t$, feature vectors $x_{t,a} \in \RR^{d \times 1}$ with $\norm{x_{t,a}}_2 \leq 1$ for every base arm $a \in E$ are revealed to the learning agent; the feature vectors combine both the information of the user and the corresponding base arm. Then the learning agent recommends a feasible action $\bA_t=(\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t) \in \cS$ to the user. 
-\wei{Why using $\ba_{1}^t$, not $a_1^t$?} \shuai{I think $a_1^t$ is a random variable because $\bA_t$ is random. Is it making sense?}
 Starting from the first item, the user checks the items one by one. The checking process stops if the user clicks on one item or has checked all items without clicking anyone. We use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ as the {\em weight} of base arm $a$ at time $t$ to indicate whether the user has clicked on $a$ or not. 
 
-Let $\cH_t$ denote all history before the learning agent chooses action at time $t$; $\cH_t$ contains all information and observations at time $s < t$ and context information at time $t$. Given history $\cH_t$, we assume $\bw_{t,a}$'s are mutually independent and satisfy
-\wei{Is this given $x_{t,a}$ accurate? $x_{t,a}$  is not a probabilistic event. Also, are we assuming $\bw_{t,a}$'s are
-		also independent of all other events, such as the event before time $t$? We should make it clear.
-Perhaps we should put the history definition here?}
+Let $\cH_t$ denote the history before the learning agent chooses action at time $t$.
+Thus $\cH_t$ contains all information and observations at time $s < t$ and context information at time $t$. Given history $\cH_t$, we assume $\bw_{t,a}$'s are mutually independent and satisfy
 \begin{equation}
 \label{eq:expectation}
 \EE[\bw_{t,a} | \cH_t] = \theta_{\ast}^{\top} x_{t,a},
@@ -170,6 +168,8 @@ $$
 \bO_t = \abs{\bA_t}, \text{ if }\bw_t(\ba_j^t) = 0, ~~ \forall\, j \leq \abs{\bA_t}.
 $$
 At the end of every time $t$, the agent observes the first $\bO_t$ items of $\bA_t$. We say that item $a$ is {\it observed} if $a = \ba_k^t$ for some $k \leq \bO_t$. 
+Thus, $\cH_t$ consists of $\{x_s, \bA_s = (\ba_{1}^s,...,\ba_{\abs{\bA_s}}^s), \bO_s, \bw_s(\ba_k^s),x_t 
+	\mid  k \in[\bO_s], 1 \le s<t \}$.
 
 The agent receives some reward if the user clicks on some item. Suppose we consider the position discount: if the user clicks on the $k$-th item, then the learning agent receives reward $0 \leq \gamma_k \leq 1$. Usually the importance of the positions is decreasing: the first position is most important. So it is a reasonable assumption that
 $$
@@ -245,7 +245,9 @@ where $R_{\wedge}(t, \bA_t) = f_{\wedge, t}^{\ast} - f_{\wedge}(\bA_t, \theta_{\
 
 \subsection{Algorithm}
 	
-Because $\cH_t$ denotes all history before time $t$ and context information of time $t$, $\cH_t$ consists of $\{x_s, \bA_s = (\ba_{1}^s,...,\ba_{\abs{\bA_s}}^s), \bO_s, \bw_s(\ba_k^s), k \in[\bO_s], s<t, x_t \}$ and define $\EE_t[\cdot] = \EE[\cdot | \cH_t]$. Here we abuse the notation $\abs{\bA_s}$ to denote the number of base arms in the action $\bA_s$. By Equation \eqref{eq:expectation}, we have 
+At time $t$, we denote $\EE_t[\cdot] = \EE[\cdot | \cH_t]$, where $\cH_t$ is the history a time $t$ before the learning agent
+	chooses her action. 
+By Equation \eqref{eq:expectation}, we have 
 $$
 \EE[(\gamma_k \bw_{s,\ba_k^s}) | \cH_{s}] = \theta_*^{\top} (\gamma_k x_{s,\ba_k^s}).
 $$
@@ -261,7 +263,8 @@ where $\bX_t \in \RR^{(\sum_{s=1}^{t}\bO_s) \times d}$ is the matrix whose rows 
 $$
 \bV_t = \bX_t^{\top} \bX_t + \lambda I = \lambda I + \sum_{s=1}^{t} \sum_{k=1}^{\bO_s} \gamma_k^2 x_{s,\ba_k^s}x_{s,\ba_k^s}^{\top}.
 $$
-Then $\bV_t \in \RR^{d \times d}$ is a positive invertible matrix. In the following, we will mainly use notations for disjunctive objective when the two cases are similar.
+Then $\bV_t \in \RR^{d \times d}$ is a positive invertible matrix. 
+%In the following, we will mainly use notations for disjunctive objective when the two cases are similar.
 
 Next we build on a good estimate of differences between $\hat{\theta}_t$ and $\theta_*$ by Theorem 2 in \cite{abbasi2011improved}, which states the following results.
 	
@@ -269,7 +272,7 @@ Next we build on a good estimate of differences between $\hat{\theta}_t$ and $\t
 \label{thm:theta_estimate}
 Let 
 $$
-\beta_{t}(\delta) = \sqrt{\log(\det(\bV_{t})) + 2 \log(\frac{1}{\delta})} + \sqrt{\lambda}.
+\beta_{t}(\delta) = \sqrt{\log(\det(\bV_{t})) + 2 \log\left(\frac{1}{\delta}\right)} + \sqrt{\lambda}.
 $$
 Then for any $\delta > 0$, with probability at least $1 - \delta$, for all $t > 0$, we have
 \begin{equation}
