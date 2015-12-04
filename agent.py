@@ -82,7 +82,7 @@ def monkey(candidates, K=8, T=150000, verbose=False):
                     print('Agent: Score={0}/{1}'.format(score, t))
     return agent
 
-def contextual_cascading_monkey(e, s, T=10000):
+def contextual_cascading_monkey(e, s, T):
     score = [0]
     for t in range(1, T):
         _ = e()
@@ -94,7 +94,23 @@ def contextual_cascading_monkey(e, s, T=10000):
 
 contextual_full_monkey = contextual_cascading_monkey
 
-def contextual_cascading_sherry(e, s, T=10000):
+def absolute_cascading_ucb(e, s, T):
+    score = [0]
+    W = {arm:0.5 for arm in s.arms}
+    b = {arm:1 for arm in s.arms}
+    for t in range(1, T):
+        _ = e()
+        U = {arm:W[arm] + np.sqrt(1.5 * np.log(t) / b[arm]) for arm in s.arms}
+        recc = [p[1] for p in heapq.nlargest(s.K, [(U[arm], arm) for arm in s.arms])]
+        r, c = e(recc)
+        for k in range(min(s.K, c+1)):
+            W[recc[k]] = ((b[recc[k]]) * W[recc[k]] + ((k == c) ^ s.disj)) / (b[recc[k]] + 1)
+            b[recc[k]] += 1
+        score.append(score[-1] + r)
+    logger.info('Absolute play score {0}/{1}'.format(score[-1], T))
+    return score, 0
+
+def contextual_cascading_sherry(e, s, T):
     delta = 0.9
     lamb = 0.1
     theta = np.zeros(s.d)
@@ -119,7 +135,7 @@ def contextual_cascading_sherry(e, s, T=10000):
     logger.info('theta cosine similarity {0}'.format(1 - cosine(s.theta, theta)))
     return score, 1 - cosine(s.theta, theta)
 
-def contextual_full_lijing(e, s, T=10000):
+def contextual_full_lijing(e, s, T):
     delta = 0.9
     lamb = 0.1
     theta = np.zeros(s.d)
@@ -148,8 +164,9 @@ def flowtest():
     exploit2, explore2 = contextual_cascading_monkey(*contextual_cascading_monkey_environment(s), T=T)
     exploit3, explore3 = contextual_full_monkey(*contextual_full_monkey_environment(s), T=T)
     exploit4, explore4 = contextual_full_lijing(*contextual_full_monkey_environment(s), T=T)
+    exploit5, explore5 = absolute_cascading_ucb(*contextual_cascading_monkey_environment(s), T=T)
     plt.plot(range(T), exploit1, 'r--', range(T), exploit2, 'r--', range(T), exploit4, 'b--')
-    plt.show()
+    #plt.show()
 
 T = 10000
 s = contextual_monkey_rng()
