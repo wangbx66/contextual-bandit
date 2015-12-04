@@ -20,7 +20,7 @@ def red(s):
     return(colorama.Fore.RED + s.__str__() + colorama.Fore.WHITE)
 
 def uni(x):
-    return x/np.sqrt((x*x).sum())
+    return x/np.sqrt(x.dot(x))
 
 class ucb_settings:
     def __init__(self, **s):
@@ -29,28 +29,31 @@ class ucb_settings:
     def __str__(self):
         return '\n'.join([str(k) + ' ' + str(v) for k, v in self.__dict__.items()])
 
-def contextual_cascading_monkey(L=20, K=4, d=10, gamma=0.95, eps=0.1, v=0.35, disj=False):
-    logger.info('Initializing environment "Monkey Contextual"')
-    arms = [idx for idx in range(L)]
+def contextual_monkey_rng(L=20, d=10, v=0.35):
+    arms = list(range(L))
     x = {arm:np.random.uniform(0, 1, d) for arm in arms}
     theta = v * uni(np.random.uniform(0, 1, d))
-    xt = {arm:x[arm] for arm in x}
+    return ucb_settings(arms=arms, x=x, theta=theta, d=d)
+
+def contextual_cascading_monkey(s=contextual_monkey_rng(), K=4, gamma=0.95, eps=0.1, v=0.35, disj=False):
+    logger.info('Initializing environment "Monkey Contextual"')
+    xt = {arm:s.x[arm] for arm in s.x}
     def environment(recommend=None):
         if recommend == None:
             for arm in xt:
-                xt[arm] = uni(x[arm] + np.random.uniform(-v, v, d))
+                xt[arm] = uni(s.x[arm] + np.random.uniform(-v, v, s.d))
             return xt
         else:
             assert(len(recommend) <= K)
-            print(sorted([theta.dot(xt[arm]) for arm in arms])[::-1])
-            print(red([theta.dot(xt[arm]) for arm in recommend]))
+            #print(sorted([s.theta.dot(xt[arm]) for arm in s.arms])[::-1])
+            #print(red([s.theta.dot(xt[arm]) for arm in recommend]))
             for c, arm in enumerate(recommend): 
-                p = theta.dot(xt[arm]) + np.random.normal(0, eps)
+                p = s.theta.dot(xt[arm]) + np.random.normal(0, eps)
                 if (np.random.uniform(0, 1) < p) ^ disj:
                     return gamma ** c * int(not disj), c
             return int(disj), len(recommend)
     logger.info('Initialized environment "Monkey Contextual"')
-    return environment, ucb_settings(arms=arms, K=K, d=d, gamma=gamma, theta=theta)
+    return environment, ucb_settings(arms=s.arms, K=K, d=s.d, gamma=gamma, theta=s.theta)
 
 def movielens(candidates, userno=1):
     logger.info('Initializing environment "Movielens"')

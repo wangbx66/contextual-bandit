@@ -78,20 +78,16 @@ def monkey(candidates, K=8, T=150000, verbose=False):
                     print('Agent: Score={0}/{1}'.format(score, t))
     return agent
 
-def contextual_cascading_monkey(T=100000):
-    def agent(environment):
-        e, s = environment
-        score = 0
-        for t in range(1, T):
-            recc = random.sample(s.arms, s.K)
-            r, _ = e(recc)
-            score += r
-            if t % 10000 == 0:
-                print('Agent: Score={0}/{1}'.format(score, t))
-    return agent
-        
-def contextual_cascading_sherry(environment, T=100000):
-    e, s = environment()
+def contextual_cascading_monkey(e, s, T=10000):
+    score = [0]
+    for t in range(1, T):
+        _ = e()
+        recc = random.sample(s.arms, s.K)
+        r, _ = e(recc)
+        score.append(score[-1] + r)
+    return score, 0
+
+def contextual_cascading_sherry(e, s, T=10000):
     delta = 0.9
     lamb = 0.1
     theta = np.zeros(s.d)
@@ -103,7 +99,7 @@ def contextual_cascading_sherry(environment, T=100000):
     score = [0]
     for i in range (1, T):
         x = e()
-        U = {arm:min(theta.dot(x[arm]) + beta * x[arm].dot(np.linalg.inv(V)).dot(x[arm]), 1) for arm in s.arms}
+        U = {arm:theta.dot(x[arm]) + beta * x[arm].dot(np.linalg.inv(V)).dot(x[arm]) for arm in s.arms}
         recc = [p[1] for p in heapq.nlargest(s.K, [(U[arm], arm) for arm in s.arms])]
         r, c = e(recc)
         V += sum([s.gamma ** (2*k) * np.outer(x[recc[k]], x[recc[k]]) for k in range(min(s.K, c+1))])
@@ -112,10 +108,15 @@ def contextual_cascading_sherry(environment, T=100000):
         theta = np.linalg.inv(X.T.dot(X) + lamb * np.eye(s.d)).dot(X.T.dot(Y))
         beta = np.sqrt(np.log(np.linalg.det(V))- ldV - 2 * np.log(delta)) + np.sqrt(lamb)
         score.append(score[-1] + r)
-    return score, cosine(s.theta, theta) 
+    return score, 1 - cosine(s.theta, theta) 
 
-from environment import contextual_cascading_monkey
-environment = contextual_cascading_monkey
-agent = contextual_cascading_sherry
-exploit, explore = agent(environment)
-
+T = 10000
+from environment import contextual_cascading_monkey as contextual_cascading_monkey_environment
+from environment import contextual_monkey_rng
+s = contextual_monkey_rng()
+exploit1, explore1 = contextual_cascading_sherry(*contextual_cascading_monkey_environment(s), T=T)
+print('=========')
+exploit2, explore2 = contextual_cascading_monkey(*contextual_cascading_monkey_environment(s), T=T)
+print(explore1, explore2)
+plt.plot(range(T), exploit1, 'r--', range(T), exploit2, 'b--')
+plt.show()
