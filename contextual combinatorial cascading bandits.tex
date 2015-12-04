@@ -197,7 +197,7 @@ R(T) = \EE[\sum_{t=1}^T R(t, \bA_t)].
 $$
 where $R(t, \bA_t) = f_t^{\ast} - f(\bA_t, \theta_{\ast}^{\top}x_t)$.
 
-The above formulation is on disjuctive objective, that is, at a time step the agent stops as soon as she reveals a base arm at a position $k$ in the sequence with weight $1$ and she receives reward $\gamma_k$ as the result. Similarly, we could also consider the case of conjunctive objective. We also use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ to indicate the weight of item $a$ at time $t$ satisfying Equation \eqref{eq:expectation}). The learning agent observes all items until the first one with weight $0$. Suppose we also consider partial reward: if the $k$-th item is the first item with weight $0$, then the learning agent receives reward $\gamma_k'$; if all items have weight $1$, the learning agent receives reward $1$. The more items the learning agent reveals, the more reward the agent should receive. It is reasonable to assume that
+The above formulation is on the disjunctive objective, that is, at a time step the agent stops as soon as she reveals a base arm at a position $k$ in the sequence with weight $1$ and she receives reward $\gamma_k$ as the result. Similarly, we could also consider the case of conjunctive objective. We also use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ to indicate the weight of item $a$ at time $t$ satisfying Equation \eqref{eq:expectation}). The learning agent observes all items until the first one with weight $0$. Suppose we also consider partial reward: if the $k$-th item is the first item with weight $0$, then the learning agent receives reward $\gamma_k'$; if all items have weight $1$, the learning agent receives reward $1$. The more items the learning agent reveals, the more reward the agent should receive. It is reasonable to assume that
 $$
 0 = \gamma'_1 \leq \gamma'_2 \leq \cdots \leq \gamma'_K \leq 1.
 $$
@@ -264,7 +264,7 @@ $$
 \bV_t = \bX_t^{\top} \bX_t + \lambda I = \lambda I + \sum_{s=1}^{t} \sum_{k=1}^{\bO_s} \gamma_k^2 x_{s,\ba_k^s}x_{s,\ba_k^s}^{\top}.
 $$
 Then $\bV_t \in \RR^{d \times d}$ is a positive invertible matrix. 
-%In the following, we will mainly use notations for disjunctive objective when the two cases are similar.
+In the following, we will mainly use notations for the disjunctive objective when the two cases are similar.
 
 Next we build on a good estimate of differences between $\hat{\theta}_t$ and $\theta_*$ by Theorem 2 in \cite{abbasi2011improved}, which states the following results.
 	
@@ -301,15 +301,19 @@ $$
 \end{align*}
 \end{proof}
 
-Our proposed algorithm, ConComCascade, is described in Algorithm \ref{alg:ConComCascade}. First, it computes the upper confidence bounds (UCBs) $\bU_t \in [0,1]^{E}$ on the expected weights of all base arms in $E$. Second, it recommends an action $\bA_t$ by the offline oracle with estimated weights $\bU_t$. Third, play $\bA_t$ and observes all feedback of base arms until first $0$ weight come out; the learning agent observes $\bO_t$ base arms and $\bw_t(\ba_k^t), k \in [\bO_t]$, where 
+Our proposed algorithm, ConComCascade, is described in Algorithm \ref{alg:ConComCascade}. 
+First, the learning agent 
+	computes the upper confidence bounds (UCBs) $\bU_t \in [0,1]^{E}$ on the expected weights of all base arms in $E$. 
+Second, she uses the computed UCBs $\bU_t$ to select an action $\bA_t$. 
+Third, she plays $\bA_t$ and observes all feedback of base arms until first $0$ weight come out; the learning agent observes $\bO_t$ base arms and $\bw_t(\ba_k^t), k \in [\bO_t]$, where 
 $$
 \bw_t(\ba_{k}^t) = \begin{cases} 0, ~~k < \bO_t\\ 1, ~~k = \bO_t\end{cases}
 $$ 
 or
 $$
-\bw_t(\ba_k^t) = 1, k \leq \bO_t = \abs{\bA_t}.
+\bw_t(\ba_k^t) = 0, k \leq \bO_t = \abs{\bA_t}.
 $$
-Then, the learning agent update $\bV_t, \bX_t, \bY_t$ in order to get a newer estimate $\hat{\theta}_t$ of $\theta_*$ and new confidence radius $\beta_t(\delta)$. In this part, we use the notation $[A; B]$ to denote the matrix obtained by stack A and B vertically like
+Then, the learning agent updates $\bV_t, \bX_t, \bY_t$ in order to get a newer estimate $\hat{\theta}_t$ of $\theta_*$ and new confidence radius $\beta_t(\delta)$. In this part, we use the notation $[A; B]$ to denote the matrix obtained by stacking A and B vertically like
  $\begin{pmatrix} A\\ B\end{pmatrix}$.
 
 \begin{algorithm}
@@ -338,8 +342,8 @@ Then, the learning agent update $\bV_t, \bX_t, \bY_t$ in order to get a newer es
 
 \STATE {//Update statistics}
 \STATE {$\bV_{t} \leftarrow \bV_{t-1} + \sum_{k=1}^{\bO_t} \gamma_k^2 x_{t, \ba_k^t}x_{t, \ba_k^t}^{\top}$}
-\STATE {$\bX_t \leftarrow [\bX_{t-1}; ~\gamma_1' x_{t, \ba_1^t}^{\top};  ~\ldots; ~\gamma_{\bO_t}' x_{t, \ba_{\bO_t}^t}^{\top}]$}
-\STATE {$\bY_t \leftarrow [\bY_{t-1}; ~\gamma_1' \bw(\ba_1^t); ~\ldots; ~\gamma_{\bO_t}' \bw_t(\ba_{\bO_t}^t)]$}
+\STATE {$\bX_t \leftarrow [\bX_{t-1}; ~\gamma_1 x_{t, \ba_1^t}^{\top};  ~\ldots; ~\gamma_{\bO_t} x_{t, \ba_{\bO_t}^t}^{\top}]$}
+\STATE {$\bY_t \leftarrow [\bY_{t-1}; ~\gamma_1 \bw(\ba_1^t); ~\ldots; ~\gamma_{\bO_t} \bw_t(\ba_{\bO_t}^t)]$}
 \STATE {$\hat{\theta}_t \leftarrow (\bX_t^\top \bX_t + \lambda I)^{-1} \bX_{t}^\top \bY_t$}
 \STATE {$\beta_{t}(\delta) \leftarrow \sqrt{\log(\det(\bV_{t})) + 2 \log(\frac{1}{\delta})} + \sqrt{\lambda}$}
 			
