@@ -284,7 +284,7 @@ Then for any $\delta > 0$, with probability at least $1 - \delta$, for all $t > 
 This theorem states that with high probability, the estimate $\hat{\theta}$ lies in the ellipsoid centered at $\theta_*$  with confidence radius $\beta_t(\delta)$ under $\bV_t$ norm. Building on this, we can define an upper confidence bound of the expected weight of base arm $a$ by
 \begin{equation}
 \label{eq:defU}
-\bU_t(a) = \min\{\hat{\theta}_{t-1}^{\top}x_{t,a} + \beta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}, 1\}.
+\bU_t(a) = \min\left\{\hat{\theta}_{t-1}^{\top}x_{t,a} + \beta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}, 1 \right\}.
 \end{equation}
 
 The fact that $\bU_t(a)$ is an upper confidence bound of expected weight $\theta_*^{\top}x_{t,a}$ is proved in the following lemma.
@@ -366,7 +366,8 @@ Let $p_{t, A}$ (resp., $p_{\wedge, t, A}$) be the probability that all base arms
 &p_{t, A} = \prod_{k=1}^{\abs{A}-1} (1 - \theta_{\ast}^{\top} x_{t, a_k^t}),\\
 &p_{\wedge, t, A} = \prod_{k=1}^{\abs{A}-1} (\theta_{\ast}^{\top} x_{t, a_k^t}).
 \end{align*}
-We also define $p^* = \min_{1 \leq t \leq T} \min_{A \in \cS} ~ p_{t, A}$ to be the minimal probability that an action could have all base arms observed under the 
+We also define $p^* = \min_{1 \leq t \leq T} \min_{A \in \cS} ~ p_{t, A}$ to be the minimal probability over all time 
+	that an action could have all base arms observed under the 
 disjunctive objective. The following is the main theorem on the regret achieved by
 	our C$^3$-UCB algorithm, for both the disjunctive and conjunctive objectives.
 \begin{theorem}
@@ -376,27 +377,27 @@ $\gamma_k' = 1 - \gamma_k, \gamma'_K \leq \frac{1}{4}f_{\wedge}^{\ast}$.
 Let regularization parameter $\lambda$ satisfy $\lambda \geq C_\gamma$,
 	where $C_\gamma = \sum_{k=1}^{K} \gamma_k^2$. 
 Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regrets of our algorithm, C$^3$-UCB for both the conjunctive and disjunctive objectives, satisfy
-\begin{equation}
-\begin{split}
-R(T) &\le \frac{\sqrt{2}}{p^*} \sqrt{TKd\log(\lambda + C_\gamma T/d)}  \\
-&\qquad \cdot \left(\sqrt{d\log(\lambda + C_\gamma T/d) + 2\log\left(\frac{1}{\delta}\right)} + \sqrt{\lambda}\right) \\
-&=O(\frac{d}{p^*}\log(T)\sqrt{TK}),
-\end{split}
-\end{equation}
-\begin{equation}
-\begin{split}
-R_{\wedge}(T) &\le \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \sqrt{TKd\log(\lambda + C_\gamma T/d)} \\
-&\qquad \cdot \left(\sqrt{d\log(\lambda + C_\gamma T/d) + 2\log\left(\frac{1}{\delta}\right)} + \sqrt{\lambda}\right)\\
-&=O(\frac{d}{f_{\wedge}^{\ast}}\log(T)\sqrt{TK}).
-\end{split}
-\end{equation}
+\begin{align}
+R(T) &\le \frac{\sqrt{2}}{p^*} \sqrt{TKd\log(\lambda + C_\gamma T/d)}  \nonumber \\
+&\qquad \cdot \left(\sqrt{d\log(\lambda + C_\gamma T/d) + 2\log\left(\frac{1}{\delta}\right)} + \sqrt{\lambda}\right) \nonumber \\
+&=O\left(\frac{d}{p^*} \sqrt{TK} \log T\right),
+\end{align}
+\begin{align}
+R_{\wedge}(T) &\le \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \sqrt{TKd\log(\lambda + C_\gamma T/d)} \nonumber \\
+&\qquad \cdot \left(\sqrt{d\log(\lambda + C_\gamma T/d) + 2\log\left(\frac{1}{\delta}\right)} + \sqrt{\lambda}\right) \nonumber \\
+&=O\left(\frac{d}{f_{\wedge}^{\ast}}\sqrt{TK} \log T\right).
+\end{align}
 %where
 %\begin{align*}
 %C_\gamma = \sum_{k=1}^{K} \gamma_k^2 = \sum_{k=1}^{K} (1 - \gamma_k')^2 \in [1, K].
 %\end{align*}
 \end{theorem}
 
+\wei{Is the $\log$ in the above theorem with base $2$? 
+	Other UCB regret bounds usually has $\ln$. Please double check if here
+	indeed we use $\log$ of base 2. }
 To prove Theorem \ref{thm:main}, we could start from estimating $\EE[\Delta_{t, \bA_t}|\cH_t]$ for every time $t$. In fact, we can derive the following lemma.
+\wei{I did not see $\Delta_{t,\bA_t}$ defined before.}
 \begin{lemma}
 \label{lem:DeltaEstimate}
 For any time $t$ and $A = (a_1, \ldots, a_{\abs{A}})$, if $f(A_t^*, \bU_t) \leq f(A, \bU_t)$, then we have
