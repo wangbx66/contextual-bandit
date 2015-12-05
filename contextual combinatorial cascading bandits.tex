@@ -302,7 +302,7 @@ $$
 \end{align*}
 \end{proof}
 
-Our proposed algorithm, ConComCascade, is described in Algorithm \ref{alg:ConComCascade}. 
+Our proposed algorithm, C$^3$-UCB, is described in Algorithm \ref{alg:ConComCascade}. 
 First, the learning agent 
 	computes the upper confidence bounds (UCBs) $\bU_t \in [0,1]^{E}$ on the expected weights of all base arms in $E$. 
 Second, she uses the computed UCBs $\bU_t$ to select an action $\bA_t$. 
@@ -318,7 +318,7 @@ Then, the learning agent updates $\bV_t, \bX_t, \bY_t$ in order to get a newer e
  $\begin{pmatrix} A\\ B\end{pmatrix}$.
 
 \begin{algorithm}
-\caption{ConComCascade}
+\caption{C$^3$-UCB}
 \label{alg:ConComCascade}
 \begin{algorithmic}[1]
 \STATE {//Initialization}
@@ -360,35 +360,38 @@ To state our main theorem, we need some definitions. Let
 $$
 f_{\wedge}^* = \max_{1 \leq t \leq T} f_{\wedge, t}^{\ast}
 $$
-denote the best expected reward in all time under the conjunctive objective and let $p_{t, \bA_t}$ (resp., $p_{\wedge, t, \bA_t}$) are probabilities that all base arms of $A = (a_1, \ldots, a_{\abs{A}})$ have been observed under disjunctive objective(resp., conjunctive), that is 
+denote the best expected reward of all time under the conjunctive objective.
+Let $p_{t, A}$ (resp., $p_{\wedge, t, A}$) be the probability that all base arms of $A = (a_1, \ldots, a_{\abs{A}})$ have been observed under the disjunctive objective (resp., conjunctive objective) when under the context of time $t$, that is 
 \begin{align*}
 &p_{t, A} = \prod_{k=1}^{\abs{A}-1} (1 - \theta_{\ast}^{\top} x_{t, a_k^t}),\\
 &p_{\wedge, t, A} = \prod_{k=1}^{\abs{A}-1} (\theta_{\ast}^{\top} x_{t, a_k^t}).
 \end{align*}
-We also define $p^* = \min_{1 \leq t \leq T} \min_{A \in \cS} ~ p_{t, A}$ to be the minimal probability that an action could have all base arms observed under disjunctive case. Here is our main theorem.
+We also define $p^* = \min_{1 \leq t \leq T} \min_{A \in \cS} ~ p_{t, A}$ to be the minimal probability that an action could have all base arms observed under the 
+disjunctive objective. The following is the main theorem on the regret achieved by
+	our C$^3$-UCB algorithm, for both the disjunctive and conjunctive objectives.
 \begin{theorem}
 \label{thm:main}
 Suppose $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_{K} \geq 0$ and 
-$$
-\gamma_k' = 1 - \gamma_k, \gamma'_K \leq \frac{1}{4}f_{\wedge}^{\ast}.
-$$
-Let regularization parameter satisfy $\lambda \geq C_\gamma$. Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regrets of our algorithm, {\em ConComCascade} for both conjunctive and disjunctive objectives, satisfy
+$\gamma_k' = 1 - \gamma_k, \gamma'_K \leq \frac{1}{4}f_{\wedge}^{\ast}$.
+Let regularization parameter $\lambda$ satisfy $\lambda \geq C_\gamma$,
+	where $C_\gamma = \sum_{k=1}^{K} \gamma_k^2$. 
+Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regrets of our algorithm, C$^3$-UCB for both the conjunctive and disjunctive objectives, satisfy
 \begin{equation}
 \begin{split}
-&R(T) = \frac{\sqrt{2}}{p^*} (\sqrt{d\log(\lambda + C_\gamma T/d) + 2\log(\frac{1}{\delta})} + \sqrt{\lambda}) \\
-&\qquad \qquad \cdot \sqrt{TKd\log(\lambda + C_\gamma T/d)},
+&R(T) \le \frac{\sqrt{2}}{p^*} \sqrt{TKd\log(\lambda + C_\gamma T/d)}  \\
+&\qquad \qquad \cdot \left(\sqrt{d\log(\lambda + C_\gamma T/d) + 2\log\left(\frac{1}{\delta}\right)} + \sqrt{\lambda}\right),
 \end{split}
 \end{equation}
 \begin{equation}
 \begin{split}
-&R_{\wedge}(T) = \frac{\sqrt{128}}{f_{\wedge}^{\ast}} (\sqrt{d\log(\lambda + C_\gamma T/d) + 2\log(\frac{1}{\delta})} + \sqrt{\lambda})\\
-&\qquad \qquad \cdot \sqrt{TKd\log(\lambda + C_\gamma T/d)}.
+&R_{\wedge}(T) \le \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \sqrt{TKd\log(\lambda + C_\gamma T/d)} \\
+&\qquad \qquad \cdot \left(\sqrt{d\log(\lambda + C_\gamma T/d) + 2\log\left(\frac{1}{\delta}\right)} + \sqrt{\lambda}\right).
 \end{split}
 \end{equation}
-where
-\begin{align*}
-C_\gamma = \sum_{k=1}^{K} \gamma_k^2 = \sum_{k=1}^{K} (1 - \gamma_k')^2 \in [1, K].
-\end{align*}
+%where
+%\begin{align*}
+%C_\gamma = \sum_{k=1}^{K} \gamma_k^2 = \sum_{k=1}^{K} (1 - \gamma_k')^2 \in [1, K].
+%\end{align*}
 \end{theorem}
 
 To prove Theorem \ref{thm:main}, we could start from estimating $\EE[\Delta_{t, \bA_t}|\cH_t]$ for every time $t$. In fact, we can derive the following lemma.
