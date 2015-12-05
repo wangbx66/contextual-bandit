@@ -378,14 +378,16 @@ Let regularization parameter $\lambda$ satisfy $\lambda \geq C_\gamma$,
 Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regrets of our algorithm, C$^3$-UCB for both the conjunctive and disjunctive objectives, satisfy
 \begin{equation}
 \begin{split}
-&R(T) \le \frac{\sqrt{2}}{p^*} \sqrt{TKd\log(\lambda + C_\gamma T/d)}  \\
-&\qquad \qquad \cdot \left(\sqrt{d\log(\lambda + C_\gamma T/d) + 2\log\left(\frac{1}{\delta}\right)} + \sqrt{\lambda}\right),
+R(T) &\le \frac{\sqrt{2}}{p^*} \sqrt{TKd\log(\lambda + C_\gamma T/d)}  \\
+&\qquad \cdot \left(\sqrt{d\log(\lambda + C_\gamma T/d) + 2\log\left(\frac{1}{\delta}\right)} + \sqrt{\lambda}\right) \\
+&=O(\frac{d}{p^*}\log(T)\sqrt{TK}),
 \end{split}
 \end{equation}
 \begin{equation}
 \begin{split}
-&R_{\wedge}(T) \le \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \sqrt{TKd\log(\lambda + C_\gamma T/d)} \\
-&\qquad \qquad \cdot \left(\sqrt{d\log(\lambda + C_\gamma T/d) + 2\log\left(\frac{1}{\delta}\right)} + \sqrt{\lambda}\right).
+R_{\wedge}(T) &\le \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \sqrt{TKd\log(\lambda + C_\gamma T/d)} \\
+&\qquad \cdot \left(\sqrt{d\log(\lambda + C_\gamma T/d) + 2\log\left(\frac{1}{\delta}\right)} + \sqrt{\lambda}\right)\\
+&=O(\frac{d}{f_{\wedge}^{\ast}}\log(T)\sqrt{TK}).
 \end{split}
 \end{equation}
 %where
@@ -604,7 +606,7 @@ If we have
 % \gamma_K \geq (1+\frac{1}{n_0})f^{\ast}, \qquad 
 % $$
 $$
-\gamma_K' \geq \frac{1}{4} f_{\wedge}^{\ast},
+\gamma_K' \le \frac{1}{4} f_{\wedge}^{\ast},
 $$
 then
 \begin{align*}
