@@ -272,7 +272,11 @@ Next we build on a good estimate of differences between $\hat{\theta}_t$ and $\t
 \label{thm:theta_estimate}
 Let 
 $$
-\beta_{t}(\delta) = \sqrt{\ln(\frac{\det(\bV_{t})}{\det(\lambda I)}) + 2 \ln\left(\frac{1}{\delta}\right)} + \sqrt{\lambda}.
+\beta_{t}(\delta) = \sqrt{\ln\left(\frac{\det(\bV_{t})}{\det(\lambda I)}\right) + 2 \ln\left(\frac{1}{\delta}\right)} + \sqrt{\lambda}.
+$$
+\wei{I thought the following is simpler. Should we use the following?}
+$$
+\beta_{t}(\delta) = \sqrt{\ln\left(\frac{\det(\bV_{t})}{\lambda^d \delta^2}\right)} + \sqrt{\lambda}.
 $$
 Then for any $\delta > 0$, with probability at least $1 - \delta$, for all $t > 0$, we have
 \begin{equation}
@@ -388,13 +392,7 @@ R_{\wedge}(T) &\le \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \sqrt{TKd\ln(1 + C_\gamm
 %\end{align*}
 \end{theorem}
 
-\wei{Is the $\log$ in the above theorem with base $2$? 
-	Other UCB regret bounds usually has $\ln$. Please double check if here
-	indeed we use $\log$ of base 2. }
-\shuai{The all $\log$'s have base e. I have changed them to be $\ln$.}
-To prove Theorem \ref{thm:main}, we could start from estimating $\EE[R{t, \bA_t}|\cH_t]$ for every time $t$. In fact, we can derive the following lemma.
-\wei{I did not see $\Delta_{t,\bA_t}$ defined before.}
-\shuai{Sorry. It should be $R(t, \bA_t)$ here. I have revised them all.}
+To prove Theorem \ref{thm:main}, we could start from estimating $\EE[R(t, \bA_t)|\cH_t]$ for every time $t$. In fact, we can derive the following lemma.
 \begin{lemma}
 \label{lem:DeltaEstimate}
 For any time $t$ and $A = (a_1, \ldots, a_{\abs{A}})$, if $f(A_t^*, \bU_t) \leq f(A, \bU_t)$, then we have
