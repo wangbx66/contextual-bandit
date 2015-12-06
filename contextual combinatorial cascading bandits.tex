@@ -145,7 +145,9 @@ The purpose of this document is to provide both the basic paper template and sub
 
 We formulate the problem of {\em contextual combinatorial cascading bandit} as follows. Suppose we have a finite set of $L$ ground items,  $E=\{1,...,L\}$, also referred to as {\em base arms}. 
 Let $\prod^k=\{(a_1,...,a_k): a_1,...,a_k \in E, a_i \neq a_j \text{ for any } i \neq j\}$ be the set of all $k$-tuples of distinct items from $E$. We also refer to each of such tuples as an {\em action}.
-Let $\cS \subseteq \cup_{k=1}^K \prod^{k}$ be the set of feasible actions with length no more than $K$. 
+Let $\prod^{\leq K}= \cup_{k=1}^K \prod^{k}$ denote set of all actions with length
+	at most $K$, and let $\cS \subseteq \prod^{\leq K}$ be the set of feasible actions with length no more than $K$. 
+
 As a convention, we always use boldface symbols to represent random variables.
 
 At time $t$, feature vectors $x_{t,a} \in \RR^{d \times 1}$ with $\norm{x_{t,a}}_2 \leq 1$ for every base arm $a \in E$ are revealed to the learning agent; the feature vectors combine both the information of the user and the corresponding base arm. Then the learning agent recommends a feasible action $\bA_t=(\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t) \in \cS$ to the user. 
@@ -182,10 +184,11 @@ $$
 where we use the notation that $\bigvee_{k=1}^n a_k = \max_{1 \leq k \leq n} a_k$. Notice that the order of $\bA_t$ affects both the feed back and the reward.
 
 Now let us introduce a function $f$ on $A = (a_1,...,a_{\abs{A}}) \in \cS, w = (w(1),...,w(L))$ by
-\begin{align*}
-&f : \cS \times [0,1]^E \to [0,1]\\
+\begin{align}
+&f : \cS \times [0,1]^E \to [0,1] \nonumber \\
 &f(A,w) = \sum_{k = 1}^{\abs{A}} \gamma_{k} \prod_{i=1}^{k-1} (1 - w(a_i)) w(a_k).
-\end{align*}
+	\label{eq:functionf}
+\end{align}
 Then we have $\br_t = f(\bA_t, \bw_t)$ and $\EE[\br_t] = f(\bA_t, \theta_{\ast}^{\top}x_t)$ where $x_t = (x_{t,1}, \cdots, x_{t,L}) \in \RR^{d \times L}$. Let 
 \begin{align*}
 A_t^{\ast} &= \argmax_{A\in \cS} f(A,\theta_{\ast}^{\top}x_t),\\
@@ -215,10 +218,12 @@ At the end of time $t$, the learning agent observes $\bO_{\wedge, t}, \bw_t(\ba_
 \end{align*}
 
 If we define a function $f_{\wedge}$ on $A = (a_1, \ldots, a_{\abs{A}}) \in \cS, w = (w(1), \ldots, w(L))$ by
-\begin{align*}
-&f_{\wedge} : \cS \times [0,1]^E \to [0,1]\\
-&f_{\wedge}(A,w) = \sum_{k = 1}^{\abs{A}} \gamma_k' (\prod_{i = 1}^{k - 1} w(a_i))(1 - w(a_k)) + \prod_{i=1}^{\abs{A}}w(a_i),
-\end{align*}
+\begin{align}
+&f_{\wedge} : \cS \times [0,1]^E \to [0,1] \nonumber \\
+&f_{\wedge}(A,w) = \sum_{k = 1}^{\abs{A}} \gamma_k' \prod_{i = 1}^{k - 1} w(a_i)
+ (1 - w(a_k)) + \prod_{i=1}^{\abs{A}}w(a_i),
+ \label{eq:functionfstar}
+\end{align}
 then we have $\br_{\wedge, t} = f_{\wedge}(\bA_t, \bw_t)$ and $\EE[\br_{\wedge, t}] = f_{\wedge}(\bA_t, \theta_{\ast}^{\top}x_t)$ where $x_t = (x_{t,1}, \cdots, x_{t,L}) \in \RR^{d \times L}$. To simplify notations, we assume 
 $$
 \gamma_k' = 1 - \gamma_k.
@@ -351,8 +356,7 @@ Then, the learning agent updates $\bV_t, \bX_t, \bY_t$ in order to get a newer e
 \STATE {$\bX_t \leftarrow [\bX_{t-1}; ~\gamma_1 x_{t, \ba_1^t}^{\top};  ~\ldots; ~\gamma_{\bO_t} x_{t, \ba_{\bO_t}^t}^{\top}]$}
 \STATE {$\bY_t \leftarrow [\bY_{t-1}; ~\gamma_1 \bw(\ba_1^t); ~\ldots; ~\gamma_{\bO_t} \bw_t(\ba_{\bO_t}^t)]$}
 \STATE {$\hat{\theta}_t \leftarrow (\bX_t^\top \bX_t + \lambda I)^{-1} \bX_{t}^\top \bY_t$}
-\STATE {$\beta_{t}(\delta) \leftarrow \sqrt{\ln(\det(\bV_{t})) + 2 \ln(\frac{1}{\delta})} + \sqrt{\lambda}$}
-			
+\STATE {$\beta_{t}(\delta) \leftarrow \sqrt{\ln(\det(\bV_{t})) + 2 \ln(\frac{1}{\delta})} + \sqrt{\lambda}$ \wei{This $\beta$ is different from what is defined in Theorem 4.1.}}
 \ENDFOR {~~$t$}
 \end{algorithmic}
 \end{algorithm}
@@ -392,6 +396,9 @@ R_{\wedge}(T) &\le \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \sqrt{TKd\ln(1 + C_\gamm
 %\end{align*}
 \end{theorem}
 
+\wei{I do not see the purpose of putting Lemma 4.4 and 4.5 in this section. Perhaps
+	they should all be moved to Section 4.3}
+
 To prove Theorem \ref{thm:main}, we could start from estimating $\EE[R(t, \bA_t)|\cH_t]$ for every time $t$. In fact, we can derive the following lemma.
 \begin{lemma}
 \label{lem:DeltaEstimate}
@@ -410,6 +417,8 @@ $$
 f(A_t^*, \bU_t) \leq f(\bA_t, \bU_t), ~~ f_{\wedge}(A_t^*, \bU_t) \leq f_{\wedge}(\bA_t, \bU_t).
 $$
 Then we can derive an estimate of $R(t, \bA_t)$ and $R_{\wedge}(t, \bA_t)$, however, in terms of all base arms in $\bA_t$. Only when the learning agent has observed all base arms of $\bA_t$, we can use such an estimate, which means we are able to estimate
+
+\wei{I do not understand the above paragraph and the formula below.}
 \begin{align*}
 &~~\EE_t[R(t, \bA_t)] \\
 &= \EE_t[R(t, \bA_t)(1/p_{t, \bA_t}) \bOne\{R(t, \bA_t) > 0, \bO_t \geq \abs{\bA_t}\}],\\
@@ -431,21 +440,25 @@ From this lemma, we can use the prefix $\bB_t$ to substitue $\bA_t$ because $p_{
 
 \subsection{Proofs}
 
+We first provide a basic property of functions $f$ and $f_{\wedge}$ as defined
+in~Eq.\eqref{eq:functionf} and \eqref{eq:functionfstar}.
 \begin{lemma}
 \label{lem:increasing} 
-Suppose $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$ and $0 \leq \gamma_1' \leq \cdots \leq \gamma_K' \leq 1$. Then $f(A, w)$ and $f_{\wedge}(A, w)$ are increasing with respect to $w$; equivalently, if $0 \leq w \leq w' \leq 1$ as column vectors in $\RR^L$, then for any $A \in \prod^{\leq K}(E)$, it holds that
+Suppose $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$ and $0 \leq \gamma_1' \leq \cdots \leq \gamma_K' \leq 1$. Then $f(A, w)$ and $f_{\wedge}(A, w)$ are increasing with respect to $w$; that is, if $0 \leq w \leq w' \leq 1$ as column vectors in $\RR^L$, then for any $A \in \prod^{\leq K}$, it holds that
 $$
 f(A, w) \leq f(A, w'), ~~ f_{\wedge}(A, w) \leq f_{\wedge}(A, w').
 $$
 \end{lemma}
 \begin{proof}
-It suffices to prove when $A = (1, \ldots, m)$, where $1 \leq m \leq K$. Because for $1 \leq k \leq m$,
+Without the loss of generality, we prove for the case
+	of $A = (1, \ldots, m)$, where $1 \leq m \leq K$. 
+First, for $1 \leq k \leq m$, we have
 \begin{align*}
 &\gamma_{k} - \sum_{i=k+1}^m \gamma_i \prod_{j = k + 1}^{i - 1} (1 - w_j') w_i'\\
 \geq &~\gamma_k [1 - \sum_{i=k+1}^m \prod_{j=k+1}^{i-1}(1 - w_j') w_i']\\
 \geq &~\gamma_{k} \cdot 0 = 0,
 \end{align*}
-then
+Then it implies that
 \begin{align*}
 &\gamma_k w_k + (1 - w_k)\sum_{i=k+1}^m \gamma_i \prod_{j=k+1}^{i-1}(1 - w_j') w_i'\\
 \leq &\gamma_k w_k' + (1 - w_k')\sum_{i=k+1}^m \gamma_i \prod_{j=k+1}^{i-1}(1 - w_j') w_i'\\
@@ -459,9 +472,17 @@ Therefore,
 &\qquad \cdot [\gamma_k w_k' + (1 - w_k')\sum_{i=k+1}^m \gamma_i \prod_{j=k+1}^{i-1}(1 - w_j') w_i']\\
 &=f(A; w_1, \ldots, w_{k-1}, w_{k}', \ldots, w_m').
 \end{align*}
-By letting $\gamma_k = 1 - \gamma_k'$ and the relation (\ref{eq:ConDisRelation}), the increasing property of $f_{\wedge}$ is obtained directly.
+By letting $\gamma_k = 1 - \gamma_k'$ and using the relation
+	in Eq. \eqref{eq:ConDisRelation}, the increasing property of $f_{\wedge}$ is obtained directly.
 \end{proof}
 
+The following lemma provides the relationship between an estimated mean vector and its
+	upper bound, in terms of their $f$ function values.
+\wei{The symbol here may need to be changed. $w_i$ coincides with weight $w_i$ before, 
+		and $p$ coincides with many related probability definition using $p$.
+	$w_i$ can be replaced with $u_i$ (standing for upper bound), 
+	$u_i$ can be replaced with $r_i$ (standing for radius), but not sure yet
+	about $p_i$.}
 \begin{lemma}
 \label{lem:estimateTech}
 Suppose $0 \leq \gamma_k, \gamma_k' \leq 1, k \in [K]$. Let $0 \leq p_1, \ldots, p_m \leq 1$, $u_1, \ldots, u_m \geq 0$ and $w_i = \min\{p_i + u_i, 1\}, 1 \leq i \leq m$. Then
