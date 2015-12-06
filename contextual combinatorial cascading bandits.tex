@@ -398,6 +398,7 @@ R_{\wedge}(T) &\le \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \sqrt{TKd\ln(1 + C_\gamm
 
 \wei{I do not see the purpose of putting Lemma 4.4 and 4.5 in this section. Perhaps
 	they should all be moved to Section 4.3}
+\shuai{I think Section 4.3 will probably be put in the appendix. So I sketch a proof of main theorem here. If all the proofs will be kept, then we don't need Lemma 4.4 and 4.5 here.}
 
 To prove Theorem \ref{thm:main}, we could start from estimating $\EE[R(t, \bA_t)|\cH_t]$ for every time $t$. In fact, we can derive the following lemma.
 \begin{lemma}
@@ -419,8 +420,10 @@ $$
 Then we can derive an estimate of $R(t, \bA_t)$ and $R_{\wedge}(t, \bA_t)$, however, in terms of all base arms in $\bA_t$. Only when the learning agent has observed all base arms of $\bA_t$, we can use such an estimate, which means we are able to estimate
 
 \wei{I do not understand the above paragraph and the formula below.}
+\shuai{If we choose action of $\bA_t$ instead of $A_t^{\ast}$, then we can know the differece between their expected reward. But the regret is bounded by all base arms in $\bA_t$. Only the observed base arms can be estimated together. So we can only estimate the following formula. I rewrite the following formula and can explain to you later.}
 \begin{align*}
 &~~\EE_t[R(t, \bA_t)] \\
+&= \EE[R(t, \bA_t) \bOne\{R(t, \bA_t) > 0\} \EE[(1/p_{t, \bA_t}) \bOne\{\bO_t \geq \abs{\bA_t}\}|\bA_t] | \cH_t]\\
 &= \EE_t[R(t, \bA_t)(1/p_{t, \bA_t}) \bOne\{R(t, \bA_t) > 0, \bO_t \geq \abs{\bA_t}\}],\\
 &~~\EE_t[R_{\wedge}(t, \bA_t)] \\
 &= \EE_t[R_{\wedge}(t, \bA_t)(1/p_{\wedge, t, \bA_t}) \bOne\{R_{\wedge}(t, \bA_t) > 0, \bO_{\wedge, t} \geq \abs{\bA_t}\}].
@@ -483,35 +486,36 @@ The following lemma provides the relationship between an estimated mean vector a
 	$w_i$ can be replaced with $u_i$ (standing for upper bound), 
 	$u_i$ can be replaced with $r_i$ (standing for radius), but not sure yet
 	about $p_i$.}
+\shuai{Maybe we can replace $p_i$ by $w_i$ like the lemma above. I have changed accordingly.}
 \begin{lemma}
 \label{lem:estimateTech}
-Suppose $0 \leq \gamma_k, \gamma_k' \leq 1, k \in [K]$. Let $0 \leq p_1, \ldots, p_m \leq 1$, $u_1, \ldots, u_m \geq 0$ and $w_i = \min\{p_i + u_i, 1\}, 1 \leq i \leq m$. Then
+Suppose $0 \leq \gamma_k, \gamma_k' \leq 1, k \in [K]$. Let $0 \leq w_1, \ldots, w_m \leq 1$, $r_1, \ldots, r_m \geq 0$ and $u_i = \min\{w_i + r_i, 1\}, 1 \leq i \leq m$. Then
 \begin{align*}
-&f(A^{(m)}, w) \leq f(A^{(m)}, p) + \sum_{k=1}^{m} \gamma_k u_k,\\
-&f_{\wedge}(A^{(m)}, w) \leq f_{\wedge}(A^{(m)}, p) + \sum_{k=1}^{m} (1 - \gamma_k') u_k,
+&f(A^{(m)}, u) \leq f(A^{(m)}, w) + \sum_{k=1}^{m} \gamma_k r_k,\\
+&f_{\wedge}(A^{(m)}, u) \leq f_{\wedge}(A^{(m)}, w) + \sum_{k=1}^{m} (1 - \gamma_k') r_k,
 \end{align*}
-where $A^{(m)} = (1, 2, \ldots, m), w = (w_1, \ldots, w_m)$ and $p = (p_1, \ldots, p_m)$.
+where $A^{(m)} = (1, 2, \ldots, m), u = (u_1, \ldots, u_m)$ and $w = (w_1, \ldots, w_m)$.
 \end{lemma}
 \begin{proof}
 We prove this by induction. It holds obviously for $m = 1$.
 \begin{align*}
-&~~f(A^{(m+1)}, w)\\
-&= f(A^{(m)}, w) + \gamma_{m+1}\prod_{k=1}^m(1 - w_k) w_{m+1}\\
-&\leq f(A^{(m)}, w) +  \gamma_{m+1} \prod_{k=1}^m(1 - p_k) (p_{m+1} + u_{m+1})\\
-&\leq f(A^{(m)}, p) + \sum_{k=1}^m \gamma_k u_k \\
-&\qquad + \gamma_{m+1} \prod_{k=1}^m(1 - p_k) p_{m+1} + \gamma_{m+1} u_{m+1}\\
-&= f(A^{(m+1)}, p) + \sum_{k=1}^{m+1} \gamma_k u_k
+&~~f(A^{(m+1)}, u)\\
+&= f(A^{(m)}, u) + \gamma_{m+1}\prod_{k=1}^m(1 - u_k) u_{m+1}\\
+&\leq f(A^{(m)}, u) +  \gamma_{m+1} \prod_{k=1}^m(1 - w_k) (w_{m+1} + r_{m+1})\\
+&\leq f(A^{(m)}, w) + \sum_{k=1}^m \gamma_k r_k \\
+&\qquad + \gamma_{m+1} \prod_{k=1}^m(1 - w_k) w_{m+1} + \gamma_{m+1} r_{m+1}\\
+&= f(A^{(m+1)}, w) + \sum_{k=1}^{m+1} \gamma_k r_k
 \end{align*}
 \begin{align*}
-&~~f_{\wedge}(A^{(m+1)}, w) \\
-&= f_{\wedge}(A^{(m)}, w) -\prod_{k=1}^{m} w_k \\
-&\qquad+ \gamma_{m+1}' (\prod_{k=1}^{K} w_k) (1 - w_{K+1})+ \prod_{k=1}^{K+1} w_k\\
-&= f_{\wedge}(A^{(m)}, w) - (1 - \gamma_{m+1}') (\prod_{k=1}^{m} w_k) (1 - w_{m+1})\\
-&\leq f_{\wedge}(A^{(m)}, w) - (1 - \gamma_{m+1}') (\prod_{k=1}^{m} p_k) (1 - w_{m+1})\\
-&\leq f_{\wedge}(A^{(m)}, w) -(1 - \gamma_{m+1}') (\prod_{k=1}^{m} p_k)  (1 - p_{m+1} - u_{m+1})\\
-&\leq f_{\wedge}(A^{(m)}, p) +  \sum_{k=1}^{m} (1 - \gamma_k') u_k \\
-&\qquad - (1 - \gamma_{m+1}') (1 - p_{m+1}) \prod_{k=1}^{m} p_k + (1 - \gamma_{m+1}') u_{m+1}\\
-&\leq f_{\wedge}(A^{(m+1)}, p) + \sum_{k=1}^{m+1} (1 - \gamma_k') u_k
+&~~f_{\wedge}(A^{(m+1)}, u) \\
+&= f_{\wedge}(A^{(m)}, u) -\prod_{k=1}^{m} u_k \\
+&\qquad+ \gamma_{m+1}' (\prod_{k=1}^{K} u_k) (1 - u_{K+1})+ \prod_{k=1}^{K+1} u_k\\
+&= f_{\wedge}(A^{(m)}, u) - (1 - \gamma_{m+1}') (\prod_{k=1}^{m} u_k) (1 - u_{m+1})\\
+&\leq f_{\wedge}(A^{(m)}, u) - (1 - \gamma_{m+1}') (\prod_{k=1}^{m} w_k) (1 - u_{m+1})\\
+&\leq f_{\wedge}(A^{(m)}, u) -(1 - \gamma_{m+1}') (\prod_{k=1}^{m} w_k)  (1 - w_{m+1} - r_{m+1})\\
+&\leq f_{\wedge}(A^{(m)}, w) +  \sum_{k=1}^{m} (1 - \gamma_k') r_k \\
+&\qquad - (1 - \gamma_{m+1}') (1 - w_{m+1}) \prod_{k=1}^{m} w_k + (1 - \gamma_{m+1}') r_{m+1}\\
+&\leq f_{\wedge}(A^{(m+1)}, w) + \sum_{k=1}^{m+1} (1 - \gamma_k') r_k
 \end{align*}
 \end{proof}
 
