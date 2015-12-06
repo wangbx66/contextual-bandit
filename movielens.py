@@ -1,13 +1,16 @@
 import csv
-import time
 import random
 from itertools import chain
 
 import logging
+logger = logging.getLogger('Movielens')
 
 import numpy as np
 from scipy import sparse
 from scipy.sparse.linalg import svds
+
+from utils import ucb_settings
+from utils import overlap
 
 def movielens_data():
     fpr = open('ratings.csv')
@@ -18,19 +21,19 @@ def movielens_data():
     gt.__next__()
     return chain(gr, gt)
 
-def contextual_movielens_rng(L=None, portion=0.5, d=15, K=6, gamma=0.95, disj=False):
+def contextual_movielens_rng(L=None, portion=0.5, d=15, K=6, h=13500, gamma=0.95, disj=False):
     cox = []
     coy = []
     history = {}
     movies = {}
-    for idx, (user, movie, rate, timestamp) in enumerate(movielens_load()):
+    for idx, (user, movie, rate, timestamp) in enumerate(movielens_data()):
         user = int(user) - 1
         movie = int(movie) - 1
-        if movie in movies
+        if movie in movies:
             movies[movie] += 1
         else:
             movies[movie] = 1
-        if random.uniform(0,1) < portion:
+        if np.random.uniform(0,1) < portion:
             cox.append(user)
             coy.append(movie)
         else:
@@ -47,26 +50,10 @@ def contextual_movielens_rng(L=None, portion=0.5, d=15, K=6, gamma=0.95, disj=Fa
     V = VT.T
     for i in range(V.shape[0]):
         V[i] = V[i] / np.linalg.norm(V[i])
-    
+
     if L is None:
         L = len(movies)
-    selected_movies = [x[1] for x in sorted[(movies[movie], movie) for movie in movies][-L:]]
-    eligable_users = set(history.keys())
-print('#Total eligabli users = {0}'.format(len(eligable_users)))
-print('#Users participated ea/round = {0}'.format(1))
-user = random.sample(eligable_users, 1)
-def environment(*arg):
-    if len(arg) == 0:
-        user[0] = random.sample(eligable_users, 1)[0]
-        logger.debug('Random user {0}'.format(user))
-        return U[user[0]]
-    else:
-        recommend = arg[0]
-        movies = history[user[0]]
-        logger.debug('Received recommendation {0}'.format(recommend))
-        logger.debug('User ctr history {0}'.format(movies))
-        for idx, movie in enumerate(recommend):
-            if movie in movies:
-                return idx, gamma ** idx
-        return float('Inf'), 0
-logger.info('Initializing environment "Movielens" done')
+    selected_movies = set([x[1] for x in sorted([(movies[movie], movie) for movie in movies])[-L:]])
+    eligable_users = [x[1] for x in sorted([(overlap(history[user], selected_movies), user) for user in history])[-h:]]
+    logger.info('Initializing random settings "Contextual Movielens" complete')
+    return ucb_settings(L=L, d=d, K=K, gamma=gamma, disj=disj, users=eligable_users, arms=selected_movies, ctrh=history, U=U, V=V)

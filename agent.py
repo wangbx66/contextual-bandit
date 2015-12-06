@@ -1,21 +1,11 @@
-import math
-import csv
 import heapq
-
 import numpy as np
 from scipy.spatial.distance import cosine
 import matplotlib.pyplot as plt
 
-import time
 import random
-
 import logging
-logging.basicConfig(format='%(name)s-%(levelname)s: %(message)s', level=logging.INFO)
 logger = logging.getLogger('Agent')
-
-from environment import contextual_cascading_monkey as contextual_cascading_monkey_environment
-from environment import contextual_full_monkey as contextual_full_monkey_environment
-from environment import contextual_monkey_rng
 
 def movies_mix_cld_adt(L=200):
     children, adults = set(), set()
@@ -131,6 +121,7 @@ def contextual_cascading_sherry(e, s, T):
         theta = np.linalg.inv(X.T.dot(X) + lamb * np.eye(s.d)).dot(X.T.dot(Y))
         beta = np.sqrt(np.log(np.linalg.det(V))- ldV - 2 * np.log(delta)) + np.sqrt(lamb)
         score.append(score[-1] + r)
+        logger.info('Sherry play score {0}/{1}'.format(score[-1], t))
     logger.info('Sherry play score {0}/{1}'.format(score[-1], T))
     logger.info('theta cosine similarity {0}'.format(1 - cosine(s.theta, theta)))
     return score, 1 - cosine(s.theta, theta)
@@ -156,19 +147,3 @@ def contextual_full_lijing(e, s, T):
     logger.info('Lijing play score {0}/{1}'.format(score[-1], T))
     logger.info('theta cosine similarity {0}'.format(1 - cosine(s.theta, theta)))
     return score, 1 - cosine(s.theta, theta)
-
-def flowtest():
-    T = 10000
-    s = contextual_monkey_rng(L=20, d=10, h=0.75, K=4, gamma=0.95, eps=0.1, v=0.35, disj=True)
-    exploit1, explore1 = contextual_cascading_sherry(*contextual_cascading_monkey_environment(s), T=T)
-    exploit2, explore2 = contextual_cascading_monkey(*contextual_cascading_monkey_environment(s), T=T)
-    exploit3, explore3 = contextual_full_monkey(*contextual_full_monkey_environment(s), T=T)
-    exploit4, explore4 = contextual_full_lijing(*contextual_full_monkey_environment(s), T=T)
-    exploit5, explore5 = absolute_cascading_ucb(*contextual_cascading_monkey_environment(s), T=T)
-    plt.plot(range(T), exploit1, 'r--', range(T), exploit2, 'r--', range(T), exploit4, 'b--')
-    #plt.show()
-
-T = 10000
-s = contextual_monkey_rng()
-flowtest()
-
