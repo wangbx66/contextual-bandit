@@ -375,7 +375,7 @@ f_{\wedge}^* = \min_{1 \leq t \leq T} f_{\wedge, t}^{\ast}
 $$
 denote the best expected reward of all time under the conjunctive objective.
 Let $p_{t, A}$ (resp., $p_{\wedge, t, A}$) be the {\em probability of full
-	observation of $A$, that is the probability that all base arms of $A = (a_1, \ldots, a_{\abs{A}})$ are observed under the disjunctive objective (resp., conjunctive objective) when under the context of time $t$, that is 
+	observation of $A$}, that is the probability that all base arms of $A = (a_1, \ldots, a_{\abs{A}})$ are observed under the disjunctive objective (resp., conjunctive objective) when under the context of time $t$, that is 
 \begin{align*}
 &p_{t, A} = \prod_{k=1}^{\abs{A}-1} (1 - \theta_{\ast}^{\top} x_{t, a_k^t}),\\
 &p_{\wedge, t, A} = \prod_{k=1}^{\abs{A}-1} (\theta_{\ast}^{\top} x_{t, a_k^t}).
@@ -468,12 +468,12 @@ First, for $1 \leq k \leq m$, we have
 \begin{align*}
 &\gamma_{k} - \sum_{i=k+1}^m \gamma_i \prod_{j = k + 1}^{i - 1} (1 - w_j') w_i'\\
 \geq &~\gamma_k [1 - \sum_{i=k+1}^m \prod_{j=k+1}^{i-1}(1 - w_j') w_i']\\
-\geq &~\gamma_{k} \cdot 0 = 0,
+\geq &~\gamma_{k} \cdot 0 = 0.
 \end{align*}
 Then it implies that
 \begin{align*}
 &\gamma_k w_k + (1 - w_k)\sum_{i=k+1}^m \gamma_i \prod_{j=k+1}^{i-1}(1 - w_j') w_i'\\
-\leq &\gamma_k w_k' + (1 - w_k')\sum_{i=k+1}^m \gamma_i \prod_{j=k+1}^{i-1}(1 - w_j') w_i'\\
+\leq &\gamma_k w_k' + (1 - w_k')\sum_{i=k+1}^m \gamma_i \prod_{j=k+1}^{i-1}(1 - w_j') w_i'.\\
 \end{align*}
 Therefore, 
 \begin{align*}
@@ -569,10 +569,16 @@ $0 \leq \gamma_1' \leq \cdots \leq \gamma_K' \leq 1$. Let $A = (a_1, ..., a_{\ab
 % $$
 % p_A \geq 1 - \frac{f(A, w)}{\gamma_{\abs{A}}}.
 % $$
-Let $B_k = (a_1, ..., a_k), k \leq \abs{A}$ be a prefix of $A$. Then for the problem with conjunctive objective and $k < \abs{A}$, we have the following properties:
+Let $B_k = (a_1, ..., a_k), k \leq \abs{A}$ be a prefix of $A$. 
 \wei{$p_{\wedge, A}$ is not defined before. Only $p_{\wedge, t, A}$ is defined.
 	I guess you are using $w$ vector to be the mean vectors for $A$. Please define
 	this clearly.}
+\shuai{I have modified this part.}
+Suppose we have weights $w$. Let $p_{\wedge, A}$ be the {\em probability of full observation of $A$}, that is the probability that all base arms of $A = (a_1, \ldots, a_{\abs{A}})$ are observed under the conjunctive objective:
+$$
+p_{\wedge, A} = \prod_{k=1}^{\abs{A}-1} w_{a_k}.
+$$
+Then for the problem with conjunctive objective and $k < \abs{A}$, we have the following properties:
 \begin{itemize}
 \item[(1)] $f_{\wedge}(A, w) \leq \gamma_{\abs{A}}' + (1 - \gamma_{\abs{A}}') p_{\wedge, A}$;
 \item[(2)] $f_{\wedge}(B_{k+1}, w) \leq f_{\wedge}(B_k, w)$;
@@ -616,13 +622,13 @@ f_{\wedge}(B_k, w) &\leq \gamma_{k}' (1 - p_{B_{k+1}}) + p_{B_{k+1}}\\
 \begin{lemma} \label{lem:prefixexists}
 Suppose $0 \leq \gamma_1' \leq \cdots \leq \gamma_K' \leq 1$. Let $A = (a_1, ..., a_{\abs{A}})$. For the time $t$ and the conjunctive objective, there exists a prefix $B$ of $A$ such that 
 $$
-p_{\wedge, B} \geq \frac{1}{2}f_{\wedge, t}^{\ast} - \gamma_{\abs{B}}', \qquad R_{\wedge}(t, B) \geq \frac{1}{2} R_{\wedge}(t, A).
+p_{\wedge, t, B} \geq \frac{1}{2}f_{\wedge, t}^{\ast} - \gamma_{\abs{B}}', \qquad R_{\wedge}(t, B) \geq \frac{1}{2} R_{\wedge}(t, A).
 $$ 
 \end{lemma}
 \begin{proof}
 If $f_{\wedge}(A, w) \geq \frac{1}{2} f_{\wedge, t}^{\ast}$, then by Lemma \ref{lem:prefixRelation},
 $$
-p_{\wedge, A} \geq \frac{1}{2}f_{\wedge, t}^{\ast} - \gamma_{\abs{A}}'.
+p_{\wedge, t, A} \geq \frac{1}{2}f_{\wedge, t}^{\ast} - \gamma_{\abs{A}}'.
 $$
 
 Suppose $f_{\wedge}(A, w) \leq \frac{1}{2} f_{\wedge, t}^{\ast}$. Let
@@ -635,7 +641,7 @@ $$
 $$
 Then there exists a $k$ such that $\frac{1}{2}f_{\wedge, t}^{\ast} \in I_k$:
 $$
-f_{\wedge}(B_k,w) \leq \frac{1}{2}f_{\wedge, t}^{\ast} \leq \gamma_k' + (1 - \gamma_k')p_{\wedge, B_k}
+f_{\wedge}(B_k,w) \leq \frac{1}{2}f_{\wedge, t}^{\ast} \leq \gamma_k' + (1 - \gamma_k')p_{\wedge, t, B_k}
 $$
 Therefore, the results are derived.
 \end{proof}
@@ -644,21 +650,20 @@ Therefore, the results are derived.
 \begin{lemma}
 Let $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$ and $\gamma_k' = 1 - \gamma_k$. Suppose the equation (\ref{eq:estimateTheta}) holds for all time $t$. Then
 $$
-E[R(t, \bA_t)|\cH_t] \leq \frac{1}{p^*} \beta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}
+E[R(t, \bA_t)|\cH_t] \leq \frac{1}{p^*} \EE[ \beta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} ].
 $$
 If we have
 % $$
 % \gamma_K \geq (1+\frac{1}{n_0})f^{\ast}, \qquad 
 % $$
 $$
-\gamma_K' \le \frac{1}{4} f_{\wedge}^{\ast},
+\gamma_K' \le \frac{1}{4} f_{\wedge}^{\ast} = \frac{1}{4} \min_{1 \leq t \leq T} f_{\wedge, t}^{\ast},
 $$
 then
 \begin{align*}
 % &E[\Delta_{t, \bA_t}|\cH_t] \leq (n_0+1) \beta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}},\\
-&E[R_{\wedge}(t, \bA_t)|\cH_t] \leq \frac{8}{f_{\wedge}^{\ast}} \beta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}},
+&E[R_{\wedge}(t, \bA_t)|\cH_t] \leq \frac{8}{f_{\wedge}^{\ast}} \EE[\beta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}].
 \end{align*}
-where $f^{\ast} = \max_{t} f_t^{\ast}, f_{\wedge}^{\ast} = \max_{t} f_{\wedge, t}^{\ast}$.
 \end{lemma}
 \begin{proof}
 For the disjunctive case,  $p_{\bA_t} \geq p^*$ by definition and the result can be derived directly.
@@ -666,7 +671,7 @@ For the disjunctive case,  $p_{\bA_t} \geq p^*$ by definition and the result can
 
 For the conjunctive case, there exists a prefix $\bB_t$ of $\bA_t$ such that $p_{\wedge, \bB_t} \geq \frac{1}{4}f_{\wedge, t}^*$ and $R_{\wedge}(t, \bB_t) \geq \frac{1}{2} R_{\wedge}(t, \bA_t)$. Then we have
 $$
-\EE_t[R_{\wedge}(t, \bA_t)] \leq \frac{8}{f_{\wedge, t}^*} \EE_t[R_{\wedge}(t, \bB_t) \bOne\{R_{\wedge}(t, \bB_t) > 0, \bO_t \geq \abs{\bB_t}\}
+\EE_t[R_{\wedge}(t, \bA_t)] \leq \frac{8}{f_{\wedge, t}^*} \EE_t[R_{\wedge}(t, \bB_t) \bOne\{R_{\wedge}(t, \bB_t) > 0, \bO_t \geq \abs{\bB_t}\}]
 $$
 Because 
 $$
@@ -680,6 +685,11 @@ by Lemma \ref{lem:estimateTech}, we have
 $$
 R_{\wedge}(t, \bB_t) \leq \sum_{k=1}^{\abs{\bB_t}}\beta_{t-1}(\delta)\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}.
 $$
+Therefore
+\begin{align*}
+\EE_t[R_{\wedge}(t, \bA_t)] &\leq \EE[\frac{8}{f_{\wedge, t}^*} \bOne\{ \bO_t \geq \abs{\bB_t} \}\sum_{k=1}^{\abs{\bB_t}}\beta_{t-1}(\delta)\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}]\\
+&\leq \EE[ \frac{8}{f_{\wedge}^*} \sum_{k=1}^{ \bO_t } \beta_{t-1}(\delta) \norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} ]
+\end{align*}
 \end{proof}
 	
 \begin{lemma} % det(V_t)
@@ -714,7 +724,7 @@ Denote the eigenvalues of $I + \sum_{i=1}^n x_i x_i^{\top}$ by $1+\alpha_1,...,1
 \begin{lemma}
 If $\lambda \geq C_\gamma$, then
 $$
-\sum_{s=1}^t \sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_{k}^s}}_{\bV_{s-1}^{-1}}^2 \leq 2\ln(\frac{\det(\bV_t)}{\det(\lambda I)}).
+\sum_{s=1}^t \sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_{k}^s}}_{\bV_{s-1}^{-1}}^2 \leq 2\ln(\frac{\det(\bV_t)}{\lambda^d}).
 $$
 \end{lemma}
 \begin{proof}
