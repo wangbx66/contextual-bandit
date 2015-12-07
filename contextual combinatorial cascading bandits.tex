@@ -82,6 +82,8 @@
 \newtheorem{example}[theorem]{Example}
 \newenvironment{proof}{\noindent {\textbf{Proof. }}}{$\Box$ \medskip}
 
+\newcommand{\hidetext}[1]{}
+
 \newcommand{\compilehidecomments}{false}
 
 % Macro for comments:
@@ -372,7 +374,8 @@ $$
 f_{\wedge}^* = \max_{1 \leq t \leq T} f_{\wedge, t}^{\ast}
 $$
 denote the best expected reward of all time under the conjunctive objective.
-Let $p_{t, A}$ (resp., $p_{\wedge, t, A}$) be the probability that all base arms of $A = (a_1, \ldots, a_{\abs{A}})$ have been observed under the disjunctive objective (resp., conjunctive objective) when under the context of time $t$, that is 
+Let $p_{t, A}$ (resp., $p_{\wedge, t, A}$) be the {\em probability of full
+	observation of $A$, that is the probability that all base arms of $A = (a_1, \ldots, a_{\abs{A}})$ are observed under the disjunctive objective (resp., conjunctive objective) when under the context of time $t$, that is 
 \begin{align*}
 &p_{t, A} = \prod_{k=1}^{\abs{A}-1} (1 - \theta_{\ast}^{\top} x_{t, a_k^t}),\\
 &p_{\wedge, t, A} = \prod_{k=1}^{\abs{A}-1} (\theta_{\ast}^{\top} x_{t, a_k^t}).
@@ -399,6 +402,9 @@ R_{\wedge}(T) &\le \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \sqrt{TKd\ln(1 + C_\gamm
 %\end{align*}
 \end{theorem}
 
+\wei{I hided some paragraphs trying to explain the proof here.
+	We will re-write a proof outline after revising the proofs.}
+\hidetext{
 \wei{I do not see the purpose of putting Lemma 4.4 and 4.5 in this section. Perhaps
 	they should all be moved to Section 4.3}
 \shuai{I think Section 4.3 will probably be put in the appendix. So I sketch a proof of main theorem here. If all the proofs will be kept, then we don't need Lemma 4.4 and 4.5 here.}
@@ -434,15 +440,15 @@ Then we can derive an estimate of $R(t, \bA_t)$ and $R_{\wedge}(t, \bA_t)$, howe
 
 In real problems involved with recommendations, the click rate is a very small number. Thus for the problem with disjunctive objective, $p^*$ is relatively high and can be regarded as a constant. So we have $p_{t, \bA_t} \geq p^*$. For the problem with conjunctive objective, $p_{\wedge, t, \bA_t}$ might be small. Thus we need the following lemma to find a good substitution of $\bA_t$.
 
-\begin{lemma}
-\label{lem:prefixExist}
-Let $B_k = (\ba_1^t, \ldots, \ba_k^t), k \leq \abs{A}$ be a prefix of $\bA_t$. Then there exists a prefix $\bB_t$ of $\bA_t$ such that
-$$
-p_{\wedge, t, \bB_t} \geq \frac{1}{2} f_{\wedge, t}^* - \gamma_{\abs{\bB_t}}, \qquad R_{\wedge}(t, \bB_t) \geq \frac{1}{2} R_{\wedge}(t, \bA_t).
-$$
-\end{lemma}
+%\begin{lemma}
+%\label{lem:prefixExist}
+%Let $B_k = (\ba_1^t, \ldots, \ba_k^t), k \leq \abs{A}$ be a prefix of $\bA_t$. Then there exists a prefix $\bB_t$ of $\bA_t$ such that
+%$$
+%p_{\wedge, t, \bB_t} \geq \frac{1}{2} f_{\wedge, t}^* - \gamma_{\abs{\bB_t}}, \qquad R_{\wedge}(t, \bB_t) \geq \frac{1}{2} R_{\wedge}(t, \bA_t).
+%$$
+%\end{lemma}
 From this lemma, we can use the prefix $\bB_t$ to substitue $\bA_t$ because $p_{\wedge, t, \bB_t}$ is large enough and $R_{\wedge}(t, \bB_t)$ will not be too small. Then follow the above deductions, we can get a good estimate for $\EE[R_{\wedge}(t, \bA_t)|\cH_{t-1}]$ in terms of $\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}$. Once we have estimated $\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}$ and $\beta_{t-1}(\delta)$, we can get an estimate for $\EE[R_{\wedge}(t, \bA_t)|\cH_{t-1}]$, thus for $R_{\wedge}(T)$. We leave all details in the next subsection.
-
+}
 
 \subsection{Proof of Theorem~\ref{thm:main}}
 
@@ -517,7 +523,7 @@ We prove this by induction. It holds obviously for $m = 1$.
 \end{proof}
 
 The following lemma provides the important result on the regret at each time $t$
-	in terms of feature vectors of base arms in the round.
+	in terms of feature vectors of base arms at the time.
 \begin{lemma}
 	\label{lem:DeltaEstimate}
 	For any time $t$ and $A = (a_1, \ldots, a_{\abs{A}})$, if $f(A_t^*, \bU_t) \leq f(A, \bU_t)$, then we have
@@ -534,11 +540,11 @@ By Lemma \ref{lem:estimateU}, $\theta_{\ast}^{\top}x_t \leq \bU_t$. Then by Lemm
 $$
 f_t^{\ast} = f(A_t^{\ast}, \theta_{\ast}^{\top}x_t) \leq f(A_t^{\ast}, \bU_t).
 $$
-By Lemma \ref{lem:estimateTech} and the definition of $\bU_t$ \eqref{eq:defU},
+By Lemma \ref{lem:estimateTech} and the definition of $\bU_t$ in Eq.\eqref{eq:defU},
 $$
 f(A, \bU_t) \leq f(A, \theta_{\ast}^{\top}x_t) + \sum_{k=1}^{\abs{A}} \gamma_k \beta_{t-1}(\delta)\norm{x_{t, a_k^t}}_{\bV_{t-1}^{-1}}.
 $$
-Because $f(A_t^{\ast}, \bU_t) \leq f(A, \bU_t)$, then 
+By our condition that $f(A_t^{\ast}, \bU_t) \leq f(A, \bU_t)$, we have 
 $$
 f_t^{\ast} \leq f(A, \theta_{\ast}^{\top}x_t) + \sum_{k=1}^{\abs{A}} \gamma_k \beta_{t-1}(\delta)\norm{x_{t, a_k^t}}_{\bV_{t-1}^{-1}}.
 $$
@@ -546,9 +552,14 @@ Therefore,
 $$
 R(t, A) = f_t^{\ast} - f(A, \theta_{\ast}^{\top}x_t) \leq \sum_{k=1}^{\abs{A}} \gamma_k \beta_{t-1}(\delta)\norm{x_{t, a_k^t}}_{\bV_{t-1}^{-1}}.
 $$
-The result for the disjunctive case can be deduced similarly.
+The result for the conjunctive case can be deduced in a similar way.
 \end{proof}
 
+The next lemma provides some properties about a prefix of action $A$
+	in the conjunctive case, 
+	which leads to the finding of a prefix $B$ of $A$ with similar regret
+	and probability of full observation as those of $A$, as given
+	in Lemma~\ref{lem:prefixexists}.
 \begin{lemma}
 \label{lem:prefixRelation}
 Suppose 
@@ -559,6 +570,9 @@ $0 \leq \gamma_1' \leq \cdots \leq \gamma_K' \leq 1$. Let $A = (a_1, ..., a_{\ab
 % p_A \geq 1 - \frac{f(A, w)}{\gamma_{\abs{A}}}.
 % $$
 Let $B_k = (a_1, ..., a_k), k \leq \abs{A}$ be a prefix of $A$. Then for the problem with conjunctive objective and $k < \abs{A}$, we have the following properties:
+\wei{$p_{\wedge, A}$ is not defined before. Only $p_{\wedge, t, A}$ is defined.
+	I guess you are using $w$ vector to be the mean vectors for $A$. Please define
+	this clearly.}
 \begin{itemize}
 \item[(1)] $f_{\wedge}(A, w) \leq \gamma_{\abs{A}}' + (1 - \gamma_{\abs{A}}') p_{\wedge, A}$;
 \item[(2)] $f_{\wedge}(B_{k+1}, w) \leq f_{\wedge}(B_k, w)$;
@@ -599,7 +613,7 @@ f_{\wedge}(B_k, w) &\leq \gamma_{k}' (1 - p_{B_{k+1}}) + p_{B_{k+1}}\\
 \end{itemize}
 \end{proof}
 
-\begin{lemma}
+\begin{lemma} \label{lem:prefixexists}
 Suppose $0 \leq \gamma_1' \leq \cdots \leq \gamma_K' \leq 1$. Let $A = (a_1, ..., a_{\abs{A}})$. For the time $t$ and the conjunctive objective, there exists a prefix $B$ of $A$ such that 
 $$
 p_{\wedge, B} \geq \frac{1}{2}f_{\wedge, t}^{\ast} - \gamma_{\abs{B}}', \qquad R_{\wedge}(t, B) \geq \frac{1}{2} R_{\wedge}(t, A).
@@ -627,7 +641,7 @@ Therefore, the results are derived.
 \end{proof}
 
 
-\begin{proposition}
+\begin{lemma}
 Let $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$ and $\gamma_k' = 1 - \gamma_k$. Suppose the equation (\ref{eq:estimateTheta}) holds for all time $t$. Then
 $$
 E[R(t, \bA_t)|\cH_t] \leq \frac{1}{p^*} \beta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}
@@ -645,7 +659,7 @@ then
 &E[R_{\wedge}(t, \bA_t)|\cH_t] \leq \frac{8}{f_{\wedge}^{\ast}} \beta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}},
 \end{align*}
 where $f^{\ast} = \max_{t} f_t^{\ast}, f_{\wedge}^{\ast} = \max_{t} f_{\wedge, t}^{\ast}$.
-\end{proposition}
+\end{lemma}
 \begin{proof}
 For the disjunctive case,  $p_{\bA_t} \geq p^*$ by definition and the result can be derived directly.
 % $p_{\bA_t} \geq \frac{1}{n_0 + 1}$ by lemma \ref{lem:prefixRelation} and the result can be derived directly. 
