@@ -21,7 +21,8 @@ from environment import contextual_monkey_rng
 from environment import contextual_cascading_monkey as contextual_cascading_monkey_environment
 from environment import contextual_full_monkey as contextual_full_monkey_environment
 from movielens import contextual_movielens_rng
-from environment import contextual_cascading_movielens
+from environment import contextual_cascading_movielens as contextual_cascading_movielens_environment
+from environment import contextual_full_movielens as contextual_full_movielens_environment
 
 def flowtest_monkey_disj():
     T = 10000
@@ -43,7 +44,14 @@ def flowtest_monkey_conj():
     exploit5, explore5 = absolute_cascading_ucb(*contextual_cascading_monkey_environment(s), T=T)
     plt.plot(range(T), exploit1, 'r--', range(T), exploit2, 'r--', range(T), exploit4, 'b--')
 
-T = 10000
-s = contextual_movielens_rng(L=None, portion=0.5, d=15, K=8, h=13500, gamma=0.95, disj=False)
-exploit1, explore1 = contextual_cascading_monkey(*contextual_cascading_movielens(s), T=T)
-exploit2, explore2 = contextual_cascading_sherry(*contextual_cascading_movielens(s), T=T)
+def flowtest_movielens_conj():
+    T = 10000
+    s = contextual_movielens_rng(L=400, portion=0.2, d=5, K=8, h=None, gamma=0.95, disj=False)
+    exploit1, explore1 = contextual_cascading_monkey(*contextual_cascading_movielens_environment(s), T=T)
+    exploit2, explore2 = contextual_cascading_sherry(*contextual_cascading_movielens_environment(s), T=T)
+    exploit3, explore3 = contextual_full_monkey(*contextual_full_movielens_environment(s), T=T)
+    exploit4, explore4 = contextual_full_lijing(*contextual_full_movielens_environment(s), T=T)
+    exploit5, explore5 = absolute_cascading_ucb(*contextual_cascading_movielens_environment(s), T=T)
+    plt.plot(range(T), exploit1, 'r--', range(T), exploit2, 'r--', range(T), exploit4, 'b--')
+
+flowtest_movielens_conj()

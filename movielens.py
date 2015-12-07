@@ -21,7 +21,7 @@ def movielens_data():
     gt.__next__()
     return chain(gr, gt)
 
-def contextual_movielens_rng(L=None, portion=0.5, d=15, K=6, h=13500, gamma=0.95, disj=False):
+def contextual_movielens_rng(L=None, portion=0.5, d=15, K=6, h=None, gamma=0.95, disj=False):
     cox = []
     coy = []
     history = {}
@@ -33,7 +33,7 @@ def contextual_movielens_rng(L=None, portion=0.5, d=15, K=6, h=13500, gamma=0.95
             movies[movie] += 1
         else:
             movies[movie] = 1
-        if np.random.uniform(0,1) < portion:
+        if np.random.uniform(0,1) > portion:
             cox.append(user)
             coy.append(movie)
         else:
@@ -53,6 +53,8 @@ def contextual_movielens_rng(L=None, portion=0.5, d=15, K=6, h=13500, gamma=0.95
 
     if L is None:
         L = len(movies)
+    if h is None:
+        h = len(history)
     selected_movies = set([x[1] for x in sorted([(movies[movie], movie) for movie in movies])[-L:]])
     eligable_users = [x[1] for x in sorted([(overlap(history[user], selected_movies), user) for user in history])[-h:]]
     logger.info('Initializing random settings "Contextual Movielens" complete')

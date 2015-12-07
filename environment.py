@@ -49,7 +49,7 @@ def contextual_full_monkey(s):
     return environment, ucb_settings(arms=s.arms, L=s.L, K=s.K, d=s.d, gamma=s.gamma, theta=s.theta)
 
 def contextual_cascading_movielens(s):
-    logger.info('Initializing environment "Movielens"')
+    logger.info('Initializing environment "Contextual Cascading Movielens"')
     user = random.sample(s.users, 1)
     def environment(recommend=None):
         if recommend is None:
@@ -61,7 +61,23 @@ def contextual_cascading_movielens(s):
             logger.debug('User ctr history {0}'.format(s.ctrh[user[0]]))
             r, c = reward(ctr, s.gamma, s.disj)
             return r, c
-    logger.info('Initializing environment "Movielens" done')
+    logger.info('Initializing environment "Contextual Cascading Movielens" done')
+    return environment, ucb_settings(arms=s.arms, L=s.L, K=s.K, d=s.d ** 2, gamma=s.gamma, disj=s.disj)
+
+def contextual_full_movielens(s):
+    logger.info('Initializing environment "Contextual Full Movielens"')
+    user = random.sample(s.users, 1)
+    def environment(recommend=None):
+        if recommend is None:
+            user[0] = random.sample(s.users, 1)[0]
+            return {arm: np.outer(s.U[user[0]], s.V[arm]).flatten() for arm in s.arms}
+        else:
+            ctr = [arm in s.ctrh[user[0]] for arm in recommend]
+            logger.debug('Received recommendation {0}'.format(recommend))
+            logger.debug('User ctr history {0}'.format(s.ctrh[user[0]]))
+            r, _ = reward(ctr, s.gamma, s.disj)
+            return r, [int(click) for click in ctr]
+    logger.info('Initializing environment "Contextual Full Movielens" done')
     return environment, ucb_settings(arms=s.arms, L=s.L, K=s.K, d=s.d ** 2, gamma=s.gamma, disj=s.disj)
 
 def movielens_dep(candidates, userno=1):
