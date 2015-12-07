@@ -268,7 +268,10 @@ where $\bX_t \in \RR^{(\sum_{s=1}^{t}\bO_s) \times d}$ is the matrix whose rows 
 $$
 \bV_t = \bX_t^{\top} \bX_t + \lambda I = \lambda I + \sum_{s=1}^{t} \sum_{k=1}^{\bO_s} \gamma_k^2 x_{s,\ba_k^s}x_{s,\ba_k^s}^{\top}.
 $$
-Then $\bV_t \in \RR^{d \times d}$ is a positive invertible matrix. 
+Then $\bV_t \in \RR^{d \times d}$ is a symmetric positive definite matrix. 
+For any symmetric positive definite matrix $V \in \RR^{d \times d} $ and any
+	vector $x \in \RR^{d \times 1}$, we define the $2$-norm of $x$ based on
+	$V$ to be $\norm{x}_V = (x^{\top} V x)^{\frac{1}{2}}$.
 In the following, we will mainly use notations for the disjunctive objective when the two cases are similar.
 
 Next we build on a good estimate of differences between $\hat{\theta}_t$ and $\theta_*$ by Theorem 2 in \cite{abbasi2011improved}, which states the following results.
@@ -276,10 +279,10 @@ Next we build on a good estimate of differences between $\hat{\theta}_t$ and $\t
 \begin{theorem}[\cite{abbasi2011improved}]
 \label{thm:theta_estimate}
 Let 
-$$
-\beta_{t}(\delta) = \sqrt{\ln\left(\frac{\det(\bV_{t})}{\det(\lambda I)}\right) + 2 \ln\left(\frac{1}{\delta}\right)} + \sqrt{\lambda}.
-$$
-\wei{I thought the following is simpler. Should we use the following?}
+%$$
+%\beta_{t}(\delta) = \sqrt{\ln\left(\frac{\det(\bV_{t})}{\det(\lambda I)}\right) + 2 \ln\left(\frac{1}{\delta}\right)} + \sqrt{\lambda}.
+%$$
+%\wei{I thought the following is simpler. Should we use the following?}
 $$
 \beta_{t}(\delta) = \sqrt{\ln\left(\frac{\det(\bV_{t})}{\lambda^d \delta^2}\right)} + \sqrt{\lambda}.
 $$
@@ -356,7 +359,7 @@ Then, the learning agent updates $\bV_t, \bX_t, \bY_t$ in order to get a newer e
 \STATE {$\bX_t \leftarrow [\bX_{t-1}; ~\gamma_1 x_{t, \ba_1^t}^{\top};  ~\ldots; ~\gamma_{\bO_t} x_{t, \ba_{\bO_t}^t}^{\top}]$}
 \STATE {$\bY_t \leftarrow [\bY_{t-1}; ~\gamma_1 \bw(\ba_1^t); ~\ldots; ~\gamma_{\bO_t} \bw_t(\ba_{\bO_t}^t)]$}
 \STATE {$\hat{\theta}_t \leftarrow (\bX_t^\top \bX_t + \lambda I)^{-1} \bX_{t}^\top \bY_t$}
-\STATE {$\beta_{t}(\delta) \leftarrow \sqrt{\ln(\det(\bV_{t})) + 2 \ln(\frac{1}{\delta})} + \sqrt{\lambda}$ \wei{This $\beta$ is different from what is defined in Theorem 4.1.}}
+\STATE {$\beta_{t}(\delta) \leftarrow \sqrt{\ln(\det(\bV_{t})/(\lambda^d \delta^2))} + \sqrt{\lambda}$ }
 \ENDFOR {~~$t$}
 \end{algorithmic}
 \end{algorithm}
@@ -441,7 +444,7 @@ $$
 From this lemma, we can use the prefix $\bB_t$ to substitue $\bA_t$ because $p_{\wedge, t, \bB_t}$ is large enough and $R_{\wedge}(t, \bB_t)$ will not be too small. Then follow the above deductions, we can get a good estimate for $\EE[R_{\wedge}(t, \bA_t)|\cH_{t-1}]$ in terms of $\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}$. Once we have estimated $\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}$ and $\beta_{t-1}(\delta)$, we can get an estimate for $\EE[R_{\wedge}(t, \bA_t)|\cH_{t-1}]$, thus for $R_{\wedge}(T)$. We leave all details in the next subsection.
 
 
-\subsection{Proofs}
+\subsection{Proof of Theorem~\ref{thm:main}}
 
 We first provide a basic property of functions $f$ and $f_{\wedge}$ as defined
 in~Eq.\eqref{eq:functionf} and \eqref{eq:functionfstar}.
@@ -479,14 +482,8 @@ By letting $\gamma_k = 1 - \gamma_k'$ and using the relation
 	in Eq. \eqref{eq:ConDisRelation}, the increasing property of $f_{\wedge}$ is obtained directly.
 \end{proof}
 
-The following lemma provides the relationship between an estimated mean vector and its
-	upper bound, in terms of their $f$ function values.
-\wei{The symbol here may need to be changed. $w_i$ coincides with weight $w_i$ before, 
-		and $p$ coincides with many related probability definition using $p$.
-	$w_i$ can be replaced with $u_i$ (standing for upper bound), 
-	$u_i$ can be replaced with $r_i$ (standing for radius), but not sure yet
-	about $p_i$.}
-\shuai{Maybe we can replace $p_i$ by $w_i$ like the lemma above. I have changed accordingly.}
+The following lemma provides the relationship between an estimated mean vector $w$
+	and its upper bound vector $u$, in terms of their $f$ function values.
 \begin{lemma}
 \label{lem:estimateTech}
 Suppose $0 \leq \gamma_k, \gamma_k' \leq 1, k \in [K]$. Let $0 \leq w_1, \ldots, w_m \leq 1$, $r_1, \ldots, r_m \geq 0$ and $u_i = \min\{w_i + r_i, 1\}, 1 \leq i \leq m$. Then
@@ -509,7 +506,7 @@ We prove this by induction. It holds obviously for $m = 1$.
 \begin{align*}
 &~~f_{\wedge}(A^{(m+1)}, u) \\
 &= f_{\wedge}(A^{(m)}, u) -\prod_{k=1}^{m} u_k \\
-&\qquad+ \gamma_{m+1}' (\prod_{k=1}^{K} u_k) (1 - u_{K+1})+ \prod_{k=1}^{K+1} u_k\\
+&\qquad+ \gamma_{m+1}' (\prod_{k=1}^{m} u_k) (1 - u_{m+1})+ \prod_{k=1}^{m+1} u_k\\
 &= f_{\wedge}(A^{(m)}, u) - (1 - \gamma_{m+1}') (\prod_{k=1}^{m} u_k) (1 - u_{m+1})\\
 &\leq f_{\wedge}(A^{(m)}, u) - (1 - \gamma_{m+1}') (\prod_{k=1}^{m} w_k) (1 - u_{m+1})\\
 &\leq f_{\wedge}(A^{(m)}, u) -(1 - \gamma_{m+1}') (\prod_{k=1}^{m} w_k)  (1 - w_{m+1} - r_{m+1})\\
@@ -519,7 +516,20 @@ We prove this by induction. It holds obviously for $m = 1$.
 \end{align*}
 \end{proof}
 
-\begin{proof}[ of Lemma \ref{lem:DeltaEstimate}]
+The following lemma provides the important result on the regret at each time $t$
+	in terms of feature vectors of base arms in the round.
+\begin{lemma}
+	\label{lem:DeltaEstimate}
+	For any time $t$ and $A = (a_1, \ldots, a_{\abs{A}})$, if $f(A_t^*, \bU_t) \leq f(A, \bU_t)$, then we have
+	$$
+	R(t,A) \leq \sum_{k=1}^{\abs{A}} \gamma_k \beta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}};
+	$$
+	if $f_{\wedge}(A_t^*, \bU_t) \leq f_{\wedge}(A, \bU_t)$, then we have
+	$$
+	R_{\wedge}(t, A) \leq \sum_{k=1}^{\abs{A}} \gamma_k \beta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}}.
+	$$
+\end{lemma}
+\begin{proof}
 By Lemma \ref{lem:estimateU}, $\theta_{\ast}^{\top}x_t \leq \bU_t$. Then by Lemma \ref{lem:increasing},
 $$
 f_t^{\ast} = f(A_t^{\ast}, \theta_{\ast}^{\top}x_t) \leq f(A_t^{\ast}, \bU_t).
