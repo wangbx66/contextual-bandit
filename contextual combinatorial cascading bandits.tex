@@ -42,7 +42,7 @@
 \usepackage{mathrsfs}
 \usepackage[all]{xy}
 \usepackage{empheq}
-\usepackage{bm}
+\usepackage{bbm}
 \usepackage{algorithm,algorithmic}
 \usepackage{multirow}
 \usepackage{ifthen}
@@ -145,15 +145,15 @@ The purpose of this document is to provide both the basic paper template and sub
 	
 \section{Problem Formulation}
 
-We formulate the problem of {\em contextual combinatorial cascading bandit} as follows. Suppose we have a finite set of $L$ ground items,  $E=\{1,...,L\}$, also referred to as {\em base arms}. 
-Let $\prod^k=\{(a_1,...,a_k): a_1,...,a_k \in E, a_i \neq a_j \text{ for any } i \neq j\}$ be the set of all $k$-tuples of distinct items from $E$. We also refer to each of such tuples as an {\em action}.
-Let $\prod^{\leq K}= \cup_{k=1}^K \prod^{k}$ denote set of all actions with length
-	at most $K$, and let $\cS \subseteq \prod^{\leq K}$ be the set of feasible actions with length no more than $K$. 
+We formulate the problem of {\em contextual combinatorial cascading bandit} as follows. Suppose we have a finite set  $E=\{1,...,L\}$ of $L$ \textit{ground items},  also referred to as {\em base arms}. 
+Let $\Pi^k=\{(a_1,...,a_k): a_1,...,a_k \in E, a_i \neq a_j \text{ for any } i \neq j\}$ be the set of all $k$-tuples of distinct items from $E$. We call each of such tuples an {\em action} of length $k$. We will use $|A|$ to denote the length of an action $A$.
+Let $\Pi^{\leq K}= \cup_{k=1}^K \Pi^{k}$ denote the set of all actions with length
+	at most $K$, and let $\cS \subseteq \Pi^{\leq K}$ be the set of \textit{feasible actions} with length at most $K$. 
 
 As a convention, we always use boldface symbols to represent random variables.
 
-At time $t$, feature vectors $x_{t,a} \in \RR^{d \times 1}$ with $\norm{x_{t,a}}_2 \leq 1$ for every base arm $a \in E$ are revealed to the learning agent; the feature vectors combine both the information of the user and the corresponding base arm. Then the learning agent recommends a feasible action $\bA_t=(\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t) \in \cS$ to the user. 
-Starting from the first item, the user checks the items one by one. The checking process stops if the user clicks on one item or has checked all items without clicking anyone. We use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ as the {\em weight} of base arm $a$ at time $t$ to indicate whether the user has clicked on $a$ or not. 
+At time $t$, feature vectors $x_{t,a} \in \RR^{d \times 1}$ with $\norm{x_{t,a}}_2 \leq 1$ for every base arm $a \in E$ are revealed to the learning agent; the feature vectors combine both the information of the user and the corresponding base arm. \shengyu{Add a standard/typical example (just one sentence) to illustrate the combination?} Then the learning agent recommends a feasible action $\bA_t=(\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t) \in \cS$ to a user, where notice that the length of the action is not fixed. 
+Starting from the first item $\ba_{1}^t$, the user checks the items $(\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t)$ one by one in that order. The checking process stops if the user clicks \shengyu{selects?} on one item or has checked all items without clicking \shengyu{selecting?} anyone. We use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ as the {\em weight} of base arm $a$ at time $t$ to indicate whether the user has clicked on $a$ or not. 
 
 Let $\cH_t$ denote the history before the learning agent chooses action at time $t$.
 Thus $\cH_t$ contains all information and observations at time $s < t$ and context information at time $t$. Given history $\cH_t$, we assume $\bw_{t,a}$'s are mutually independent and satisfy
