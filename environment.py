@@ -57,8 +57,6 @@ def contextual_cascading_movielens(s):
             return {arm: np.outer(s.U[user[0]], s.V[arm]).flatten() for arm in s.arms}
         else:
             ctr = [arm in s.ctrh[user[0]] for arm in recommend]
-            logger.debug('Received recommendation {0}'.format(recommend))
-            logger.debug('User ctr history {0}'.format(s.ctrh[user[0]]))
             r, c = reward(ctr, s.gamma, s.disj)
             return r, c
     logger.info('Initializing environment "Contextual Cascading Movielens" done')
@@ -73,8 +71,6 @@ def contextual_full_movielens(s):
             return {arm: np.outer(s.U[user[0]], s.V[arm]).flatten() for arm in s.arms}
         else:
             ctr = [arm in s.ctrh[user[0]] for arm in recommend]
-            logger.debug('Received recommendation {0}'.format(recommend))
-            logger.debug('User ctr history {0}'.format(s.ctrh[user[0]]))
             r, _ = reward(ctr, s.gamma, s.disj)
             return r, [int(click) for click in ctr]
     logger.info('Initializing environment "Contextual Full Movielens" done')

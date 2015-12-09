@@ -20,26 +20,33 @@ C3UCB Draft \hfill Fall 2015
 
 \section{Synthetic dataset}
 
-Let $I=\{e_1,e_2,\dots,e_L\}$ be a set of arms, each associated with a $d$-dimensional vector $x_i$ randomly drawn from $\{x\in R^d : \|x\|_2=1\}$. The expected payoff of an superarm $A\subseteq I$, denoted as $r_A$, will be $\sum_{i:e_i\in A, i\leq O_t}{(\theta_\ast^Tx_i + \epsilon_{i,t})\gamma^i z_i}$, where $\theta_\ast$ s.t. $\|\theta_\ast\|_2=1$ is randomly initiated and holds throughout the experiment, and $\epsilon_{i,t}\sim N(\mu_i,\sigma_i)$ i.i.d. be the fluctuation. In this experiment, the set of avaiable superarms $S$ is $\{A\subseteq I:|A|=k\}$. 
-
-The following approaches are served as baselines:
+Let $I=\{e_1,e_2,\dots,e_L\}$ be a set of arms, each associated with a $d$-dimensional vector $\mu_i$ randomly drawn from $\{x\in \mathbb{R}^d : \|x\|_2=1\}$. At round $t$, the context corresponding to the $i$-th arm, denoted as $x_{t,i}$, is generated using $x_{t,i}=(\mu_i+h\cdot b_{t,i})/\|\mu_i+h\cdot b_{t,i}\|_2$, where $b_{t,i}$ is randomly drawn from $\{x\in \mathbb{R}^d : \|x\|_2=1\}$ and $h$ is a constant throughout the experiment. The expectation of the Bernoulli realization of an arm $e\in I$ is $w_t(e)=\theta_\ast^Tx_i + \epsilon_{i,t}$, where $\theta_\ast$ s.t. $\|\theta_\ast\|_2=1$ is randomly initialized and holds throughout the experiment, and $\epsilon_{i,t}\sim N(\mu_i,\sigma_i)$ i.i.d. be the fluctuation. In this experiment, the set of avaiable superarms $S$ is $\{A\subseteq I:|A|=k\}$. The following approaches were tested:
 
 \begin{enumerate}
 
-  \item The monkey who randomly select $A\in S$ at each round.
+  \item Li Shuai et al. Use linear regression on $\mathbf{O_t}$ observed arms and then UCB to select candidated.
 
-  \item Combinatorial Cascading UCB which maintains its upper confidence bound purely by the historical payoff of the superarms selected. The contextual information $x_{i,t}$ is totally ignored so it can only catch the $\epsilon$ part while suffers a lot from noisy. The performance of Combinatorial Cascading UCB will mainly depends on the magnitude of $\mu$.
-  
-  \item Contextual Combinatorial UCB which takes full feedback instead of cascading feedback, which is sureal in some settings in real world. It's expected to perform better than C3UCB, but as long as their regret being comparable, the result is acceptable.
+  \item 2014 Qin Lijing et al. Same w/ Li but takes more information (from $\mathbf{O_t}$ to $k$) with a full feedback. 
+
+  \item 2015 Kveton Branislav et al. Combinatorial Cascading UCB which maintains its upper confidence bound purely by the historical payoff of the superarms selected. The contextual information $x_{i,t}$ is totally ignored so it can only catch the $\theta_\ast^T\mu$ part while suffers a lot from noisy.
+
+  \item Random.
 
 \end{enumerate}
 
 \section{Movielens}
 
-let $Y$ be a matrix in which each entry $y_{ij}\in \{0,1\}$ records the clickthrough history between user $i$ and movie $j$. We split $Y$ into training set and test set $Y=Y_{\text{train}}+Y_{\text{test}}$ by categorizing each entry randomly with probability $\delta$. Let $USV^T=Y_{\text{train}}$ be the SVD decomposition of $Y_{\text{train}}$, the context corresponding to user $i$ and movie $j$ is defined as $U_i^T(V_j, G_j)$, where $G_i$ records the binary indicators of genres.
+This section introduced Movielens dataset and its movie recommendation challenge. Let $L=\#\text{movies}$, Movielens is a matrix $A\in \{0,1\}^{\#\text{users}\cdot L}$ where each entry $A_{ij}$ is a boolean clickthrough indicator for the $i$-th user and the $j$-th movie. We split $A=A^1+A^2$, by randomly putting hot entries in $A$ into $A^1$ and $A^2$ accoring to a bernulli distribution. At round $t$, a user indexed $i_t$ is randomly selected from a predefined set of users, and the agent is required to recommend movies using $A^1$ and $H_t$ such that $A^2_{i_tj}=1$ for as many those recommended $j$s as possible.
 
-Upon received a super arm $A\in S$, the reward $\sum_{i:e_i\in I, i\leq O_t}{Y_{\text{test},ij}\gamma^i z_i}$ is returned as well as the terminal of cascade. The result is compared with the same baselines as in the above synthetic dateset experiment.
+We formulate the movie recommendation problem into a combinatorial bandit problem. Let $A^1=USV^T$ be the SVD decomposition and the movies $I=\{e_1,\dots,e_L\}$ be the set of arms, we define the context associated with $e_j$, at round $t$, as $x_{t,e_j}=u_{i_t}^Tv_j$, where $u_l$, $v_l$ denote the $l$-th row of $U$, $V$, respectively. Upon received a super arm $A\in \{A\subseteq I: |A|=k\}$, the reward $r_t$ is calculated using its definition and $w_t(e_j)=A^2_{i_te_j}$. Some notes follows:
 
+\begin{enumerate}
 
+  \item Define $x_{t,e_j}=(u_{i_t}, v_j)$ is not applicable because the argmax over arms will ignore the stochastic part of the context.
 
+  \item Split users into training and testing, as 2014 Qin Lijing et al. did, is not applicable because the context is constant for each arm.
+
+  \item Measurement for Movielens is accuracy instead of regret because we have no access to the true $\theta_\ast$, if there is one.
+
+\end{enumerate}
 \end{document}
