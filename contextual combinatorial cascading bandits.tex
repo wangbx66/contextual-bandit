@@ -387,12 +387,12 @@ $\gamma_k' = 1 - \gamma_k, \gamma'_K \leq \frac{1}{4}f_{\wedge}^{\ast}$.
 Let regularization parameter $\lambda$ satisfy $\lambda \geq C_\gamma$, where $C_\gamma = \sum_{k=1}^{K} \gamma_k^2$. Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regrets of our algorithm, C$^3$-UCB for both the conjunctive and disjunctive objectives, satisfy
 \begin{align}
 R(T) &\le \frac{\sqrt{2}}{p^*} \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))}  \nonumber \\
-&\qquad \cdot \left(\sqrt{d\ln(1 + C_\gamma T/(\lambda d)) + 2\ln\left(\frac{1}{\delta}\right)} + \sqrt{\lambda}\right) \nonumber \\
+&\qquad \cdot \left(\sqrt{d\ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^2}\right) } + \sqrt{\lambda}\right) \nonumber \\
 &=O\left(\frac{d}{p^*} \sqrt{TK} \ln T\right),
 \end{align}
 \begin{align}
 R_{\wedge}(T) &\le \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))} \nonumber \\
-&\qquad \cdot \left(\sqrt{d\ln(1 + C_\gamma T/(\lambda d)) + 2\ln\left(\frac{1}{\delta}\right)} + \sqrt{\lambda}\right) \nonumber \\
+&\qquad \cdot \left(\sqrt{d\ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^2}\right) } + \sqrt{\lambda}\right) \nonumber \\
 &=O\left(\frac{d}{f_{\wedge}^{\ast}}\sqrt{TK} \ln T\right).
 \end{align}
 %where
@@ -806,13 +806,13 @@ Suppose inequality (\ref{eq:estimateTheta}) holds for all time $t$.
 For the disjunctive case,
 \begin{equation}
 \begin{split}
-&R(T) =\sum_{t=1}^{T} \EE_{t}[R(t, \bA_t)] \\
+&R(T) = \EE[\sum_{t=1}^{T} \EE_{t}[R(t, \bA_t)] ]\\
 &\leq \EE\left[\sum_{t=1}^{T} \frac{1}{p^*} \EE_t \left[\bbeta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}\right] \right]\\
 &\leq \EE \left[\frac{1}{p^*} \bbeta_T(\delta) \sqrt{\left(\sum_{t=1}^{T} \bO_t\right) \left( \sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right)}
 	\right ]  \\
-&\leq \EE\left[\frac{1}{p^*} \left(\sqrt{\ln \left(\frac{\det(\bV_T)}{\det(\lambda I)}\right) + 2\ln\left(\frac{1}{\delta}\right)} + \sqrt{\lambda} \right) \right. \\
-& \left. \qquad \qquad \cdot \sqrt{TK \cdot 2\ln \left(\frac{\det(\bV_T)}{\det(\lambda I)} \right)} \right]\\
-&\leq \frac{\sqrt{2}}{p^*} \left(\sqrt{d\ln(1 + C_\gamma T/(\lambda d)) + 2\ln \left(\frac{1}{\delta} \right)} + \sqrt{\lambda} \right)\\
+&\leq \EE\left[\frac{1}{p^*} \left( \sqrt{ \ln \left( \frac{\det(\bV_T)}{\lambda^d \delta^2} \right)} + \sqrt{\lambda} \right) \right. \\
+& \left. \qquad \qquad \cdot \sqrt{TK \cdot 2\ln \left(\frac{\det(\bV_T)}{\lambda^d} \right)} \right]\\
+&\leq \frac{\sqrt{2}}{p^*} \left(\sqrt{ d \ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^2} \right) } + \sqrt{\lambda} \right)\\
 &\qquad \qquad \cdot \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))} ]
 \end{split}
 \end{equation}
@@ -821,13 +821,13 @@ The first inequality is by Lemma \ref{lem:DeltaEsimateWithP*}. The second inequa
 Similarly, for the conjunctive case, 
 \begin{equation}
 \begin{split}
-&R(T) =\sum_{t=1}^{T} \EE_{t}[R_{\wedge}(t, \bA_t)] \\
+&R(T) = \EE[ \sum_{t=1}^{T} \EE_{t}[R_{\wedge}(t, \bA_t)] ]\\
 &\leq \EE \left[\sum_{t=1}^{T} \frac{8}{f_{\wedge}^{\ast}} \EE_t\left[\bbeta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right] \right] \\
 &\leq \EE\left[\frac{8}{f_{\wedge}^{\ast}} \bbeta_{T}(\delta) \sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right]\\
 &\leq \EE\left[\frac{8}{f_{\wedge}^{\ast}} \bbeta_{T}(\delta) \sqrt{ \left(\sum_{t=1}^{T} \bO_t \right) \EE_t \left[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right]} \right]\\
-&\leq \EE \left[\frac{\sqrt{128}}{f_{\wedge}^{\ast}} \left(\sqrt{\ln\left(\frac{\det(\bV_T)}{\det(\lambda I)}\right) + 2\ln\left(\frac{1}{\delta}\right)} + \sqrt{\lambda} \right) \right. \\
-&\qquad \qquad \left. \cdot \sqrt{TK \cdot 2\ln \left(\frac{\det(\bV_T)}{\det(\lambda I)} \right)} \right]\\
-&\leq \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \left(\sqrt{d\ln(1 + C_\gamma T/(\lambda d)) + 2\ln \left(\frac{1}{\delta} \right)} + \sqrt{\lambda} \right)\\
+&\leq \EE \left[\frac{\sqrt{128}}{f_{\wedge}^{\ast}} \left(\sqrt{\ln\left(\frac{\det(\bV_T)}{\lambda^d \delta^2}\right) } + \sqrt{\lambda} \right) \right. \\
+&\qquad \qquad \left. \cdot \sqrt{TK \cdot 2\ln \left(\frac{\det(\bV_T)}{\lambda^d} \right)} \right]\\
+&\leq \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \left(\sqrt{d \ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^2}\right) } + \sqrt{\lambda} \right)\\
 &\qquad \qquad \cdot \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))} ]
 \end{split}
 \end{equation}
