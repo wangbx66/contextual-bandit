@@ -42,13 +42,11 @@
 \usepackage{mathrsfs}
 \usepackage[all]{xy}
 \usepackage{empheq}
-\usepackage{bbm}
 \usepackage{algorithm,algorithmic}
 \usepackage{multirow}
 \usepackage{ifthen}
 \usepackage[usenames]{color}
 \usepackage[usenames,dvipsnames]{xcolor}
-
 
 \newcommand{\EE}{\mathbb{E}}
 \newcommand{\II}{\mathbb{I}}
@@ -652,8 +650,11 @@ Therefore, the results are derived.
 \wei{This lemma needs to be clarified, using Lemma 4.6.
 Also, our regret bound is expected regret but with a high probability? Sound a 
 bit strange.}
+\shuai{Yes, our regret bound is expected regret with a high probability. The reason is that NIPS'11 gives such a result.}
+
+Notice that if we substitute $A$ by $\bA_t$ in Lemma \ref{lem:DeltaEstimate}, then the upper bound of $R(t, \bA_t)$ is in terms of all base arms of $\bA_t$. However, $\sum_{t=1}^T \sum_{k=1}^{\abs{\bA_t}} \norm{ x_{t, \ba_k^t} }_{ \bV_{t-1}^{-1} }$ is hard to estimate because $\bV_t$ only contains observed base arms. So we need the following lemma.
 \begin{lemma}
-Let $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$ and $\gamma_k' = 1 - \gamma_k$. Suppose the equation (\ref{eq:estimateTheta}) holds for all time $t$. Then
+Let $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$ and $\gamma_k' = 1 - \gamma_k$. For any time $t$ and the chosen action $\bA_t = (\ba_1^t, \ldots, \ba_{\abs{A}}^t )$, we have $f(A_t^*, \bU_t) \leq f(A, \bU_t)$. Suppose the equation (\ref{eq:estimateTheta}) holds for time $t-1$. Then
 $$
 E[R(t, \bA_t)|\cH_t] \leq \frac{1}{p^*} \EE\left[ \beta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right].
 $$
@@ -701,8 +702,12 @@ Therefore
 $\det(\bV_t) \leq (\lambda + C_\gamma t/d)^d.$
 \end{lemma}
 \begin{proof}
-We have $\det(\bV_t) \leq (\trace(\bV_t)/d)^d$, 
-\wei{Why? need a citation?} and
+Let the eigenvalues of $\bV_t$ be $\lambda_1, \ldots, \lambda_d > 0$. Then
+$$
+\det(\bV_t) = \lambda_1 \cdot \cdots \cdot \lambda_d \leq  (\frac{\lambda_1 + \ldots + \lambda_d}{d})^d = (\trace(\bV_t)/d)^d.
+$$
+\wei{Why? need a citation?} \shuai{I have rewritten this part.}
+Also,
 \begin{align*}
 &\trace(\bV_t)\\
 & = \trace(\lambda I) + \sum_{s=1}^t \sum_{k=1}^{\bO_s} \gamma_k^2 \trace(x_{s,\ba_k^s} x_{s,\ba_k^s}^{\top})\\	
