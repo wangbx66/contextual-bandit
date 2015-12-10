@@ -722,7 +722,6 @@ where the first inequality is by Lemmas \ref{lem:estimateU} and \ref{lem:increas
 	with respect to $\bU_t$, and the last inequality is by
 	Lemma~\ref{lem:prefixRelation}~(2).
 
-
 Then by Lemma \ref{lem:estimateTech},
 \begin{equation} \label{eq:btuttrue}
 f_{\wedge}(\bB_t,\bU_t) \leq f_{\wedge}(\bB_t, \theta_*^{\top}x_t) + \sum_{k=1}^{\abs{\bB_t}}\gamma_k\bbeta_{t-1}(\delta)\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}.
@@ -740,7 +739,64 @@ we can derive the result
 \leq& \frac{8}{f_{\wedge}^*} \EE \left[ \sum_{k=1}^{ \bO_t } \bbeta_{t-1}(\delta) \norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right].
 \end{align*}
 \end{proof}
-	
+
+From the above lemma, we can bound the regret at time $t$ in terms of the observed base arms, which we would like to estimate in the following. Before that, we need a technical lemma.
+
+\begin{lemma}
+\label{lem:detTech}
+Let $x_i \in \RR^{d \times 1}, 1 \leq i \leq n$. Then we have
+$$
+\det\left(I + \sum_{i=1}^n x_i x_i^{\top}\right) \geq 1 + \sum_{i=1}^n \norm{x_i}_2^2.
+$$
+\end{lemma}
+\begin{proof}
+Denote the eigenvalues of $I + \sum_{i=1}^n x_i x_i^{\top}$ by $1+\alpha_1,...,1+\alpha_d$ with $\alpha_j \geq 0$, $1\leq j\leq d$. Then
+\begin{align*}
+&\det(I + \sum_{i=1}^n x_i x_i^{\top})= \prod_{j=1}^d (1 + \alpha_j)\\
+&\geq 1 +\sum_{j=1}^d \alpha_j =1-d + \sum_{i=1}^d (1+\alpha_i) \\
+&=1-d + \trace(I + \sum_{i=1}^n x_i x_i^{\top})= 1-d + d + \sum_{i=1}^n \norm{x_i}_2^2\\
+&=1 + \sum_{i=1}^n \norm{x_i}_2^2.
+\end{align*}
+\end{proof}
+
+Now we can give the following estimate about all observed base arms.
+
+\begin{lemma}
+\label{lem:SumXiEstimateInDet}
+If $\lambda \geq C_\gamma$, then
+$$
+\sum_{s=1}^t \sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_{k}^s}}_{\bV_{s-1}^{-1}}^2 \leq 2\ln \left(\frac{\det(\bV_t)}{\lambda^d} \right).
+$$
+\end{lemma}
+\begin{proof}
+\begin{align}
+&\det(\bV_t) = \det(\bV_{t-1} + \sum_{k=1}^{\bO_t} (\gamma_k X_{t,\ba_k^{t}})(\gamma_k X_{t, \ba_k^{t}}^{\top})) \notag\\
+&=\det(\bV_{t-1}) \notag \\
+&~~~\cdot \det(I + \sum_{k=1}^{\bO_t} \gamma_k \bV_{t-1}^{-1/2}x_{t,\ba_{k}^{t}} (\gamma_k \bV_{t-1}^{-1/2}x_{t,\ba_{k}^{t}})^{\top}) \notag\\
+&\geq \det(\bV_{t-1}) (1 + \sum_{k=1}^{\bO_t} \norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2) \label{eq:detGeq} \\
+&\geq \det(\lambda I)\prod_{s=1}^{t}(1 + \sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2), \notag
+\end{align}
+where inequality \eqref{eq:detGeq} is because of Lemma \ref{lem:detTech}.
+
+Because
+$$
+\norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2 \leq \norm{\gamma_k x_{s,\ba_k^s}}_2^2/\lambda_{\min}(\bV_{s-1}) \leq \gamma_k^2 /\lambda,
+$$
+we have 
+$$
+\sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2 \leq \frac{1}{\lambda} \sum_{k=1}^{K} \gamma_k^2 = C_\gamma /\lambda \leq 1
+$$
+Using the fact that $ 2\ln(1+u) \geq u$ for any $u \in [0,1]$, we get
+\begin{align*}
+&\sum_{s=1}^t \sum_{k=1}^{\bO_s}\norm{\gamma_k x_{s,\ba_{k}^s}}_{\bV_{s-1}^{-1}}^2 \\
+&\leq 2\sum_{s=1}^t\ln(1 + \sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2)\\
+&\leq 2(\ln(\det(\bV_t)) - \ln(\det(\lambda I))) \\
+&= 2 \ln \left(\frac{\det(\bV_t)}{\det(\lambda I)} \right)
+\end{align*}
+\end{proof}
+
+By the above lemma, we need to estimate $\det(\bV_t)$ to bound regret.
+
 \begin{lemma} % det(V_t)
 \label{lem:detVt}
 $\det(\bV_t)$ is increasing with respect to $t$ and 
@@ -778,88 +834,39 @@ Also,
 Thus we have $\det(\bV_t) \leq (\lambda + C_\gamma t/d)^d.$
 \end{proof}
 
-\begin{lemma}
-\label{lem:SumXiEstimateInDet}
-Let $x_i \in \RR^{d \times 1}, 1 \leq i \leq n$. Then we have
-$$
-\det\left(I + \sum_{i=1}^n x_i x_i^{\top}\right) \geq 1 + \sum_{i=1}^n \norm{x_i}_2^2.
-$$
-\end{lemma}
-\begin{proof}
-Denote the eigenvalues of $I + \sum_{i=1}^n x_i x_i^{\top}$ by $1+\alpha_1,...,1+\alpha_d$ with $\alpha_j \geq 0$, $1\leq j\leq d$. Then
-\begin{align*}
-&\det(I + \sum_{i=1}^n x_i x_i^{\top})= \prod_{j=1}^d (1 + \alpha_j)\\
-&\geq 1 +\sum_{j=1}^d \alpha_j =1-d + \sum_{i=1}^d (1+\alpha_i) \\
-&=1-d + \trace(I + \sum_{i=1}^n x_i x_i^{\top})= 1-d + d + \sum_{i=1}^n \norm{x_i}_2^2\\
-&=1 + \sum_{i=1}^n \norm{x_i}_2^2.
-\end{align*}
-\end{proof}
 
-\begin{lemma}
-If $\lambda \geq C_\gamma$, then
-$$
-\sum_{s=1}^t \sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_{k}^s}}_{\bV_{s-1}^{-1}}^2 \leq 2\ln \left(\frac{\det(\bV_t)}{\lambda^d} \right).
-$$
-\end{lemma}
-\begin{proof}
-\begin{align*}
-&\det(\bV_t) = \det(\bV_{t-1} + \sum_{k=1}^{\bO_t} (\gamma_k X_{t,\ba_k^{t}})(\gamma_k X_{t, \ba_k^{t}}^{\top}))\\
-&=\det(\bV_{t-1})\\
-&~~~\cdot \det(I + \sum_{k=1}^{\bO_t} \gamma_k \bV_{t-1}^{-1/2}x_{t,\ba_{k}^{t}} (\gamma_k \bV_{t-1}^{-1/2}x_{t,\ba_{k}^{t}})^{\top})\\
-&\geq \det(\bV_{t-1}) (1 + \sum_{k=1}^{\bO_t} \norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2)\\
-&\geq \det(\lambda I)\prod_{s=1}^{t}(1 + \sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2)
-\end{align*}
-Because
-$$
-\norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2 \leq \norm{\gamma_k x_{s,\ba_k^s}}_2^2/\lambda_{\min}(\bV_{s-1}) \leq \gamma_k^2 /\lambda,
-$$
-we have 
-$$
-\sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2 \leq \frac{1}{\lambda} \sum_{k=1}^{K} \gamma_k^2 = C_\gamma /\lambda \leq 1
-$$
-Using the fact that $ 2\ln(1+u) \geq u$ for any $u \in [0,1]$, we get
-\begin{align*}
-&\sum_{s=1}^t \sum_{k=1}^{\bO_s}\norm{\gamma_k x_{s,\ba_{k}^s}}_{\bV_{s-1}^{-1}}^2 \\
-&\leq 2\sum_{s=1}^t\ln(1 + \sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2)\\
-&\leq 2(\ln(\det(\bV_t)) - \ln(\det(\lambda I))) \\
-&= 2 \ln \left(\frac{\det(\bV_t)}{\det(\lambda I)} \right)
-\end{align*}
-\end{proof}
 
 \begin{proof}[ of Theorem \ref{thm:main}]
 Suppose inequality (\ref{eq:estimateTheta}) holds for all time $t$. 
 
 For the disjunctive case,
-\begin{equation}
-\begin{split}
-&R(T) = \EE[\sum_{t=1}^{T} \EE_{t}[R(t, \bA_t)] ]\\
-&\leq \EE\left[\sum_{t=1}^{T} \frac{1}{p^*} \EE_t \left[\bbeta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}\right] \right]\\
+\begin{align}
+&R(T) = \EE[\sum_{t=1}^{T} \EE_{t}[R(t, \bA_t)] ] \notag\\
+&\leq \EE\left[\sum_{t=1}^{T} \frac{1}{p^*} \EE_t \left[\bbeta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}\right] \right] \label{eq:pfMdeltaEst}\\
+&\leq \EE\left[\sum_{t=1}^{T} \frac{1}{p^*} \bbeta_{T}(\delta) \EE_t \left[ \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}\right] \right] \label{eq:pfMbeta}\\
 &\leq \EE \left[\frac{1}{p^*} \bbeta_T(\delta) \sqrt{\left(\sum_{t=1}^{T} \bO_t\right) \left( \sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right)}
-	\right ]  \\
-&\leq \EE\left[\frac{1}{p^*} \left( \sqrt{ \ln \left( \frac{\det(\bV_T)}{\lambda^d \delta^2} \right)} + \sqrt{\lambda} \right) \right. \\
-& \left. \qquad \qquad \cdot \sqrt{TK \cdot 2\ln \left(\frac{\det(\bV_T)}{\lambda^d} \right)} \right]\\
-&\leq \frac{\sqrt{2}}{p^*} \left(\sqrt{ d \ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^2} \right) } + \sqrt{\lambda} \right)\\
-&\qquad \qquad \cdot \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))} ]
-\end{split}
-\end{equation}
-The first inequality is by Lemma \ref{lem:DeltaEsimateWithP*}. The second inequality is because $\bbeta_{t}(\delta)$ is increasing with respect to $t$, derived by definition of $\bbeta_t(\delta)$ and Lemma \ref{lem:detVt}, and mean inequality. The third inequality is because of the definition of $\beta_t(\delta)$ and Lemma \ref{lem:SumXiEstimateInDet}. And the last inequality is because estimate of $\det(\bV_t)$ by Lemma \ref{lem:detVt}.
+	\right ]  \label{eq:pfMmeanEq}\\
+&\leq \EE\left[\frac{1}{p^*} \left( \sqrt{ \ln \left( \frac{\det(\bV_T)}{\lambda^d \delta^2} \right)} + \sqrt{\lambda} \right) \right. \notag\\
+& \left. \qquad \qquad \cdot \sqrt{TK \cdot 2\ln \left(\frac{\det(\bV_T)}{\lambda^d} \right)} \right] \label{eq:pfMsumXi}\\
+&\leq \frac{\sqrt{2}}{p^*} \left(\sqrt{ d \ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^2} \right) } + \sqrt{\lambda} \right) \notag\\
+&\qquad \qquad \cdot \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))} ] \label{eq:pfMdetEst}
+\end{align}
+The inequality \eqref{eq:pfMdeltaEst} is by Lemma \ref{lem:DeltaEsimateWithP*}. The second inequality \eqref{eq:pfMbeta} is because $\bbeta_{t}(\delta)$ is increasing with respect to $t$, derived by definition of $\bbeta_t(\delta)$ and Lemma \ref{lem:detVt}. The third inequality \eqref{eq:pfMmeanEq} is because of mean inequality. The fourth inequality \eqref{eq:pfMsumXi} is because of the definition of $\beta_t(\delta)$ and Lemma \ref{lem:SumXiEstimateInDet}. And the last inequality \eqref{eq:pfMdetEst} is because estimate of $\det(\bV_t)$ by Lemma \ref{lem:detVt}.
 
 Similarly, for the conjunctive case, 
-\begin{equation}
-\begin{split}
-&R(T) = \EE[ \sum_{t=1}^{T} \EE_{t}[R_{\wedge}(t, \bA_t)] ]\\
-&\leq \EE \left[\sum_{t=1}^{T} \frac{8}{f_{\wedge}^{\ast}} \EE_t\left[\bbeta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right] \right] \\
-&\leq \EE\left[\frac{8}{f_{\wedge}^{\ast}} \bbeta_{T}(\delta) \sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right]\\
-&\leq \EE\left[\frac{8}{f_{\wedge}^{\ast}} \bbeta_{T}(\delta) \sqrt{ \left(\sum_{t=1}^{T} \bO_t \right) \EE_t \left[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right]} \right]\\
-&\leq \EE \left[\frac{\sqrt{128}}{f_{\wedge}^{\ast}} \left(\sqrt{\ln\left(\frac{\det(\bV_T)}{\lambda^d \delta^2}\right) } + \sqrt{\lambda} \right) \right. \\
-&\qquad \qquad \left. \cdot \sqrt{TK \cdot 2\ln \left(\frac{\det(\bV_T)}{\lambda^d} \right)} \right]\\
-&\leq \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \left(\sqrt{d \ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^2}\right) } + \sqrt{\lambda} \right)\\
-&\qquad \qquad \cdot \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))} ]
-\end{split}
-\end{equation}
+\begin{align}
+&R(T) = \EE[ \sum_{t=1}^{T} \EE_{t}[R_{\wedge}(t, \bA_t)] ] \notag\\
+&\leq \EE \left[\sum_{t=1}^{T} \frac{8}{f_{\wedge}^{\ast}} \EE_t\left[\bbeta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right] \right] \label{eq:pfMCdeltaEst}\\
+&\leq \EE\left[\frac{8}{f_{\wedge}^{\ast}} \bbeta_{T}(\delta) \sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right] \label{eq:pfMCbeta}\\
+&\leq \EE\left[\frac{8}{f_{\wedge}^{\ast}} \bbeta_{T}(\delta) \sqrt{ \left(\sum_{t=1}^{T} \bO_t \right) \EE_t \left[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right]} \right] \label{eq:pfMCmeaneq}\\
+&\leq \EE \left[\frac{\sqrt{128}}{f_{\wedge}^{\ast}} \left(\sqrt{\ln\left(\frac{\det(\bV_T)}{\lambda^d \delta^2}\right) } + \sqrt{\lambda} \right) \right. \notag\\
+&\qquad \qquad \left. \cdot \sqrt{TK \cdot 2\ln \left(\frac{\det(\bV_T)}{\lambda^d} \right)} \right] \label{eq:pfMCsumXi}\\
+&\leq \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \left(\sqrt{d \ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^2}\right) } + \sqrt{\lambda} \right) \notag\\
+&\qquad \qquad \cdot \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))} ] \label{eq:pfMCdetEst}
+\end{align}
 \end{proof}
 
-The first inequality is by Lemma \ref{lem:DeltaEsimateWithP*}. The second inequality is because $\bbeta_{t}(\delta)$ is increasing with respect to $t$, derived by definition of $\bbeta_t(\delta)$ and Lemma \ref{lem:detVt}. The third inequality is because of mean inequality. The forth inequality is by the definition of $\beta_t(\delta)$ and Lemma \ref{lem:SumXiEstimateInDet}. And the last inequality is because estimate of $\det(\bV_t)$ by Lemma \ref{lem:detVt}.
+The first inequality \eqref{eq:pfMCdeltaEst} is by Lemma \ref{lem:DeltaEsimateWithP*}. The second inequality \eqref{eq:pfMCbeta} is because $\bbeta_{t}(\delta)$ is increasing with respect to $t$, derived by definition of $\bbeta_t(\delta)$ and Lemma \ref{lem:detVt}. The third inequality \eqref{eq:pfMCmeaneq} is because of mean inequality. The forth inequality \eqref{eq:pfMCsumXi} is by the definition of $\beta_t(\delta)$ and Lemma \ref{lem:SumXiEstimateInDet}. And the last inequality \eqref{eq:pfMCdetEst} is because estimate of $\det(\bV_t)$ by Lemma \ref{lem:detVt}.
 	
 % In the unusual situation where you want a paper to appear in the
 % references without citing it in the main text, use \nocite
