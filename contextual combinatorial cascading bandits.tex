@@ -388,12 +388,12 @@ Let regularization parameter $\lambda$ satisfy $\lambda \geq C_\gamma$, where $C
 \begin{align}
 R(T) &\le \frac{\sqrt{2}}{p^*} \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))}  \nonumber \\
 &\qquad \cdot \left(\sqrt{d\ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^2}\right) } + \sqrt{\lambda}\right) \nonumber \\
-&=O\left(\frac{d}{p^*} \sqrt{TK} \ln T\right),
+&=O\left(\frac{d}{p^*} \sqrt{TK} \ln \left(\frac{C_\gamma T}{\delta}\right) \right),
 \end{align}
 \begin{align}
 R_{\wedge}(T) &\le \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))} \nonumber \\
 &\qquad \cdot \left(\sqrt{d\ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^2}\right) } + \sqrt{\lambda}\right) \nonumber \\
-&=O\left(\frac{d}{f_{\wedge}^{\ast}}\sqrt{TK} \ln T\right).
+&=O\left(\frac{d}{f_{\wedge}^{\ast}}\sqrt{TK} \ln \left(\frac{C_\gamma T}{\delta}\right) \right).
 \end{align}
 %where
 %\begin{align*}
@@ -655,7 +655,7 @@ However, it is hard to estimate an upper bound for
 \begin{lemma}
 \label{lem:DeltaEsimateWithP*}
 Let $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$ and $\gamma_k' = 1 - \gamma_k$. 
-For any time $t$ and the chosen action $\bA_t = (\ba_1^t, \ldots, \ba_{\abs{A}}^t )$, we have $f(A_t^*, \bU_t) \leq f(A, \bU_t)$. 
+%For any time $t$ and the chosen action $\bA_t = (\ba_1^t, \ldots, \ba_{\abs{A}}^t )$, we have $f(A_t^*, \bU_t) \leq f(A, \bU_t)$. 
 Suppose the equation (\ref{eq:estimateTheta}) holds for time $t-1$. Then
 $$
 \EE_t[R(t, \bA_t)] \leq \frac{1}{p^*} \EE_t \left[ \bbeta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right].
@@ -677,20 +677,34 @@ then
 For the disjunctive case,  
 \begin{align}
 &\EE[R(t, \bA_t)|\cH_t]  \nonumber \\
-=& \EE \left[ \left. R(t, \bA_t) \EE \left[ \left. \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t\geq\abs{\bA_t}\} \right| \bA_t \right]  \right| \cH_t \right]\\
-=& \EE \left[ \left. R(t, \bA_t) \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t\geq\abs{\bA_t}\}  \right| \cH_t \right]\\
-\leq &\frac{1}{p^{\ast}} \EE \left[ \left. R(t, \bA_t) \bOne\{\bO_t\geq\abs{\bA_t}\}  \right| \cH_t \right]\\
-\leq &\frac{1}{p^{\ast}} \EE \left[ \left. \sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}} \bOne\{\bO_t\geq\abs{\bA_t}\}  \right| \cH_t \right]\\
+=& \EE \left[ \left. R(t, \bA_t) \EE \left[ \left. \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t\geq\abs{\bA_t}\} \right| \bA_t \right]  \right| \cH_t \right]
+	\label{eq:addOt}\\
+=& \EE \left[ \left. R(t, \bA_t) \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t\geq\abs{\bA_t}\}  \right| \cH_t \right] \label{eq:removeE}\\
+\leq &\frac{1}{p^{\ast}} \EE \left[ \left. R(t, \bA_t) \bOne\{\bO_t\geq\abs{\bA_t}\}  \right| \cH_t \right] \label{eq:relaxpstar}\\
+\leq &\frac{1}{p^{\ast}} \EE \left[ \left. \sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}} \bOne\{\bO_t\geq\abs{\bA_t}\}  \right| \cH_t \right] \label{eq:useradiusbound}\\
 \leq &\frac{1}{p^{\ast}} \EE \left[ \left. \sum_{k=1}^{\bO_t} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}} \right| \cH_t \right].
+\label{eq:relaxindicator}
 \end{align}
-The third inequality is because $p_{\bA_t} \geq p^*$ and the forth inequality is by Lemma \ref{lem:DeltaEstimate}.
+Equality \eqref{eq:addOt} is because when $\bA_t$ is fixed, $p_{t, \bA_t}$
+	is the probability of $\bO_t\geq\abs{\bA_t}$, and thus the inner expectation is $1$.
+Equality \eqref{eq:removeE} is because when the history $\cH_t$ is fixed,
+	$\bA_t$ is fixed by the deterministic algorithm C$^3$-UCB, and thus there is no
+	need to write the conditional expectation.
+Inequality~\eqref{eq:relaxpstar} is because $p_{t,\bA_t} \geq p^*$ by definition.
+Inequality~\eqref{eq:useradiusbound} is by Lemma \ref{lem:DeltaEstimate} and
+	the fact $f(A_t^*, \bU_t) \leq f(\bA_t, \bU_t)$, which is true because
+	algorithm C$^3$-UCB selects action $\bA_t$ as the best action with respect to
+	$\bU_t$.
+Inequality~\eqref{eq:relaxindicator} is by simply arguing on the two cases for
+	the indicator function $\bOne\{\bO_t\geq\abs{\bA_t}\}$.
 % $p_{\bA_t} \geq \frac{1}{n_0 + 1}$ by lemma \ref{lem:prefixRelation} and the result can be derived directly. 
 
 For the conjunctive case, by Lemma~\ref{lem:prefixexists} there exists a prefix $\bB_t$ of $\bA_t$ such that $p_{\wedge, t, \bB_t} \geq \frac{1}{2}f_{\wedge, t}^* - \gamma'_{|\bB_t|}$ and $R_{\wedge}(t, \bB_t) \geq \frac{1}{2} R_{\wedge}(t, \bA_t)$. 
 By the assumption that $\gamma'_{|\bB_t|}\le \gamma'_K \le \frac{1}{4} f^*_{\wedge}
 	\le \frac{1}{4} f^*_{\wedge,t}  $, we have
 	$p_{\wedge, t, \bB_t} \geq \frac{1}{4}f_{\wedge, t}^*$.
-Then we have
+Then, similar to the derivation from Eq.\eqref{eq:addOt} to Eq.\eqref{eq:relaxpstar},
+	we have
 \begin{align}
 &\EE_t[R_{\wedge}(t, \bA_t)] \leq 2 \EE[R_{\wedge}(t, \bB_t) \left. \right| \cH_t] \nonumber \\
 =& 2 \EE \left[ \left. R_{\wedge}(t, \bB_t) \EE \left[ \left. \frac{1}{p_{\wedge, t, \bB_t}} \bOne\{\bO_t\geq\abs{\bB_t}\} \right| \bB_t \right]  \right| \cH_t \right] \nonumber \\
@@ -768,7 +782,7 @@ Thus we have $\det(\bV_t) \leq (\lambda + C_\gamma t/d)^d.$
 \label{lem:SumXiEstimateInDet}
 Let $x_i \in \RR^{d \times 1}, 1 \leq i \leq n$. Then we have
 $$
-\det(I + \sum_{i=1}^n x_i x_i^{\top}) \geq 1 + \sum_{i=1}^n \norm{x_i}_2^2.
+\det\left(I + \sum_{i=1}^n x_i x_i^{\top}\right) \geq 1 + \sum_{i=1}^n \norm{x_i}_2^2.
 $$
 \end{lemma}
 \begin{proof}
