@@ -350,7 +350,7 @@ Then, the learning agent updates $\bV_t, \bX_t, \bY_t$ in order to get a newer e
 %\STATE {}
 		
 \STATE {//Choose action $\bA_t$ using UCBs $\bU_t$}
-\STATE {$\bA_t=(\ba_1^t,...,\ba_{\abs{\bA_t}}^t) \leftarrow \argmax_{A \in \cS} f(A, \bU_t)$}
+\STATE { $\bA_t=(\ba_1^t,...,\ba_{\abs{\bA_t}}^t) \leftarrow \argmax_{A \in \cS} f(A, \bU_t)$ } 
 \STATE {//In the conjunctive case, use $f_{\wedge}$ in stead of $f$}
 \STATE {Play $\bA_t$ and observe $\bO_t, \bw_t(\ba_k^t), k\in[\bO_t]$}
 %\STATE {}
@@ -647,16 +647,16 @@ $$
 The result for the conjunctive case can be deduced in a similar way.
 \end{proof}
 
-\wei{This lemma needs to be clarified, using Lemma 4.6.
-Also, our regret bound is expected regret but with a high probability? Sound a 
-bit strange.}
-\shuai{Yes, our regret bound is expected regret with a high probability. The reason is that NIPS'11 gives such a result.}
-
-Notice that if we substitute $A$ by $\bA_t$ in Lemma \ref{lem:DeltaEstimate}, then the upper bound of $R(t, \bA_t)$ is in terms of all base arms of $\bA_t$. However, $\sum_{t=1}^T \sum_{k=1}^{\abs{\bA_t}} \norm{ x_{t, \ba_k^t} }_{ \bV_{t-1}^{-1} }$ is hard to estimate because $\bV_t$ only contains observed base arms. So we need the following lemma.
+Notice that if we substitute $A$ by $\bA_t$ in Lemma \ref{lem:DeltaEstimate}, then the upper bound of $R(t, \bA_t)$ is in terms of all base arms of $\bA_t$. 
+However, it is hard to estimate an upper bound for
+	$\sum_{t=1}^T \sum_{k=1}^{\abs{\bA_t}} \norm{ x_{t, \ba_k^t} }_{ \bV_{t-1}^{-1} }$ 
+	because $\bV_t$ only contains observed base arms. Thus we need the following lemma.
 
 \begin{lemma}
 \label{lem:DeltaEsimateWithP*}
-Let $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$ and $\gamma_k' = 1 - \gamma_k$. For any time $t$ and the chosen action $\bA_t = (\ba_1^t, \ldots, \ba_{\abs{A}}^t )$, we have $f(A_t^*, \bU_t) \leq f(A, \bU_t)$. Suppose the equation (\ref{eq:estimateTheta}) holds for time $t-1$. Then
+Let $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$ and $\gamma_k' = 1 - \gamma_k$. 
+For any time $t$ and the chosen action $\bA_t = (\ba_1^t, \ldots, \ba_{\abs{A}}^t )$, we have $f(A_t^*, \bU_t) \leq f(A, \bU_t)$. 
+Suppose the equation (\ref{eq:estimateTheta}) holds for time $t-1$. Then
 $$
 \EE_t[R(t, \bA_t)] \leq \frac{1}{p^*} \EE_t \left[ \bbeta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right].
 $$
@@ -675,43 +675,55 @@ then
 \end{lemma}
 \begin{proof}
 For the disjunctive case,  
-\begin{align*}
-&\EE[R(t, \bA_t)|\cH_t] \\
+\begin{align}
+&\EE[R(t, \bA_t)|\cH_t]  \nonumber \\
 =& \EE \left[ \left. R(t, \bA_t) \EE \left[ \left. \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t\geq\abs{\bA_t}\} \right| \bA_t \right]  \right| \cH_t \right]\\
 =& \EE \left[ \left. R(t, \bA_t) \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t\geq\abs{\bA_t}\}  \right| \cH_t \right]\\
 \leq &\frac{1}{p^{\ast}} \EE \left[ \left. R(t, \bA_t) \bOne\{\bO_t\geq\abs{\bA_t}\}  \right| \cH_t \right]\\
-\leq &\frac{1}{p^{\ast}} \EE \left[ \left. \sum_{k=1}^{\abs{A}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}} \bOne\{\bO_t\geq\abs{\bA_t}\}  \right| \cH_t \right]\\
+\leq &\frac{1}{p^{\ast}} \EE \left[ \left. \sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}} \bOne\{\bO_t\geq\abs{\bA_t}\}  \right| \cH_t \right]\\
 \leq &\frac{1}{p^{\ast}} \EE \left[ \left. \sum_{k=1}^{\bO_t} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}} \right| \cH_t \right].
-\end{align*}
+\end{align}
 The third inequality is because $p_{\bA_t} \geq p^*$ and the forth inequality is by Lemma \ref{lem:DeltaEstimate}.
 % $p_{\bA_t} \geq \frac{1}{n_0 + 1}$ by lemma \ref{lem:prefixRelation} and the result can be derived directly. 
 
-For the conjunctive case, there exists a prefix $\bB_t$ of $\bA_t$ such that $p_{\wedge, t, \bB_t} \geq \frac{1}{4}f_{\wedge, t}^*$ and $R_{\wedge}(t, \bB_t) \geq \frac{1}{2} R_{\wedge}(t, \bA_t)$. Then we have
-\begin{align*}
-&\EE_t[R_{\wedge}(t, \bA_t)] \leq 2 \EE[R_{\wedge}(t, \bB_t) \left. \right| \cH_t]\\
-=& 2 \EE \left[ \left. R_{\wedge}(t, \bB_t) \EE \left[ \left. \frac{1}{p_{\wedge, t, \bB_t}} \bOne\{\bO_t\geq\abs{\bB_t}\} \right| \bB_t \right]  \right| \cH_t \right]\\
-=& 2\EE \left[ \left. R_{\wedge}(t, \bB_t) \frac{1}{p_{\wedge, t, \bB_t}} \bOne\{\bO_t\geq\abs{\bB_t}\}  \right| \cH_t \right]\\
-\leq &\frac{8}{f_{\wedge, t}^{\ast}} \EE \left[ \left. R_{\wedge}(t, \bB_t) \bOne\{\bO_t\geq\abs{\bB_t}\}  \right| \cH_t \right]
+For the conjunctive case, by Lemma~\ref{lem:prefixexists} there exists a prefix $\bB_t$ of $\bA_t$ such that $p_{\wedge, t, \bB_t} \geq \frac{1}{2}f_{\wedge, t}^* - \gamma'_{|\bB_t|}$ and $R_{\wedge}(t, \bB_t) \geq \frac{1}{2} R_{\wedge}(t, \bA_t)$. 
+By the assumption that $\gamma'_{|\bB_t|}\le \gamma'_K \le \frac{1}{4} f^*_{\wedge}
+	\le \frac{1}{4} f^*_{\wedge,t}  $, we have
+	$p_{\wedge, t, \bB_t} \geq \frac{1}{4}f_{\wedge, t}^*$.
+Then we have
+\begin{align}
+&\EE_t[R_{\wedge}(t, \bA_t)] \leq 2 \EE[R_{\wedge}(t, \bB_t) \left. \right| \cH_t] \nonumber \\
+=& 2 \EE \left[ \left. R_{\wedge}(t, \bB_t) \EE \left[ \left. \frac{1}{p_{\wedge, t, \bB_t}} \bOne\{\bO_t\geq\abs{\bB_t}\} \right| \bB_t \right]  \right| \cH_t \right] \nonumber \\
+=& 2\EE \left[ \left. R_{\wedge}(t, \bB_t) \frac{1}{p_{\wedge, t, \bB_t}} \bOne\{\bO_t\geq\abs{\bB_t}\}  \right| \cH_t \right] \nonumber \\
+\leq &\frac{8}{f_{\wedge, t}^{\ast}} \EE \left[ \left. R_{\wedge}(t, \bB_t) \bOne\{\bO_t\geq\abs{\bB_t}\}  \right| \cH_t \right]. \label{eq:btOneotbt}
 % \leq &\frac{8}{f_{\wedge, t}^{\ast}} \EE \left[ \left. \sum_{k=1}^{\abs{\bB_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}} \bOne\{\bO_t\geq\abs{\bB_t}\}  \right| \cH_t \right]\\
 % \leq &\frac{8}{f_{\wedge, t}^{\ast}} \EE \left[ \left. \sum_{k=1}^{\bO_t} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}} \right| \cH_t \right].
-\end{align*}
-By Lemma \ref{lem:increasing},
-$$
-f_{\wedge}(A_t^*, \theta_*^{\top}X_t) \leq f_{\wedge}(A_t^*,\bU_t) \leq f_{\wedge}(\bA_t,\bU_t) \leq f_{\wedge}(\bB_t,\bU_t)
-$$
-and by Lemma \ref{lem:estimateTech},
-$$
+\end{align}
+Next, we have
+\begin{equation} \label{eq:andstarbt}
+f_{\wedge}(A_t^*, \theta_*^{\top}x_t) \leq f_{\wedge}(A_t^*,\bU_t) \leq f_{\wedge}(\bA_t,\bU_t) \leq f_{\wedge}(\bB_t,\bU_t),
+\end{equation}
+where the first inequality is by Lemmas \ref{lem:estimateU} and \ref{lem:increasing},
+	the second inequality is by the C$^3$-UCB algorithm, in which the best action $\bA_t$ is selected
+	with respect to $\bU_t$, and the last inequality is by
+	Lemma~\ref{lem:prefixRelation}~(2).
+
+
+Then by Lemma \ref{lem:estimateTech},
+\begin{equation} \label{eq:btuttrue}
 f_{\wedge}(\bB_t,\bU_t) \leq f_{\wedge}(\bB_t, \theta_*^{\top}x_t) + \sum_{k=1}^{\abs{\bB_t}}\gamma_k\bbeta_{t-1}(\delta)\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}.
-$$
-Therefore,
-$$
-R_{\wedge}(t, \bB_t) \leq \sum_{k=1}^{\abs{\bB_t}}\bbeta_{t-1}(\delta)\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}.
-$$
-Then we can derive the result
+\end{equation}
+Therefore, combining Eq.\eqref{eq:andstarbt} and \eqref{eq:btuttrue}, we have
+\begin{align}
+R_{\wedge}(t, \bB_t) & = f_{\wedge, t}^{\ast} - f_{\wedge}(\bB_t, \theta_{\ast}^{\top}x_t) \nonumber \\
+& \leq \sum_{k=1}^{\abs{\bB_t}}\bbeta_{t-1}(\delta)\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}. \label{eq:sumbetax}
+\end{align}
+Finally from Inequalities~\eqref{eq:btOneotbt} and \eqref{eq:sumbetax}
+we can derive the result
 \begin{align*}
 &\EE_t[R_{\wedge}(t, \bA_t)] \\
-\leq& \EE \left[\frac{8}{f_{\wedge, t}^*} \bOne\{ \bO_t \geq \abs{\bB_t} \}\sum_{k=1}^{\abs{\bB_t}}\bbeta_{t-1}(\delta)\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right]\\
-\leq& \EE \left[ \frac{8}{f_{\wedge}^*} \sum_{k=1}^{ \bO_t } \bbeta_{t-1}(\delta) \norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right]
+\leq& \frac{8}{f_{\wedge, t}^*} \EE \left[\bOne\{ \bO_t \geq \abs{\bB_t} \}\sum_{k=1}^{\abs{\bB_t}}\bbeta_{t-1}(\delta)\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right]\\
+\leq& \frac{8}{f_{\wedge}^*} \EE \left[ \sum_{k=1}^{ \bO_t } \bbeta_{t-1}(\delta) \norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right].
 \end{align*}
 \end{proof}
 	
