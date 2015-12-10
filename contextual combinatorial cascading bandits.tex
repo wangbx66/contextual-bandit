@@ -387,13 +387,13 @@ $\gamma_k' = 1 - \gamma_k, \gamma'_K \leq \frac{1}{4}f_{\wedge}^{\ast}$.
 Let regularization parameter $\lambda$ satisfy $\lambda \geq C_\gamma$, where $C_\gamma = \sum_{k=1}^{K} \gamma_k^2$. Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regrets of our algorithm, C$^3$-UCB for both the conjunctive and disjunctive objectives, satisfy
 \begin{align}
 R(T) &\le \frac{\sqrt{2}}{p^*} \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))}  \nonumber \\
-&\qquad \cdot \left(\sqrt{d\ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^2}\right) } + \sqrt{\lambda}\right) \nonumber \\
-&=O\left(\frac{d}{p^*} \sqrt{TK} \ln \left(\frac{C_\gamma T}{\delta}\right) \right),
+&\qquad \cdot \left(\sqrt{d\ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda}\right) \nonumber \\
+&=O\left(\frac{d}{p^*} \sqrt{TK} \ln \left(\frac{C_\gamma T}{\delta^{2/d}}\right) \right),
 \end{align}
 \begin{align}
 R_{\wedge}(T) &\le \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))} \nonumber \\
-&\qquad \cdot \left(\sqrt{d\ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^2}\right) } + \sqrt{\lambda}\right) \nonumber \\
-&=O\left(\frac{d}{f_{\wedge}^{\ast}}\sqrt{TK} \ln \left(\frac{C_\gamma T}{\delta}\right) \right).
+&\qquad \cdot \left(\sqrt{d\ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda}\right) \nonumber \\
+&=O\left(\frac{d}{f_{\wedge}^{\ast}}\sqrt{TK} \ln \left(\frac{C_\gamma T}{\delta^{2/d}}\right) \right).
 \end{align}
 %where
 %\begin{align*}
@@ -854,7 +854,7 @@ For the disjunctive case, we have
 	\right ]  \label{eq:pfMmeanEq}\\
 &\leq \EE\left[\frac{1}{p^*} \left( \sqrt{ \ln \left( \frac{\det(\bV_T)}{\lambda^d \delta^2} \right)} + \sqrt{\lambda} \right) \right. \notag\\
 & \left. \qquad \qquad \cdot \sqrt{TK \cdot 2\ln \left(\frac{\det(\bV_T)}{\lambda^d} \right)} \right] \label{eq:pfMsumXi}\\
-&\leq \frac{\sqrt{2}}{p^*} \left(\sqrt{ d \ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^2} \right) } + \sqrt{\lambda} \right) \notag\\
+&\leq \frac{\sqrt{2}}{p^*} \left(\sqrt{ d \ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^{2/d}} \right) } + \sqrt{\lambda} \right) \notag\\
 &\qquad \qquad \cdot \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))}. \label{eq:pfMdetEst}
 \end{align}
 Inequality \eqref{eq:pfMdeltaEst} is by Lemma \ref{lem:DeltaEsimateWithP*}. 
@@ -873,7 +873,7 @@ Similarly, for the conjunctive case, we have the following derivation:
 &\leq \EE\left[\frac{8}{f_{\wedge}^{\ast}} \bbeta_{T}(\delta) \sqrt{ \left(\sum_{t=1}^{T} \bO_t \right) \EE_t \left[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right]} \right] \label{eq:pfMCmeaneq}\\
 &\leq \EE \left[\frac{\sqrt{128}}{f_{\wedge}^{\ast}} \left(\sqrt{\ln\left(\frac{\det(\bV_T)}{\lambda^d \delta^2}\right) } + \sqrt{\lambda} \right) \right. \notag\\
 &\qquad \qquad \left. \cdot \sqrt{TK \cdot 2\ln \left(\frac{\det(\bV_T)}{\lambda^d} \right)} \right] \label{eq:pfMCsumXi}\\
-&\leq \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \left(\sqrt{d \ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^2}\right) } + \sqrt{\lambda} \right) \notag\\
+&\leq \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \left(\sqrt{d \ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda} \right) \notag\\
 &\qquad \qquad \cdot \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))}. \label{eq:pfMCdetEst}
 \end{align}
 %The first inequality \eqref{eq:pfMCdeltaEst} is by Lemma \ref{lem:DeltaEsimateWithP*}. The second inequality \eqref{eq:pfMCbeta} is because $\bbeta_{t}(\delta)$ is increasing with respect to $t$, derived by definition of $\bbeta_t(\delta)$ and Lemma \ref{lem:detVt}. The third inequality \eqref{eq:pfMCmeaneq} is because of mean inequality. The forth inequality \eqref{eq:pfMCsumXi} is by the definition of $\beta_t(\delta)$ and Lemma \ref{lem:SumXiEstimateInDet}. And the last inequality \eqref{eq:pfMCdetEst} is because estimate of $\det(\bV_t)$ by Lemma \ref{lem:detVt}.
