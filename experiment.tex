@@ -1,10 +1,17 @@
 \documentclass[a4paper,11pt]{article}
 
 \usepackage{fullpage}
-\usepackage{amsmath,amsthm,amssymb}
-\usepackage{graphicx}
 \usepackage{courier}
 \usepackage{tikz}
+\usepackage{times}
+\usepackage{helvet}
+\usepackage{courier}
+\usepackage{amsmath, amssymb, amsfonts, bm}
+\usepackage{algorithm,algorithmic}
+\usepackage{amsthm}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{booktabs}
 
 \begin{document}
 
@@ -49,4 +56,24 @@ We formulate the movie recommendation problem into a combinatorial bandit proble
   \item Measurement for Movielens is accuracy instead of regret because we have no access to the true $\theta_\ast$, if there is one.
 
 \end{enumerate}
+
+An example output, with $T=10000$, is listed below.
+
+\begin{table}
+    \centering
+    \renewcommand{\arraystretch}{1.2}
+	\begin{tabular}{lc}
+	    \toprule
+		\textbf{Algorithm}  &\textbf{Cumulative Reward $\sum_{t=1}^Tr_i $}\\
+		\midrule
+		Li		    &4342.73 \\
+		Qin		    &4323.26 \\
+		Monkey		    &1765.41 \\
+		Kveton		    &1787.81 \\
+		Perfect Play		    &N/A \\
+		\bottomrule
+	\end{tabular}
+	\caption{\textbf{Cumulative reward w.r.t different baselines, under Movielens setting.}}
+	\label{daily}
+\end{table}
 \end{document}
