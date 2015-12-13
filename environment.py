@@ -16,7 +16,9 @@ def contextual_monkey_rng(L=20, d=10, h=0.35, K=4, gamma=0.95, eps=0.1, v=0.35, 
     x = {arm:np.random.uniform(0, 1, d) for arm in arms}
     theta = h * uni(np.random.uniform(0, 1, d))
     logger.info('Initializing random settings "Contextual Monkey" complete')
-    return ucb_settings(arms=arms, L=L, x=x, theta=theta, K=K, d=d, gamma=gamma, eps=eps, v=v, disj=disj)
+    s = ucb_settings(arms=arms, L=L, x=x, theta=theta, K=K, d=d, gamma=gamma, eps=eps, v=v, disj=disj)
+    logger.info(s)
+    return s
 
 def contextual_cascading_monkey(s):
     logger.info('Initializing environment "Contextual Cascading Monkey"')

@@ -56,7 +56,7 @@ def flowtest_movielens_conj():
 
 def flowtest_movielens_disj():
     T = 10000
-    s = contextual_movielens_rng(L=15, portion=0.2, d=15, K=4, h=120, gamma=0.95, disj=True)
+    s = contextual_movielens_rng(L=15, portion=0.2, d=15, K=4, h=None, gamma=0.95, disj=True)
     exploit1, explore1 = contextual_cascading_monkey(*contextual_cascading_movielens_environment(s), T=T)
     exploit2, explore2 = contextual_cascading_sherry(*contextual_cascading_movielens_environment(s), T=T)
     exploit3, explore3 = contextual_full_monkey(*contextual_full_movielens_environment(s), T=T)

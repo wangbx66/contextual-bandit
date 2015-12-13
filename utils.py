@@ -22,4 +22,4 @@ class ucb_settings:
         self.__dict__ = s
         
     def __str__(self):
-        return '\n'.join([str(k) + ' ' + str(v) for k, v in self.__dict__.items()])
+        return '\n'.join([str(k) + ' ' + str(v) for k, v in self.__dict__.items() if not k in ['arms', 'ctrh', 'users', 'U', 'V', 'x']])

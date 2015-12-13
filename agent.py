@@ -1,3 +1,4 @@
+import time
 import heapq
 import numpy as np
 from scipy.spatial.distance import cosine
@@ -110,7 +111,10 @@ def contextual_cascading_sherry(e, s, T):
     X = np.zeros((1, s.d))
     Y = np.zeros(1)
     score = [0]
+    timestamp = time.time()
     for t in range (1, T):
+        if t == 101:
+            logger.info('Sherry 100 rounds with {0}s elapsed'.format(time.time() - timestamp))
         x = e()
         U = {arm:theta.dot(x[arm]) + beta * x[arm].dot(np.linalg.inv(V)).dot(x[arm]) for arm in s.arms}
         recc = [p[1] for p in heapq.nlargest(s.K, [(U[arm], arm) for arm in s.arms])]

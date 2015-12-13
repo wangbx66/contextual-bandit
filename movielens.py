@@ -58,4 +58,6 @@ def contextual_movielens_rng(L=None, portion=0.5, d=15, K=6, h=None, gamma=0.95,
     selected_movies = set([x[1] for x in sorted([(movies[movie], movie) for movie in movies])[-L:]])
     eligable_users = [x[1] for x in sorted([(overlap(history[user], selected_movies), user) for user in history])[-h:]]
     logger.info('Initializing random settings "Contextual Movielens" complete')
-    return ucb_settings(L=L, d=d, K=K, gamma=gamma, disj=disj, users=eligable_users, arms=selected_movies, ctrh=history, U=U, V=V)
+    s = ucb_settings(L=L, d=d, K=K, gamma=gamma, disj=disj, users=eligable_users, arms=selected_movies, ctrh=history, U=U, V=V)
+    logger.info(s)
+    return s
