@@ -1,9 +1,8 @@
 import logging
-logging.basicConfig(format='%(name)s-%(levelname)s: %(message)s', level=logging.INFO)
-logger = logging.getLogger('Main')
 logfile = logging.FileHandler('log')
-logfile.setFormatter(logging.Formatter('%(name)s-%(levelname)s: %(message)s'))
-logger.addHandler(logfile)
+logconsole = logging.StreamHandler()
+logging.basicConfig(format='%(name)s-%(levelname)s: %(message)s', level=logging.INFO, handlers=[logfile, logconsole])
+logger = logging.getLogger('Main')
 
 import time
 seed = int(time.time() * 100) % 339
