@@ -113,8 +113,6 @@ def contextual_cascading_sherry(e, s, T):
     score = [0]
     timestamp = time.time()
     for t in range (1, T):
-        if t == 101:
-            logger.info('Sherry 100 rounds with {0}s elapsed'.format(time.time() - timestamp))
         x = e()
         U = {arm:theta.dot(x[arm]) + beta * x[arm].dot(np.linalg.inv(V)).dot(x[arm]) for arm in s.arms}
         recc = [p[1] for p in heapq.nlargest(s.K, [(U[arm], arm) for arm in s.arms])]
@@ -125,6 +123,8 @@ def contextual_cascading_sherry(e, s, T):
         theta = np.linalg.inv(X.T.dot(X) + lamb * np.eye(s.d)).dot(X.T.dot(Y))
         beta = np.sqrt(np.log(np.linalg.det(V))- ldV - 2 * np.log(delta)) + np.sqrt(lamb)
         score.append(score[-1] + r)
+        if t % 500 == 0:
+            logger.info('Sherry {0} rounds with {1}s elapsed'.format(t, int(time.time() - timestamp)))
     logger.info('Sherry play score {0}/{1}'.format(score[-1], T))
     if 'theta' in s.__dict__:
         logger.info('theta cosine similarity {0}'.format(1 - cosine(s.theta, theta)))
