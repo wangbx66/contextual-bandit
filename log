@@ -1,0 +1,31 @@
+Main-INFO: ===== Numpy/Python random seed = 82
+Main-INFO: Movielens flowtest
+Main-INFO: Require rng initialization
+Main-INFO: K 3
+    gamma 0.95
+    L 90
+    d 15
+    h 120
+    portion 0.2
+    disj True
+Movielens-INFO: Initializing random settings "Contextual Movielens" complete
+Movielens-INFO: gamma 0.95
+    disj True
+    K 3
+    L 90
+    d 15
+Environment-INFO: Initializing environment "Contextual Cascading Movielens"
+Environment-INFO: Initializing environment "Contextual Cascading Movielens" done
+Agent-INFO: Monkey play score 556.827500000013/10000
+Environment-INFO: Initializing environment "Contextual Cascading Movielens"
+Environment-INFO: Initializing environment "Contextual Cascading Movielens" done
+Agent-INFO: Sherry play score 2531.105000000042/10000
+Environment-INFO: Initializing environment "Contextual Full Movielens"
+Environment-INFO: Initializing environment "Contextual Full Movielens" done
+Agent-INFO: Monkey play score 560.8675000000158/10000
+Environment-INFO: Initializing environment "Contextual Full Movielens"
+Environment-INFO: Initializing environment "Contextual Full Movielens" done
+Agent-INFO: Lijing play score 3081.062500000004/10000
+Environment-INFO: Initializing environment "Contextual Cascading Movielens"
+Environment-INFO: Initializing environment "Contextual Cascading Movielens" done
+Agent-INFO: Absolute play score 768.5224999999792/10000

@@ -1,7 +1,9 @@
 import logging
 logfile = logging.FileHandler('log')
+logfile.setLevel(logging.INFO)
 logconsole = logging.StreamHandler()
-logging.basicConfig(format='%(name)s-%(levelname)s: %(message)s', level=logging.INFO, handlers=[logfile, logconsole])
+logconsole.setLevel(logging.DEBUG)
+logging.basicConfig(format='%(name)s-%(levelname)s: %(message)s', level=logging.DEBUG, handlers=[logfile, logconsole])
 logger = logging.getLogger('Main')
 
 import time
@@ -10,7 +12,7 @@ import numpy as np
 np.random.seed(seed)
 import random
 random.seed(seed)
-logger.info('Numpy/Python random seed = {0}'.format(seed))
+logger.info('===== Numpy/Python random seed = {0}'.format(seed))
 
 import matplotlib.pyplot as plt
 
@@ -58,7 +60,8 @@ def flowtest_movielens_conj():
 
 def flowtest_movielens_disj():
     T = 10000
-    kw = {'L':90, 'portion':0.2, 'd':15, 'K':3, 'h':120, 'gamma':0.95, 'disj':True}
+    kw = {'L':15, 'portion':0.2, 'd':15, 'K':4, 'h':120, 'gamma':0.95, 'disj':True}
+    logger.info('Movielens flowtest')
     logger.info('Require rng initialization')
     logger.info('\n    '.join(str(k) + ' ' + str(v) for k, v in kw.items()))
     s = contextual_movielens_rng(**kw)

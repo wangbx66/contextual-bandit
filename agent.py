@@ -107,7 +107,7 @@ def contextual_cascading_sherry(e, s, T):
     theta = np.zeros(s.d)
     beta = 0
     V = lamb * np.eye(s.d)
-    ldV = np.log(np.linalg.det(V))
+    ldV = np.linalg.slogdet(V)[1]
     X = np.zeros((1, s.d))
     Y = np.zeros(1)
     score = [0]
@@ -121,10 +121,10 @@ def contextual_cascading_sherry(e, s, T):
         X = np.concatenate([X] + [s.gamma ** k * x[recc[k]].reshape(1, s.d) for k in range(min(s.K, c+1))])
         Y = np.concatenate([Y] + [s.gamma ** k * ((k == c) ^ s.disj) * np.ones(1) for k in range(min(s.K, c+1))])
         theta = np.linalg.inv(X.T.dot(X) + lamb * np.eye(s.d)).dot(X.T.dot(Y))
-        beta = np.sqrt(np.log(np.linalg.det(V))- ldV - 2 * np.log(delta)) + np.sqrt(lamb)
+        beta = np.sqrt(np.linalg.slogdet(V)[1] - ldV - 2 * np.log(delta)) + np.sqrt(lamb)
         score.append(score[-1] + r)
         if t % 500 == 0:
-            logger.info('Sherry {0} rounds with {1}s elapsed'.format(t, int(time.time() - timestamp)))
+            logger.debug('Sherry {0} rounds with {1}s elapsed'.format(t, int(time.time() - timestamp)))
     logger.info('Sherry play score {0}/{1}'.format(score[-1], T))
     if 'theta' in s.__dict__:
         logger.info('theta cosine similarity {0}'.format(1 - cosine(s.theta, theta)))
