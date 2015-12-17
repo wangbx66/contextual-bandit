@@ -41,9 +41,7 @@ def contextual_movielens_rng(L=None, portion=0.5, d=15, K=6, h=None, gamma=0.95,
                 history[user].append(movie)
             else:
                 history[user] = [movie]
-    cox = np.array(cox)
-    coy = np.array(coy)
-    A = sparse.coo_matrix((np.ones(cox.shape), (cox, coy)), shape=(cox.max() + 1, coy.max() + 1), dtype=np.float32)
+    A = sparse.coo_matrix((np.ones(len(cox)), (cox, coy)), shape=(max(list(history) + cox) + 1, max(list(movies) + coy) + 1), dtype=np.float32)
     U, S, VT = svds(A, d)
     for i in range(U.shape[0]):
         U[i] = U[i] / np.linalg.norm(U[i])
