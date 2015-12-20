@@ -48,19 +48,9 @@ def flowtest_monkey_conj():
     exploit5, explore5 = absolute_cascading_ucb(*contextual_cascading_monkey_environment(s), T=T)
     plt.plot(range(T), exploit1, 'r--', range(T), exploit2, 'r--', range(T), exploit4, 'b--')
 
-def flowtest_movielens_conj():
+def flowtest_movielens():
     T = 10000
-    s = contextual_movielens_rng(L=400, portion=0.2, d=5, K=8, h=None, gamma=0.95, disj=False)
-    exploit1, explore1 = contextual_cascading_monkey(*contextual_cascading_movielens_environment(s), T=T)
-    exploit2, explore2 = contextual_cascading_sherry(*contextual_cascading_movielens_environment(s), T=T)
-    exploit3, explore3 = contextual_full_monkey(*contextual_full_movielens_environment(s), T=T)
-    exploit4, explore4 = contextual_full_lijing(*contextual_full_movielens_environment(s), T=T)
-    exploit5, explore5 = absolute_cascading_ucb(*contextual_cascading_movielens_environment(s), T=T)
-    plt.plot(range(T), exploit1, 'r--', range(T), exploit2, 'r--', range(T), exploit4, 'b--')
-
-def flowtest_movielens_disj():
-    T = 10000
-    kw = {'L':15, 'portion':0.2, 'd':15, 'K':4, 'h':120, 'gamma':0.95, 'disj':True}
+    kw = {'L':950, 'portion':0.2, 'd':15, 'K':15, 'h':30, 'gamma':0.95, 'disj':True}
     logger.info('Movielens flowtest')
     logger.info('Require rng initialization')
     logger.info('\n    '.join(str(k) + ' ' + str(v) for k, v in kw.items()))
@@ -72,5 +62,5 @@ def flowtest_movielens_disj():
     exploit5, explore5 = absolute_cascading_ucb(*contextual_cascading_movielens_environment(s), T=T)
     plt.plot(range(T), exploit1, 'r--', range(T), exploit2, 'r--', range(T), exploit4, 'b--')
 
-flowtest_movielens_disj()
+flowtest_movielens()
 logfile.close()
