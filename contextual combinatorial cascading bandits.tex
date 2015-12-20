@@ -173,7 +173,9 @@ The purpose of this document is to provide both the basic paper template and sub
 \end{abstract} 
 	
 \section{Introduction}
-	
+
+
+
 \section{Related Works}
 	
 \section{Problem Formulation}
@@ -431,22 +433,21 @@ We also define $p^* = \min_{1 \leq t \leq T} \min_{A \in \cS} ~ p_{t, A}$ to be 
 	\begin{lemma}
 		\CLemmaPrefixExi
 	\end{lemma}
-	Then we need to bound $f(A, \bU_t)$ and $f_{\wedge}(A, \bU_t)$ which is non-linear and contains discounted parameters $\gamma$. First we have the expected reward function is increasing with respect to $w$ when $\gamma~s$ are decreasing and $\gamma's$ are increasing.
+	Then we use the prefix to replace $\bA_t$ to compute the expected regret. Next we need to show the expected reward function is increasing with respect to $w$ when $\gamma~s$ are decreasing and $\gamma's$ are increasing and bound $f(\bA_t, \bU_t)$ and $f_{\wedge}(\bB_t, \bU_t)$ which is non-linear and contains discounted parameters $\gamma$.
 	\begin{lemma}
 		\CLemmaIncre
 	\end{lemma}
-	Then we have an estimate of the expected reward with UCB $\bU_t$.
 	\begin{lemma}
 		\CLemmaTech
 	\end{lemma}
-	Next we only need to estimate $\det(\bV_t)$ and those contextual information of observed base arms in $\bV$-norms.
+	From the above Lemmas, the cumulative regret is bounded by the discounted sum of the contextual information of observed base arms in $\bV$-norms. The next two Lemmas solve this issue.
 	\begin{lemma}
 		\CLemmaSumXiEstimateInDet
 	\end{lemma}
 	\begin{lemma}
 		\CLemmaDetVt
 	\end{lemma}
-	Then it is easy to derive the proof.
+	Then we can use a mean inequality to derive the result.
 \end{proof}
 
 
@@ -676,7 +677,7 @@ However, it is hard to estimate an upper bound for $\sum_{t=1}^T \sum_{k=1}^{\ab
 		&\EE_t[R_{\wedge}(t, \bA_t)] \\
 		\leq& \frac{8}{f_{\wedge, t}^*} \EE \left[\bOne\{ \bO_t \geq \abs{\bB_t} \}\sum_{k=1}^{\abs{\bB_t}}\bbeta_{t-1}(\delta)\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right]\\
 		\leq& \frac{8}{f_{\wedge}^*} \EE \left[ \sum_{k=1}^{ \bO_t } \bbeta_{t-1}(\delta) \norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right].
-	\textbf{lem:DeltaEsimateWithP*}\end{align*}
+	\end{align*}
 \end{proof}
 
 From the above lemma, we can bound the regret at time $t$ in terms of the observed base arms, for which we further bound in Lemma~\ref{lem:SumXiEstimateInDet}.
@@ -786,7 +787,7 @@ Now we are ready to prove the main theorem.
 	Inequality \eqref{eq:pfMdeltaEst} is by Lemma \ref{lem:DeltaEsimateWithP*}. 
 	Inequality \eqref{eq:pfMbeta} is because $\bbeta_{t}(\delta)$ is increasing with respect to $t$, derived by the definition of $\bbeta_t(\delta)$ (Eq.\eqref{eq:definebeta}) and Lemma \ref{lem:detVt}. 
 	Inequality \eqref{eq:pfMmeanEq} is by the mean inequality. 
-	Inequality \eqref{eq:pfMsumXi} is because of the definition of $\beta_t(\delta)$ (Eq.\eqref{eq:definebeta}) and Lemma \ref{lem:SumXiEstimateInDet}. 
+	Inequality \eqref{eq:pfMsumXi} is because of the definition of $\bbeta_t(\delta)$ (Eq.\eqref{eq:definebeta}) and Lemma \ref{lem:SumXiEstimateInDet}. 
 	And the last inequality \eqref{eq:pfMdetEst} is because estimate of $\det(\bV_t)$ by Lemma \ref{lem:detVt}.
 
 	Similarly, for the conjunctive case, we have the following derivation:
