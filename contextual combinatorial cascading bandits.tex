@@ -176,12 +176,27 @@ The purpose of this document is to provide both the basic paper template and sub
 
 
 
-\section{Related Works}
+\section{Related Work}
+
+Our work generalizes both the cascading bandits of \cite{kveton2015cascading} and combinatorial cascading bandits of \cite{kveton2015combinatorial} to involve contextual information and position discount.
+In cascading bandits of \cite{kveton2015cascading}, the feasible set contains any list of $K$ items out of $L$ ground items.
+Our work generalizes the feasible set to be any set of lists of at most $K$ items, like \cite{kveton2015combinatorial}.
+In both \cite{kveton2015cascading} and \cite{kveton2015combinatorial}, even though they define the feasible actions as lists, they regard them as sets. The order of a feasible action does not affect the regret bound, which might have problem in real application, especially for recommendations.
+
+In \cite{kveton2015cascading}, they found that recommending items in chosen action in increasing order of their UCBs has better performance than in decreasing order of their UCBs.
+This result might conflict with recommendations in real world.
+To improve the quality of user experience, we usually list items with higher preference first and then lower preference items.
+Our work extends this part by introducing position discounted parameters.
+Under our setting, the items with higher preference will come first.
+
+
 	
 \section{Problem Formulation}
 
-We formulate the problem of {\em contextual combinatorial cascading bandit} as follows. Suppose we have a finite set  $E=\{1,...,L\}$ of $L$ \textit{ground items},  also referred to as {\em base arms}. 
-Let $\Pi^k=\{(a_1,...,a_k): a_1,...,a_k \in E, a_i \neq a_j \text{ for any } i \neq j\}$ be the set of all $k$-tuples of distinct items from $E$. We call each of such tuples an {\em action} of length $k$. We will use $|A|$ to denote the length of an action $A$.
+We formulate the problem of {\em contextual combinatorial cascading bandit} as follows. 
+Suppose we have a finite set  $E=\{1,...,L\}$ of $L$ \textit{ground items},  also referred to as {\em base arms}. 
+Let $\Pi^k=\{(a_1,...,a_k): a_1,...,a_k \in E, a_i \neq a_j \text{ for any } i \neq j\}$ be the set of all $k$-tuples of distinct items from $E$. 
+We call each of such tuples an {\em action} of length $k$. We will use $|A|$ to denote the length of an action $A$.
 Let $\Pi^{\leq K}= \cup_{k=1}^K \Pi^{k}$ denote the set of all actions with length at most $K$, and let $\cS \subseteq \Pi^{\leq K}$ be the set of \textit{feasible actions} with length at most $K$. 
 
 As a convention, we always use boldface symbols to represent random variables.
