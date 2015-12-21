@@ -450,9 +450,49 @@ We also define $p^* = \min_{1 \leq t \leq T} \min_{A \in \cS} ~ p_{t, A}$ to be 
 	Then we can use a mean inequality to derive the result.
 \end{proof}
 
+\subsection{Lower Bounds}
 
+Suppose we have such a graph: 
+$$
+	\xymatrix{
+		S_0 \ar[r]^{0.8} \ar[d]_{0.9} & B \ar[dr]^{0.8} &\\
+		C \ar[r]_{0.8} & D \ar[r]_{0.7} &S_1 
+	}
+$$
+There are two paths in this graph: $A_1 = \{S_0 \to B \to S_1\}$ and $A_2 = \{S_0 \to C \to D \to S_1\}$. 
+Let the feasible action set be $\cS = \{A_1, A_2\}.$ The numbers on the edges denote the probability of that edge being unblocked. 
+For example, the probability of $C \to D$ being unblocked is $0.8$. 
+When we select a path, we get reward $1$ if and only if the path is unblocked and get reward $0$ if the path is blocked somewhere. 
+So the optimal action is $A_1$ with expected reward $0.64$ and $A_2$ is suboptimal with expected reward $0.504$.
 
-\subsection{Proof of Theorem~\ref{thm:main}}
+Next we analyze those times when the learning agent selects path $A_2$ instead of the optimal $A_1$. 
+Notice that if the observed edges are $S_0 \to C \to D$ or $S_0 \to C$, we will not abandon $A_2$ because the expected rewards are $0.9 \times 0.8$ and $0.9$, higher than $0.64$. 
+Only the times when all edges in $A_2$ being observed will help to recognize $A_2$ and abandon it. 
+Recall that the probability of all edges of $A_2$ being observed is $p_{A_2} = 0.9 \times 0.8 = 0.72.$ 
+So we have
+$$
+\EE[N_{A_2}]p_{A_2} \leq \frac{c \log(T)}{\Delta^2},
+$$
+where $N_{A_2}$ is the number of times that learning agent selects $A_2$ and $\Delta$ is the difference of the best expected reward minus the expected reward of $A_2$.
+Therefore,
+$$
+\EE[N_{A_2}] \leq \frac{c \log(T)}{p_{A_2} \Delta^2}
+$$
+and
+$$
+R(T) \leq \EE[\Delta N_{A_2}] \leq \frac{c \log(T)}{p_{A_2} \Delta}.
+$$
+	
+% In the unusual situation where you want a paper to appear in the
+% references without citing it in the main text, use \nocite
+%\nocite{langley00}
+	
+\bibliography{cascade_reference}
+\bibliographystyle{icml2015}
+
+\appendix
+
+\section{Proof of Theorem~\ref{thm:main}}
 
 We first provide a basic property of functions $f$ and $f_{\wedge}$ as defined in~Eq.\eqref{eq:functionf} and \eqref{eq:functionfstar}.
 \begin{lemma} %lem:increasing
@@ -462,23 +502,23 @@ We first provide a basic property of functions $f$ and $f_{\wedge}$ as defined i
 \begin{proof}
 	Without the loss of generality, we prove for the case of $A = (1, \ldots, m)$, where $1 \leq m \leq K$. First, for $1 \leq k \leq m$, we have
 	\begin{align*}
-		&\gamma_{k} - \sum_{i=k+1}^m \gamma_i \prod_{j = k + 1}^{i - 1} (1 - w_j') w_i'\\
-		\geq &~\gamma_k [1 - \sum_{i=k+1}^m \prod_{j=k+1}^{i-1}(1 - w_j') w_i']\\
-		\geq &~\gamma_{k} \cdot 0 = 0.
+	&\gamma_{k} - \sum_{i=k+1}^m \gamma_i \prod_{j = k + 1}^{i - 1} (1 - w_j') w_i'\\
+	\geq &~\gamma_k [1 - \sum_{i=k+1}^m \prod_{j=k+1}^{i-1}(1 - w_j') w_i']\\
+	\geq &~\gamma_{k} \cdot 0 = 0.
 	\end{align*}
 	Then it implies that
 	\begin{align*}
-		&\gamma_k w_k + (1 - w_k)\sum_{i=k+1}^m \gamma_i \prod_{j=k+1}^{i-1}(1 - w_j') w_i'\\
-		\leq &\gamma_k w_k' + (1 - w_k')\sum_{i=k+1}^m \gamma_i \prod_{j=k+1}^{i-1}(1 - w_j') w_i'.\\
+	&\gamma_k w_k + (1 - w_k)\sum_{i=k+1}^m \gamma_i \prod_{j=k+1}^{i-1}(1 - w_j') w_i'\\
+	\leq &\gamma_k w_k' + (1 - w_k')\sum_{i=k+1}^m \gamma_i \prod_{j=k+1}^{i-1}(1 - w_j') w_i'.\\
 	\end{align*}
 	Therefore, 
 	\begin{align*}
-		& f(A; w_1, \dots, w_k, w_{k+1}', \dots, w_m')\\
-		&=\sum_{i=1}^{k-1} \gamma_i \prod_{j=1}^{i-1}(1 - w_j) w_i + \prod_{j=1}^{k-1}(1 - w_j) \\
-		&\qquad \cdot [\gamma_k w_k + (1 - w_k)\sum_{i=k+1}^m \gamma_i \prod_{j=k+1}^{i-1}(1 - w_j') w_i']\\
-		&\leq \sum_{i=1}^{k-1} \gamma_i \prod_{j=1}^{i-1}(1 - w_j) w_i + \prod_{j=1}^{k-1}(1 - w_j) \\
-		&\qquad \cdot [\gamma_k w_k' + (1 - w_k')\sum_{i=k+1}^m \gamma_i \prod_{j=k+1}^{i-1}(1 - w_j') w_i']\\
-		&=f(A; w_1, \ldots, w_{k-1}, w_{k}', \ldots, w_m').
+	& f(A; w_1, \dots, w_k, w_{k+1}', \dots, w_m')\\
+	&=\sum_{i=1}^{k-1} \gamma_i \prod_{j=1}^{i-1}(1 - w_j) w_i + \prod_{j=1}^{k-1}(1 - w_j) \\
+	&\qquad \cdot [\gamma_k w_k + (1 - w_k)\sum_{i=k+1}^m \gamma_i \prod_{j=k+1}^{i-1}(1 - w_j') w_i']\\
+	&\leq \sum_{i=1}^{k-1} \gamma_i \prod_{j=1}^{i-1}(1 - w_j) w_i + \prod_{j=1}^{k-1}(1 - w_j) \\
+	&\qquad \cdot [\gamma_k w_k' + (1 - w_k')\sum_{i=k+1}^m \gamma_i \prod_{j=k+1}^{i-1}(1 - w_j') w_i']\\
+	&=f(A; w_1, \ldots, w_{k-1}, w_{k}', \ldots, w_m').
 	\end{align*}
 	By letting $\gamma_k = 1 - \gamma_k'$ and using the relation in Eq. \eqref{eq:ConDisRelation}, the increasing property of $f_{\wedge}$ is obtained directly.
 \end{proof}
@@ -491,23 +531,23 @@ The following lemma provides the relationship between an estimated mean vector $
 \begin{proof}
 	We prove this by induction. It holds obviously for $m = 1$.
 	\begin{align*}
-		&~~f(A^{(m+1)}, u)\\
-		&= f(A^{(m)}, u) + \gamma_{m+1}\prod_{k=1}^m(1 - u_k) u_{m+1}\\
-		&\leq f(A^{(m)}, u) +  \gamma_{m+1} \prod_{k=1}^m(1 - w_k) (w_{m+1} + r_{m+1})\\
-		&\leq f(A^{(m)}, w) + \sum_{k=1}^m \gamma_k r_k \\
-		&\qquad + \gamma_{m+1} \prod_{k=1}^m(1 - w_k) w_{m+1} + \gamma_{m+1} r_{m+1}\\
-		&= f(A^{(m+1)}, w) + \sum_{k=1}^{m+1} \gamma_k r_k
+	&~~f(A^{(m+1)}, u)\\
+	&= f(A^{(m)}, u) + \gamma_{m+1}\prod_{k=1}^m(1 - u_k) u_{m+1}\\
+	&\leq f(A^{(m)}, u) +  \gamma_{m+1} \prod_{k=1}^m(1 - w_k) (w_{m+1} + r_{m+1})\\
+	&\leq f(A^{(m)}, w) + \sum_{k=1}^m \gamma_k r_k \\
+	&\qquad + \gamma_{m+1} \prod_{k=1}^m(1 - w_k) w_{m+1} + \gamma_{m+1} r_{m+1}\\
+	&= f(A^{(m+1)}, w) + \sum_{k=1}^{m+1} \gamma_k r_k
 	\end{align*}
 	\begin{align*}
-		&~~f_{\wedge}(A^{(m+1)}, u) \\
-		&= f_{\wedge}(A^{(m)}, u) -\prod_{k=1}^{m} u_k \\
-		&\qquad+ \gamma_{m+1}' (\prod_{k=1}^{m} u_k) (1 - u_{m+1})+ \prod_{k=1}^{m+1} u_k\\
-		&= f_{\wedge}(A^{(m)}, u) - (1 - \gamma_{m+1}') (\prod_{k=1}^{m} u_k) (1 - u_{m+1})\\
-		&\leq f_{\wedge}(A^{(m)}, u) - (1 - \gamma_{m+1}') (\prod_{k=1}^{m} w_k) (1 - u_{m+1})\\
-		&\leq f_{\wedge}(A^{(m)}, u) -(1 - \gamma_{m+1}') (\prod_{k=1}^{m} w_k)  (1 - w_{m+1} - r_{m+1})\\
-		&\leq f_{\wedge}(A^{(m)}, w) +  \sum_{k=1}^{m} (1 - \gamma_k') r_k \\
-		&\qquad - (1 - \gamma_{m+1}') (1 - w_{m+1}) \prod_{k=1}^{m} w_k + (1 - \gamma_{m+1}') r_{m+1}\\
-		&\leq f_{\wedge}(A^{(m+1)}, w) + \sum_{k=1}^{m+1} (1 - \gamma_k') r_k
+	&~~f_{\wedge}(A^{(m+1)}, u) \\
+	&= f_{\wedge}(A^{(m)}, u) -\prod_{k=1}^{m} u_k \\
+	&\qquad+ \gamma_{m+1}' (\prod_{k=1}^{m} u_k) (1 - u_{m+1})+ \prod_{k=1}^{m+1} u_k\\
+	&= f_{\wedge}(A^{(m)}, u) - (1 - \gamma_{m+1}') (\prod_{k=1}^{m} u_k) (1 - u_{m+1})\\
+	&\leq f_{\wedge}(A^{(m)}, u) - (1 - \gamma_{m+1}') (\prod_{k=1}^{m} w_k) (1 - u_{m+1})\\
+	&\leq f_{\wedge}(A^{(m)}, u) -(1 - \gamma_{m+1}') (\prod_{k=1}^{m} w_k)  (1 - w_{m+1} - r_{m+1})\\
+	&\leq f_{\wedge}(A^{(m)}, w) +  \sum_{k=1}^{m} (1 - \gamma_k') r_k \\
+	&\qquad - (1 - \gamma_{m+1}') (1 - w_{m+1}) \prod_{k=1}^{m} w_k + (1 - \gamma_{m+1}') r_{m+1}\\
+	&\leq f_{\wedge}(A^{(m+1)}, w) + \sum_{k=1}^{m+1} (1 - \gamma_k') r_k
 	\end{align*}
 \end{proof}
 
@@ -519,7 +559,7 @@ The next lemma provides some properties about a prefix of action $A$ in the conj
 	Suppose we have expected weights $w$ for the base arms of action $A$. 
 	Let $p_{\wedge, A}$ be the {\em probability of full observation of $A$}, that is the probability that all base arms of $A = (a_1, \ldots, a_{\abs{A}})$ are observed under the conjunctive objective:
 	$$
-		p_{\wedge, A} = \prod_{k=1}^{\abs{A}-1} w_{a_k}.
+	p_{\wedge, A} = \prod_{k=1}^{\abs{A}-1} w_{a_k}.
 	$$
 	Then for the problem with conjunctive objective and $k < \abs{A}$, we have the following properties:
 	\begin{itemize}
@@ -535,26 +575,26 @@ The next lemma provides some properties about a prefix of action $A$ in the conj
 	\begin{itemize}
 		\item[(1)]
 		\begin{align*}
-			f_{\wedge}(A,w) & = \sum_{k = 1}^{\abs{A}} \gamma_k' \prod_{i = 1}^{k - 1} w(a_i) (1 - w(a_k)) + \prod_{i=1}^{\abs{A}}w(a_i) \\
-			&\leq \gamma_m'(1 - p_{\wedge, A} w_m) + p_{\wedge, A} w_m \\
-			&\leq \gamma_m' + (1 - \gamma_m') p_{\wedge, A};
+		f_{\wedge}(A,w) & = \sum_{k = 1}^{\abs{A}} \gamma_k' \prod_{i = 1}^{k - 1} w(a_i) (1 - w(a_k)) + \prod_{i=1}^{\abs{A}}w(a_i) \\
+		&\leq \gamma_m'(1 - p_{\wedge, A} w_m) + p_{\wedge, A} w_m \\
+		&\leq \gamma_m' + (1 - \gamma_m') p_{\wedge, A};
 		\end{align*}
-
+		
 		\item[(2)]
 		\begin{align*}
-			&f_{\wedge}(B_k, w) - f_{\wedge}(B_{k+1}, w)\\
-			&=\prod_{i=1}^{k}w_i - \gamma_{k+1}' (\prod_{i=1}^{k}w_i) (1 - w_{k+1}) - (\prod_{i=1}^{k}w_i) w_{k+1}\\
-			&=(1 - \gamma_{k+1}') (\prod_{i=1}^{k}w_i) (1 - w_{k+1}) \geq 0;
+		&f_{\wedge}(B_k, w) - f_{\wedge}(B_{k+1}, w)\\
+		&=\prod_{i=1}^{k}w_i - \gamma_{k+1}' (\prod_{i=1}^{k}w_i) (1 - w_{k+1}) - (\prod_{i=1}^{k}w_i) w_{k+1}\\
+		&=(1 - \gamma_{k+1}') (\prod_{i=1}^{k}w_i) (1 - w_{k+1}) \geq 0;
 		\end{align*}
-
+		
 		\item[(3)]
 		$p_{\wedge, B_{k+1}} = \prod_{i=1}^{k} w_i \leq \prod_{i=1}^{k-1} w_i = p_{\wedge, B_k}$;
-
+		
 		\item[(4)]
 		\begin{align*}
-			f_{\wedge}(B_k, w) & \leq \gamma_{k}' (1 - p_{\wedge,B_{k+1}}) + p_{\wedge,B_{k+1}}\\
-			&\leq \gamma_{k+1}' (1 - p_{\wedge,B_{k+1}}) + p_{\wedge,B_{k+1}} \\
-			&= \gamma_{k+1}' + (1 - \gamma_{k+1}') p_{\wedge,B_{k+1}}
+		f_{\wedge}(B_k, w) & \leq \gamma_{k}' (1 - p_{\wedge,B_{k+1}}) + p_{\wedge,B_{k+1}}\\
+		&\leq \gamma_{k+1}' (1 - p_{\wedge,B_{k+1}}) + p_{\wedge,B_{k+1}} \\
+		&= \gamma_{k+1}' + (1 - \gamma_{k+1}') p_{\wedge,B_{k+1}}
 		\end{align*}
 	\end{itemize}
 \end{proof}
@@ -567,21 +607,21 @@ The next lemma provides some properties about a prefix of action $A$ in the conj
 	Let $w= \theta_*^{\top} x_t$.
 	If $f_{\wedge}(A, w) \geq \frac{1}{2} f_{\wedge, t}^{\ast}$, then by Lemma \ref{lem:prefixRelation} (1),
 	$$
-		p_{\wedge, t, A} \geq \frac{1}{2}f_{\wedge, t}^{\ast} - \gamma_{\abs{A}}'.
+	p_{\wedge, t, A} \geq \frac{1}{2}f_{\wedge, t}^{\ast} - \gamma_{\abs{A}}'.
 	$$
 	In this case, we set prefix $B = A$.
-
+	
 	Now suppose $f_{\wedge}(A, w) \leq \frac{1}{2} f_{\wedge, t}^{\ast}$. Let
 	$$
-		x_k = f_{\wedge}(B_k,w), ~~ y_k = \gamma_k' + (1 - \gamma_k')p_{\wedge, t,B_k}, ~~I_k = [x_k, y_k]
+	x_k = f_{\wedge}(B_k,w), ~~ y_k = \gamma_k' + (1 - \gamma_k')p_{\wedge, t,B_k}, ~~I_k = [x_k, y_k]
 	$$
 	Then by Lemma \ref{lem:prefixRelation}, we have $x_k \leq y_k$, $x_{k+1} \leq x_k \leq y_{k+1}$. Therefore, $I_k$ is indeed an interval and $I_k \cap I_{k+1} \neq \emptyset$. Also, $x_{\abs{A}} = f_{\wedge}(A, w)$ and $y_1 = 1$. Thus
 	$$
-		[f_{\wedge}(A,w), 1] = \bigcup_{k=1}^{\abs{A}} I_k.
+	[f_{\wedge}(A,w), 1] = \bigcup_{k=1}^{\abs{A}} I_k.
 	$$
 	Then there exists a $k$ such that $\frac{1}{2}f_{\wedge, t}^{\ast} \in I_k$:
 	$$
-		f_{\wedge}(B_k,w) \leq \frac{1}{2}f_{\wedge, t}^{\ast} \leq \gamma_k' + (1 - \gamma_k')p_{\wedge, t, B_k}
+	f_{\wedge}(B_k,w) \leq \frac{1}{2}f_{\wedge, t}^{\ast} \leq \gamma_k' + (1 - \gamma_k')p_{\wedge, t, B_k}
 	$$
 	Therefore, the results are derived.
 \end{proof}
@@ -591,29 +631,29 @@ The following lemma provides the important result on the regret at each time $t$
 	\label{lem:DeltaEstimate}
 	For any time $t$ and $A = (a_1, \ldots, a_{\abs{A}})$, if $f(A_t^*, \bU_t) \leq f(A, \bU_t)$, then we have
 	$$
-		R(t,A) \leq \sum_{k=1}^{\abs{A}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}};
+	R(t,A) \leq \sum_{k=1}^{\abs{A}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}};
 	$$
 	if $f_{\wedge}(A_t^*, \bU_t) \leq f_{\wedge}(A, \bU_t)$, then we have
 	$$
-		R_{\wedge}(t, A) \leq \sum_{k=1}^{\abs{A}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}}.
+	R_{\wedge}(t, A) \leq \sum_{k=1}^{\abs{A}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}}.
 	$$
 \end{lemma}
 \begin{proof}
 	By Lemma \ref{lem:estimateU}, $\theta_{\ast}^{\top}x_t \leq \bU_t$. Then by Lemma \ref{lem:increasing},
 	$$
-		f_t^{\ast} = f(A_t^{\ast}, \theta_{\ast}^{\top}x_t) \leq f(A_t^{\ast}, \bU_t).
+	f_t^{\ast} = f(A_t^{\ast}, \theta_{\ast}^{\top}x_t) \leq f(A_t^{\ast}, \bU_t).
 	$$
 	By Lemma \ref{lem:estimateTech} and the definition of $\bU_t$ in Eq.\eqref{eq:defU},
 	$$
-		f(A, \bU_t) \leq f(A, \theta_{\ast}^{\top}x_t) + \sum_{k=1}^{\abs{A}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, a_k^t}}_{\bV_{t-1}^{-1}}.
+	f(A, \bU_t) \leq f(A, \theta_{\ast}^{\top}x_t) + \sum_{k=1}^{\abs{A}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, a_k^t}}_{\bV_{t-1}^{-1}}.
 	$$
 	By our condition that $f(A_t^{\ast}, \bU_t) \leq f(A, \bU_t)$, we have 
 	$$
-		f_t^{\ast} \leq f(A, \theta_{\ast}^{\top}x_t) + \sum_{k=1}^{\abs{A}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, a_k^t}}_{\bV_{t-1}^{-1}}.
+	f_t^{\ast} \leq f(A, \theta_{\ast}^{\top}x_t) + \sum_{k=1}^{\abs{A}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, a_k^t}}_{\bV_{t-1}^{-1}}.
 	$$
 	Therefore,
 	$$
-		R(t, A) = f_t^{\ast} - f(A, \theta_{\ast}^{\top}x_t) \leq \sum_{k=1}^{\abs{A}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, a_k^t}}_{\bV_{t-1}^{-1}}.
+	R(t, A) = f_t^{\ast} - f(A, \theta_{\ast}^{\top}x_t) \leq \sum_{k=1}^{\abs{A}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, a_k^t}}_{\bV_{t-1}^{-1}}.
 	$$
 	The result for the conjunctive case can be deduced in a similar way.
 \end{proof}
@@ -626,57 +666,57 @@ However, it is hard to estimate an upper bound for $\sum_{t=1}^T \sum_{k=1}^{\ab
 	Let $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$ and $\gamma_k' = 1 - \gamma_k$.
 	Suppose the equation (\ref{eq:estimateTheta}) holds for time $t-1$. Then
 	$$
-		\EE_t[R(t, \bA_t)] \leq \frac{1}{p^*} \EE_t \left[ \bbeta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right].
+	\EE_t[R(t, \bA_t)] \leq \frac{1}{p^*} \EE_t \left[ \bbeta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right].
 	$$
 	If we have
 	$$
-		\gamma_K' \le \frac{1}{4} f_{\wedge}^{\ast} = \frac{1}{4} \min_{1 \leq t \leq T} f_{\wedge, t}^{\ast},
+	\gamma_K' \le \frac{1}{4} f_{\wedge}^{\ast} = \frac{1}{4} \min_{1 \leq t \leq T} f_{\wedge, t}^{\ast},
 	$$
 	then
 	$$
-		\EE_t [R_{\wedge}(t, \bA_t) ] \leq \frac{8}{f_{\wedge}^{\ast}} \EE_t \left[ \bbeta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right].
+	\EE_t [R_{\wedge}(t, \bA_t) ] \leq \frac{8}{f_{\wedge}^{\ast}} \EE_t \left[ \bbeta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right].
 	$$
 \end{lemma}
 \begin{proof}
 	For the disjunctive case,  
 	\begin{align}
-		&\EE[R(t, \bA_t)|\cH_t]  \nonumber \\
-		=& \EE \left[ \left. R(t, \bA_t) \EE \left[ \left. \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t\geq\abs{\bA_t}\} \right| \bA_t \right]  \right| \cH_t \right] \label{eq:addOt}\\
-		=& \EE \left[ \left. R(t, \bA_t) \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t\geq\abs{\bA_t}\}  \right| \cH_t \right] \label{eq:removeE}\\
-		\leq &\frac{1}{p^{\ast}} \EE \left[ \left. R(t, \bA_t) \bOne\{\bO_t\geq\abs{\bA_t}\}  \right| \cH_t \right] \label{eq:relaxpstar}\\
-		\leq &\frac{1}{p^{\ast}} \EE \left[ \left. \sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}} \bOne\{\bO_t\geq\abs{\bA_t}\}  \right| \cH_t \right] \label{eq:useradiusbound}\\
-		\leq &\frac{1}{p^{\ast}} \EE \left[ \left. \sum_{k=1}^{\bO_t} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}} \right| \cH_t \right]. \label{eq:relaxindicator}
+	&\EE[R(t, \bA_t)|\cH_t]  \nonumber \\
+	=& \EE \left[ \left. R(t, \bA_t) \EE \left[ \left. \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t\geq\abs{\bA_t}\} \right| \bA_t \right]  \right| \cH_t \right] \label{eq:addOt}\\
+	=& \EE \left[ \left. R(t, \bA_t) \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t\geq\abs{\bA_t}\}  \right| \cH_t \right] \label{eq:removeE}\\
+	\leq &\frac{1}{p^{\ast}} \EE \left[ \left. R(t, \bA_t) \bOne\{\bO_t\geq\abs{\bA_t}\}  \right| \cH_t \right] \label{eq:relaxpstar}\\
+	\leq &\frac{1}{p^{\ast}} \EE \left[ \left. \sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}} \bOne\{\bO_t\geq\abs{\bA_t}\}  \right| \cH_t \right] \label{eq:useradiusbound}\\
+	\leq &\frac{1}{p^{\ast}} \EE \left[ \left. \sum_{k=1}^{\bO_t} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}} \right| \cH_t \right]. \label{eq:relaxindicator}
 	\end{align}
 	Equality \eqref{eq:addOt} is because when $\bA_t$ is fixed, $p_{t, \bA_t}$ is the probability of $\bO_t\geq\abs{\bA_t}$, and thus the inner expectation is $1$. Equality \eqref{eq:removeE} is because when the history $\cH_t$ is fixed, $\bA_t$ is fixed by the deterministic algorithm C$^3$-UCB, and thus there is no need to write the conditional expectation. Inequality~\eqref{eq:relaxpstar} is because $p_{t,\bA_t} \geq p^*$ by definition. Inequality~\eqref{eq:useradiusbound} is by Lemma \ref{lem:DeltaEstimate} and the fact $f(A_t^*, \bU_t) \leq f(\bA_t, \bU_t)$, which is true because algorithm C$^3$-UCB selects action $\bA_t$ as the best action with respect to $\bU_t$. Inequality~\eqref{eq:relaxindicator} is by simply arguing on the two cases for the indicator function $\bOne\{\bO_t\geq\abs{\bA_t}\}$.
-
+	
 	For the conjunctive case, by Lemma~\ref{lem:prefixexists} there exists a prefix $\bB_t$ of $\bA_t$ such that $p_{\wedge, t, \bB_t} \geq \frac{1}{2}f_{\wedge, t}^* - \gamma'_{|\bB_t|}$ and $R_{\wedge}(t, \bB_t) \geq \frac{1}{2} R_{\wedge}(t, \bA_t)$. By the assumption that $\gamma'_{|\bB_t|}\le \gamma'_K \le \frac{1}{4} f^*_{\wedge}
 	\le \frac{1}{4} f^*_{\wedge,t}  $, we have $p_{\wedge, t, \bB_t} \geq \frac{1}{4}f_{\wedge, t}^*$. Then, similar to the derivation from Eq.\eqref{eq:addOt} to Eq.\eqref{eq:relaxpstar}, we have
 	\begin{align}
-		&\EE_t[R_{\wedge}(t, \bA_t)] \leq 2 \EE[R_{\wedge}(t, \bB_t) \left. \right| \cH_t] \nonumber \\
-		=& 2 \EE \left[ \left. R_{\wedge}(t, \bB_t) \EE \left[ \left. \frac{1}{p_{\wedge, t, \bB_t}} \bOne\{\bO_t\geq\abs{\bB_t}\} \right| \bB_t \right]  \right| \cH_t \right] \nonumber \\
-		=& 2\EE \left[ \left. R_{\wedge}(t, \bB_t) \frac{1}{p_{\wedge, t, \bB_t}} \bOne\{\bO_t\geq\abs{\bB_t}\}  \right| \cH_t \right] \nonumber \\
-		\leq &\frac{8}{f_{\wedge, t}^{\ast}} \EE \left[ \left. R_{\wedge}(t, \bB_t) \bOne\{\bO_t\geq\abs{\bB_t}\}  \right| \cH_t \right]. \label{eq:btOneotbt}
+	&\EE_t[R_{\wedge}(t, \bA_t)] \leq 2 \EE[R_{\wedge}(t, \bB_t) \left. \right| \cH_t] \nonumber \\
+	=& 2 \EE \left[ \left. R_{\wedge}(t, \bB_t) \EE \left[ \left. \frac{1}{p_{\wedge, t, \bB_t}} \bOne\{\bO_t\geq\abs{\bB_t}\} \right| \bB_t \right]  \right| \cH_t \right] \nonumber \\
+	=& 2\EE \left[ \left. R_{\wedge}(t, \bB_t) \frac{1}{p_{\wedge, t, \bB_t}} \bOne\{\bO_t\geq\abs{\bB_t}\}  \right| \cH_t \right] \nonumber \\
+	\leq &\frac{8}{f_{\wedge, t}^{\ast}} \EE \left[ \left. R_{\wedge}(t, \bB_t) \bOne\{\bO_t\geq\abs{\bB_t}\}  \right| \cH_t \right]. \label{eq:btOneotbt}
 	\end{align}
 	Next, we have
 	\begin{equation} \label{eq:andstarbt}
-		f_{\wedge}(A_t^*, \theta_*^{\top}x_t) \leq f_{\wedge}(A_t^*,\bU_t) \leq f_{\wedge}(\bA_t,\bU_t) \leq f_{\wedge}(\bB_t,\bU_t),
+	f_{\wedge}(A_t^*, \theta_*^{\top}x_t) \leq f_{\wedge}(A_t^*,\bU_t) \leq f_{\wedge}(\bA_t,\bU_t) \leq f_{\wedge}(\bB_t,\bU_t),
 	\end{equation}
 	where the first inequality is by Lemmas \ref{lem:estimateU} and \ref{lem:increasing}, the second inequality is by the C$^3$-UCB algorithm, in which the best action $\bA_t$ is selected with respect to $\bU_t$, and the last inequality is by Lemma~\ref{lem:prefixRelation}~(2).
 	
 	Then by Lemma \ref{lem:estimateTech},
 	\begin{equation} \label{eq:btuttrue}
-		f_{\wedge}(\bB_t,\bU_t) \leq f_{\wedge}(\bB_t, \theta_*^{\top}x_t) + \sum_{k=1}^{\abs{\bB_t}}\gamma_k\bbeta_{t-1}(\delta)\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}.
+	f_{\wedge}(\bB_t,\bU_t) \leq f_{\wedge}(\bB_t, \theta_*^{\top}x_t) + \sum_{k=1}^{\abs{\bB_t}}\gamma_k\bbeta_{t-1}(\delta)\norm{x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}.
 	\end{equation}
 	Therefore, combining Eq.\eqref{eq:andstarbt} and \eqref{eq:btuttrue}, we have
 	\begin{align}
-		R_{\wedge}(t, \bB_t) & = f_{\wedge, t}^{\ast} - f_{\wedge}(\bB_t, \theta_{\ast}^{\top}x_t) \nonumber \\
-		& \leq \sum_{k=1}^{\abs{\bB_t}}\bbeta_{t-1}(\delta)\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}. \label{eq:sumbetax}
+	R_{\wedge}(t, \bB_t) & = f_{\wedge, t}^{\ast} - f_{\wedge}(\bB_t, \theta_{\ast}^{\top}x_t) \nonumber \\
+	& \leq \sum_{k=1}^{\abs{\bB_t}}\bbeta_{t-1}(\delta)\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}. \label{eq:sumbetax}
 	\end{align}
 	Finally from Inequalities~\eqref{eq:btOneotbt} and \eqref{eq:sumbetax}， we can derive the result
 	\begin{align*}
-		&\EE_t[R_{\wedge}(t, \bA_t)] \\
-		\leq& \frac{8}{f_{\wedge, t}^*} \EE \left[\bOne\{ \bO_t \geq \abs{\bB_t} \}\sum_{k=1}^{\abs{\bB_t}}\bbeta_{t-1}(\delta)\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right]\\
-		\leq& \frac{8}{f_{\wedge}^*} \EE \left[ \sum_{k=1}^{ \bO_t } \bbeta_{t-1}(\delta) \norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right].
+	&\EE_t[R_{\wedge}(t, \bA_t)] \\
+	\leq& \frac{8}{f_{\wedge, t}^*} \EE \left[\bOne\{ \bO_t \geq \abs{\bB_t} \}\sum_{k=1}^{\abs{\bB_t}}\bbeta_{t-1}(\delta)\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right]\\
+	\leq& \frac{8}{f_{\wedge}^*} \EE \left[ \sum_{k=1}^{ \bO_t } \bbeta_{t-1}(\delta) \norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right].
 	\end{align*}
 \end{proof}
 
@@ -687,16 +727,16 @@ But before that, we need the following technical lemma.
 	\label{lem:detTech}
 	Let $x_i \in \RR^{d \times 1}, 1 \leq i \leq n$. Then we have
 	$$
-		\det\left(I + \sum_{i=1}^n x_i x_i^{\top}\right) \geq 1 + \sum_{i=1}^n \norm{x_i}_2^2.
+	\det\left(I + \sum_{i=1}^n x_i x_i^{\top}\right) \geq 1 + \sum_{i=1}^n \norm{x_i}_2^2.
 	$$
 \end{lemma}
 \begin{proof}
 	Denote the eigenvalues of $I + \sum_{i=1}^n x_i x_i^{\top}$ by $1+\alpha_1,...,1+\alpha_d$ with $\alpha_j \geq 0$, $1\leq j\leq d$. Then
 	\begin{align*}
-		&\det(I + \sum_{i=1}^n x_i x_i^{\top})= \prod_{j=1}^d (1 + \alpha_j)\\
-		&\geq 1 +\sum_{j=1}^d \alpha_j =1-d + \sum_{i=1}^d (1+\alpha_i) \\
-		&=1-d + \trace(I + \sum_{i=1}^n x_i x_i^{\top})= 1-d + d + \sum_{i=1}^n \norm{x_i}_2^2\\
-		&=1 + \sum_{i=1}^n \norm{x_i}_2^2.
+	&\det(I + \sum_{i=1}^n x_i x_i^{\top})= \prod_{j=1}^d (1 + \alpha_j)\\
+	&\geq 1 +\sum_{j=1}^d \alpha_j =1-d + \sum_{i=1}^d (1+\alpha_i) \\
+	&=1-d + \trace(I + \sum_{i=1}^n x_i x_i^{\top})= 1-d + d + \sum_{i=1}^n \norm{x_i}_2^2\\
+	&=1 + \sum_{i=1}^n \norm{x_i}_2^2.
 	\end{align*}
 \end{proof}
 
@@ -707,28 +747,28 @@ But before that, we need the following technical lemma.
 \end{lemma}
 \begin{proof}
 	\begin{align}
-		&\det(\bV_t) = \det\left(\bV_{t-1} + \sum_{k=1}^{\bO_t} (\gamma_k x_{t,\ba_k^{t}})(\gamma_k x_{t, \ba_k^{t}}^{\top}) \right) \nonumber \\
-		&=\det(\bV_{t-1}) \notag \\
-		&~~~\cdot \det \left(I + \sum_{k=1}^{\bO_t} \gamma_k \bV_{t-1}^{-1/2}x_{t,\ba_{k}^{t}} (\gamma_k \bV_{t-1}^{-1/2}x_{t,\ba_{k}^{t}})^{\top} \right) \label{eq:Vfactor}\\
-		&\geq \det(\bV_{t-1}) \left(1 + \sum_{k=1}^{\bO_t} \norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right) \label{eq:detGeq} \\
-		&\geq \det(\lambda I)\prod_{s=1}^{t} \left(1 + \sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2 \right), \label{eq:repeatV}
+	&\det(\bV_t) = \det\left(\bV_{t-1} + \sum_{k=1}^{\bO_t} (\gamma_k x_{t,\ba_k^{t}})(\gamma_k x_{t, \ba_k^{t}}^{\top}) \right) \nonumber \\
+	&=\det(\bV_{t-1}) \notag \\
+	&~~~\cdot \det \left(I + \sum_{k=1}^{\bO_t} \gamma_k \bV_{t-1}^{-1/2}x_{t,\ba_{k}^{t}} (\gamma_k \bV_{t-1}^{-1/2}x_{t,\ba_{k}^{t}})^{\top} \right) \label{eq:Vfactor}\\
+	&\geq \det(\bV_{t-1}) \left(1 + \sum_{k=1}^{\bO_t} \norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right) \label{eq:detGeq} \\
+	&\geq \det(\lambda I)\prod_{s=1}^{t} \left(1 + \sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2 \right), \label{eq:repeatV}
 	\end{align}
 	where Equality~\eqref{eq:Vfactor} is by the fact that $V+U = V^{1/2} (I + V^{-1/2} U V^{-1/2}) V^{1/2}$ for a symmetric positive definite matrix $V$, Inequality \eqref{eq:detGeq} is due to Lemma \ref{lem:detTech}, and Inequality~\eqref{eq:repeatV} is by repeatedly applying Inequality \eqref{eq:detGeq}.
-
+	
 	Because
 	$$
-		\norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2 \leq \norm{\gamma_k x_{s,\ba_k^s}}_2^2/\lambda_{\min}(\bV_{s-1}) \leq \gamma_k^2 /\lambda,
+	\norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2 \leq \norm{\gamma_k x_{s,\ba_k^s}}_2^2/\lambda_{\min}(\bV_{s-1}) \leq \gamma_k^2 /\lambda,
 	$$
 	where $\lambda_{\min}(\bV_{s-1})$ is the minimum eigenvalue of $\bV_{s-1}$,  we have 
 	$$
-		\sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2 \leq \frac{1}{\lambda} \sum_{k=1}^{K} \gamma_k^2 = C_\gamma /\lambda \leq 1
+	\sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2 \leq \frac{1}{\lambda} \sum_{k=1}^{K} \gamma_k^2 = C_\gamma /\lambda \leq 1
 	$$
 	Using the fact that $ 2\ln(1+u) \geq u$ for any $u \in [0,1]$, we get
 	\begin{align*}
-		&\sum_{s=1}^t \sum_{k=1}^{\bO_s}\norm{\gamma_k x_{s,\ba_{k}^s}}_{\bV_{s-1}^{-1}}^2 \\
-		&\leq 2\sum_{s=1}^t\ln \left(1 + \sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2 \right)\\
-		& = 2 \ln \prod_{s=1}^{t} \left(1 + \sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2 \right) \\
-		&\le 2 \ln \left(\frac{\det(\bV_t)}{\det(\lambda I)} \right),
+	&\sum_{s=1}^t \sum_{k=1}^{\bO_s}\norm{\gamma_k x_{s,\ba_{k}^s}}_{\bV_{s-1}^{-1}}^2 \\
+	&\leq 2\sum_{s=1}^t\ln \left(1 + \sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2 \right)\\
+	& = 2 \ln \prod_{s=1}^{t} \left(1 + \sum_{k=1}^{\bO_s} \norm{\gamma_k x_{s,\ba_k^s}}_{\bV_{s-1}^{-1}}^2 \right) \\
+	&\le 2 \ln \left(\frac{\det(\bV_t)}{\det(\lambda I)} \right),
 	\end{align*}
 	where the last inequality is from Inequality~\eqref{eq:repeatV}.
 \end{proof}
@@ -742,28 +782,28 @@ Finally the last lemma bound $\det(\bV_t)$.
 \begin{proof}
 	To prove $\det(\bV_t)$ is increasing with respect to $t$, it is enough to prove that
 	$$
-		\det(V + xx^{\top}) \geq \det(V),
+	\det(V + xx^{\top}) \geq \det(V),
 	$$
 	for any symmetric positive definite matrix $V \in \RR^{d \times d}$ and column vector $x \in \RR^{d\times 1}$. In fact,
 	\begin{align*}
-		&\det(V + xx^{\top}) \\
-		=& \det(V) \det(I + V^{-1/2}x x^{\top} V^{-1/2})\\
-		=& \det(V) \det(1 + \norm{V^{-1/2}x}^2)\\
-		\geq &\det(V).
+	&\det(V + xx^{\top}) \\
+	=& \det(V) \det(I + V^{-1/2}x x^{\top} V^{-1/2})\\
+	=& \det(V) \det(1 + \norm{V^{-1/2}x}^2)\\
+	\geq &\det(V).
 	\end{align*}
 	The second equality above is due to Sylvester's determinant theorem, which states that $\det(I + AB) = \det(I +BA)$.
-
+	
 	Let the eigenvalues of $\bV_t$ be $\lambda_1, \ldots, \lambda_d > 0$. Then
 	\begin{align*}
-		&\det(\bV_t) = \lambda_1 \cdot \cdots \cdot \lambda_d \\
-		\leq & \left( \frac{\lambda_1 + \ldots + \lambda_d}{d} \right)^d = (\trace(\bV_t)/d)^d.
+	&\det(\bV_t) = \lambda_1 \cdot \cdots \cdot \lambda_d \\
+	\leq & \left( \frac{\lambda_1 + \ldots + \lambda_d}{d} \right)^d = (\trace(\bV_t)/d)^d.
 	\end{align*}
 	Also,
 	\begin{align*}
-		&\trace(\bV_t)\\
-		& = \trace(\lambda I) + \sum_{s=1}^t \sum_{k=1}^{\bO_s} \gamma_k^2 \trace(x_{s,\ba_k^s} x_{s,\ba_k^s}^{\top})\\	
-		& = d \lambda + \sum_{s=1}^t \sum_{k=1}^{\bO_s} \gamma_k^2 \norm{x_{s,\ba_k^s}}_2^2\\
-		& \leq d \lambda + \sum_{s=1}^t\sum_{k=1}^{K}\gamma_k^2 = d \lambda + t C_\gamma.
+	&\trace(\bV_t)\\
+	& = \trace(\lambda I) + \sum_{s=1}^t \sum_{k=1}^{\bO_s} \gamma_k^2 \trace(x_{s,\ba_k^s} x_{s,\ba_k^s}^{\top})\\	
+	& = d \lambda + \sum_{s=1}^t \sum_{k=1}^{\bO_s} \gamma_k^2 \norm{x_{s,\ba_k^s}}_2^2\\
+	& \leq d \lambda + \sum_{s=1}^t\sum_{k=1}^{K}\gamma_k^2 = d \lambda + t C_\gamma.
 	\end{align*}
 	Thus we have $\det(\bV_t) \leq (\lambda + C_\gamma t/d)^d.$
 \end{proof}
@@ -772,44 +812,37 @@ Now we are ready to prove the main theorem.
 
 \begin{proof}[ of Theorem \ref{thm:main}]
 	Suppose inequality (\ref{eq:estimateTheta}) holds for all time $t$, which is true with probability $1-\delta$. 
-
+	
 	For the disjunctive case, we have
 	\begin{align}
-		&R(T) = \EE \left[\sum_{t=1}^{T} \EE_{t}[R(t, \bA_t)] \right] \notag\\
-		&\leq \EE\left[\sum_{t=1}^{T} \frac{1}{p^*} \EE_t \left[\bbeta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}\right] \right] \label{eq:pfMdeltaEst}\\
-		&\leq \EE\left[\sum_{t=1}^{T} \frac{1}{p^*} \bbeta_{T}(\delta) \EE_t \left[ \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}\right] \right] \label{eq:pfMbeta}\\
-		&\leq \EE \left[\frac{1}{p^*} \bbeta_T(\delta) \sqrt{\left(\sum_{t=1}^{T} \bO_t\right) \left( \sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right)} \right ]  \label{eq:pfMmeanEq}\\
-		&\leq \EE\left[\frac{1}{p^*} \left( \sqrt{ \ln \left( \frac{\det(\bV_T)}{\lambda^d \delta^2} \right)} + \sqrt{\lambda} \right) \right. \notag\\
-		& \left. \qquad \qquad \cdot \sqrt{TK \cdot 2\ln \left(\frac{\det(\bV_T)}{\lambda^d} \right)} \right] \label{eq:pfMsumXi}\\
-		&\leq \frac{\sqrt{2}}{p^*} \left(\sqrt{ d \ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^{2/d}} \right) } + \sqrt{\lambda} \right) \notag\\
-		&\qquad \qquad \cdot \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))}. \label{eq:pfMdetEst}
+	&R(T) = \EE \left[\sum_{t=1}^{T} \EE_{t}[R(t, \bA_t)] \right] \notag\\
+	&\leq \EE\left[\sum_{t=1}^{T} \frac{1}{p^*} \EE_t \left[\bbeta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}\right] \right] \label{eq:pfMdeltaEst}\\
+	&\leq \EE\left[\sum_{t=1}^{T} \frac{1}{p^*} \bbeta_{T}(\delta) \EE_t \left[ \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}\right] \right] \label{eq:pfMbeta}\\
+	&\leq \EE \left[\frac{1}{p^*} \bbeta_T(\delta) \sqrt{\left(\sum_{t=1}^{T} \bO_t\right) \left( \sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right)} \right ]  \label{eq:pfMmeanEq}\\
+	&\leq \EE\left[\frac{1}{p^*} \left( \sqrt{ \ln \left( \frac{\det(\bV_T)}{\lambda^d \delta^2} \right)} + \sqrt{\lambda} \right) \right. \notag\\
+	& \left. \qquad \qquad \cdot \sqrt{TK \cdot 2\ln \left(\frac{\det(\bV_T)}{\lambda^d} \right)} \right] \label{eq:pfMsumXi}\\
+	&\leq \frac{\sqrt{2}}{p^*} \left(\sqrt{ d \ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^{2/d}} \right) } + \sqrt{\lambda} \right) \notag\\
+	&\qquad \qquad \cdot \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))}. \label{eq:pfMdetEst}
 	\end{align}
 	Inequality \eqref{eq:pfMdeltaEst} is by Lemma \ref{lem:DeltaEsimateWithP*}. 
 	Inequality \eqref{eq:pfMbeta} is because $\bbeta_{t}(\delta)$ is increasing with respect to $t$, derived by the definition of $\bbeta_t(\delta)$ (Eq.\eqref{eq:definebeta}) and Lemma \ref{lem:detVt}. 
 	Inequality \eqref{eq:pfMmeanEq} is by the mean inequality. 
 	Inequality \eqref{eq:pfMsumXi} is because of the definition of $\bbeta_t(\delta)$ (Eq.\eqref{eq:definebeta}) and Lemma \ref{lem:SumXiEstimateInDet}. 
 	And the last inequality \eqref{eq:pfMdetEst} is because estimate of $\det(\bV_t)$ by Lemma \ref{lem:detVt}.
-
+	
 	Similarly, for the conjunctive case, we have the following derivation:
 	\begin{align}
-		&R(T) = \EE \left[ \sum_{t=1}^{T} \EE_{t}[R_{\wedge}(t, \bA_t)] \right] \notag\\
-		&\leq \EE \left[\sum_{t=1}^{T} \frac{8}{f_{\wedge}^{\ast}} \EE_t\left[\bbeta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right] \right] \label{eq:pfMCdeltaEst}\\
-		&\leq \EE\left[\frac{8}{f_{\wedge}^{\ast}} \bbeta_{T}(\delta) \sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right] \label{eq:pfMCbeta}\\
-		&\leq \EE\left[\frac{8}{f_{\wedge}^{\ast}} \bbeta_{T}(\delta) \sqrt{ \left(\sum_{t=1}^{T} \bO_t \right) \EE_t \left[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right]} \right] \label{eq:pfMCmeaneq}\\
-		&\leq \EE \left[\frac{\sqrt{128}}{f_{\wedge}^{\ast}} \left(\sqrt{\ln\left(\frac{\det(\bV_T)}{\lambda^d \delta^2}\right) } + \sqrt{\lambda} \right) \right. \notag\\
-		&\qquad \qquad \left. \cdot \sqrt{TK \cdot 2\ln \left(\frac{\det(\bV_T)}{\lambda^d} \right)} \right] \label{eq:pfMCsumXi}\\
-		&\leq \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \left(\sqrt{d \ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda} \right) \notag\\
-		&\qquad \qquad \cdot \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))}. \label{eq:pfMCdetEst}
+	&R(T) = \EE \left[ \sum_{t=1}^{T} \EE_{t}[R_{\wedge}(t, \bA_t)] \right] \notag\\
+	&\leq \EE \left[\sum_{t=1}^{T} \frac{8}{f_{\wedge}^{\ast}} \EE_t\left[\bbeta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right] \right] \label{eq:pfMCdeltaEst}\\
+	&\leq \EE\left[\frac{8}{f_{\wedge}^{\ast}} \bbeta_{T}(\delta) \sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right] \label{eq:pfMCbeta}\\
+	&\leq \EE\left[\frac{8}{f_{\wedge}^{\ast}} \bbeta_{T}(\delta) \sqrt{ \left(\sum_{t=1}^{T} \bO_t \right) \EE_t \left[\sum_{t=1}^{T} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right]} \right] \label{eq:pfMCmeaneq}\\
+	&\leq \EE \left[\frac{\sqrt{128}}{f_{\wedge}^{\ast}} \left(\sqrt{\ln\left(\frac{\det(\bV_T)}{\lambda^d \delta^2}\right) } + \sqrt{\lambda} \right) \right. \notag\\
+	&\qquad \qquad \left. \cdot \sqrt{TK \cdot 2\ln \left(\frac{\det(\bV_T)}{\lambda^d} \right)} \right] \label{eq:pfMCsumXi}\\
+	&\leq \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \left(\sqrt{d \ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda} \right) \notag\\
+	&\qquad \qquad \cdot \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))}. \label{eq:pfMCdetEst}
 	\end{align}
 \end{proof}
 
-	
-% In the unusual situation where you want a paper to appear in the
-% references without citing it in the main text, use \nocite
-%\nocite{langley00}
-	
-\bibliography{cascade_reference}
-\bibliographystyle{icml2015}
 	
 \end{document} 
 
