@@ -7,10 +7,10 @@ Main-INFO: K 3
     d 15
     h 120
     portion 0.2
-    disj True
+    disj False
 Movielens-INFO: Initializing random settings "Contextual Movielens" complete
 Movielens-INFO: gamma 0.95
-    disj True
+    disj False
     K 3
     L 90
     d 15
@@ -38,13 +38,13 @@ Main-INFO: gamma 0.95
     L 15
     h 120
     d 15
-    disj True
+    disj False
 Movielens-INFO: Initializing random settings "Contextual Movielens" complete
 Movielens-INFO: K 4
     gamma 0.95
     d 15
     L 15
-    disj True
+    disj False
 Environment-INFO: Initializing environment "Contextual Cascading Movielens"
 Environment-INFO: Initializing environment "Contextual Cascading Movielens" done
 Agent-INFO: Monkey play score 1038.9497499999204/10000
@@ -67,13 +67,13 @@ Main-INFO: L 15
     d 15
     gamma 0.95
     h None
-    disj True
+    disj False
     K 4
     portion 0.2
 Movielens-INFO: Initializing random settings "Contextual Movielens" complete
 Movielens-INFO: d 15
     gamma 0.95
-    disj True
+    disj False
     K 4
     L 15
 Environment-INFO: Initializing environment "Contextual Cascading Movielens"
@@ -94,7 +94,7 @@ Agent-INFO: Absolute play score 48.3312499999995/10000
 Main-INFO: ===== Numpy/Python random seed = 95
 Main-INFO: Movielens flowtest
 Main-INFO: Require rng initialization
-Main-INFO: disj True
+Main-INFO: disj False
     h 30
     K 3
     portion 0.2
@@ -103,7 +103,7 @@ Main-INFO: disj True
     d 5
 Movielens-INFO: Initializing random settings "Contextual Movielens" complete
 Movielens-INFO: gamma 0.95
-    disj True
+    disj False
     L 27278
     K 3
     d 5
@@ -126,7 +126,7 @@ Main-INFO: ===== Numpy/Python random seed = 63
 Main-INFO: Movielens flowtest
 Main-INFO: Require rng initialization
 Main-INFO: portion 0.2
-    disj True
+    disj False
     K 9
     d 15
     h 30
@@ -135,7 +135,7 @@ Main-INFO: portion 0.2
 Movielens-INFO: Initializing random settings "Contextual Movielens" complete
 Movielens-INFO: K 9
     d 15
-    disj True
+    disj False
     L 15
     gamma 0.95
 Environment-INFO: Initializing environment "Contextual Cascading Movielens"
@@ -162,13 +162,13 @@ Main-INFO: gamma 0.95
     d 15
     h 30
     portion 0.2
-    disj True
+    disj False
 Movielens-INFO: Initializing random settings "Contextual Movielens" complete
 Movielens-INFO: gamma 0.95
     L 150
     d 15
     K 13
-    disj True
+    disj False
 Environment-INFO: Initializing environment "Contextual Cascading Movielens"
 Environment-INFO: Initializing environment "Contextual Cascading Movielens" done
 Agent-INFO: Monkey play score 317.59061953150797/10000
@@ -193,13 +193,13 @@ Main-INFO: gamma 0.95
     d 15
     L 950
     K 15
-    disj True
+    disj False
 Movielens-INFO: Initializing random settings "Contextual Movielens" complete
 Movielens-INFO: K 15
     L 950
     d 15
     gamma 0.95
-    disj True
+    disj False
 Environment-INFO: Initializing environment "Contextual Cascading Movielens"
 Environment-INFO: Initializing environment "Contextual Cascading Movielens" done
 Agent-INFO: Monkey play score 163.78727341798574/10000
@@ -215,3 +215,65 @@ Agent-INFO: Lijing play score 2782.224121229629/10000
 Environment-INFO: Initializing environment "Contextual Cascading Movielens"
 Environment-INFO: Initializing environment "Contextual Cascading Movielens" done
 Agent-INFO: Absolute play score 196.71197943576124/10000
+Main-INFO: ===== Numpy/Python random seed = 3
+Main-INFO: Movielens flowtest
+Main-INFO: Require rng initialization
+Main-INFO: K 4
+    h 30
+    disj True
+    d 5
+    portion 0.2
+    L 15
+    gamma 0.95
+Movielens-INFO: Initializing random settings "Contextual Movielens" complete
+Movielens-INFO: disj True
+    K 4
+    d 5
+    L 15
+    gamma 0.95
+Environment-INFO: Initializing environment "Contextual Cascading Movielens"
+Environment-INFO: Initializing environment "Contextual Cascading Movielens" done
+Agent-INFO: Monkey play score 966.8683750000051/1000
+Environment-INFO: Initializing environment "Contextual Cascading Movielens"
+Environment-INFO: Initializing environment "Contextual Cascading Movielens" done
+Agent-INFO: Sherry play score 988.5447500000007/1000
+Environment-INFO: Initializing environment "Contextual Full Movielens"
+Environment-INFO: Initializing environment "Contextual Full Movielens" done
+Agent-INFO: Monkey play score 956.7670000000049/1000
+Environment-INFO: Initializing environment "Contextual Full Movielens"
+Environment-INFO: Initializing environment "Contextual Full Movielens" done
+Agent-INFO: Lijing play score 992.5267500000007/1000
+Environment-INFO: Initializing environment "Contextual Cascading Movielens"
+Environment-INFO: Initializing environment "Contextual Cascading Movielens" done
+Agent-INFO: Absolute play score 983.1656250000023/1000
+Main-INFO: ===== Numpy/Python random seed = 97
+Main-INFO: Movielens flowtest
+Main-INFO: Require rng initialization
+Main-INFO: gamma 0.95
+    K 5
+    portion 0.2
+    d 5
+    L 25
+    h 60
+    disj True
+Movielens-INFO: Initializing random settings "Contextual Movielens" complete
+Movielens-INFO: gamma 0.95
+    K 5
+    disj True
+    d 5
+    L 25
+Environment-INFO: Initializing environment "Contextual Cascading Movielens"
+Environment-INFO: Initializing environment "Contextual Cascading Movielens" done
+Agent-INFO: Monkey play score 933.9186250000065/1000
+Environment-INFO: Initializing environment "Contextual Cascading Movielens"
+Environment-INFO: Initializing environment "Contextual Cascading Movielens" done
+Agent-INFO: Sherry play score 963.5123250000046/1000
+Environment-INFO: Initializing environment "Contextual Full Movielens"
+Environment-INFO: Initializing environment "Contextual Full Movielens" done
+Agent-INFO: Monkey play score 935.2105250000062/1000
+Environment-INFO: Initializing environment "Contextual Full Movielens"
+Environment-INFO: Initializing environment "Contextual Full Movielens" done
+Agent-INFO: Lijing play score 969.6003437500061/1000
+Environment-INFO: Initializing environment "Contextual Cascading Movielens"
+Environment-INFO: Initializing environment "Contextual Cascading Movielens" done
+Agent-INFO: Absolute play score 942.5284625000061/1000

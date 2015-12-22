@@ -9,10 +9,11 @@ def uni(x):
     return x/np.sqrt(x.dot(x))
 
 def reward(ctr, gamma, disj):
+    conj = not disj
     for c, click in enumerate(ctr):
-        if click ^ disj:
-            return int(disj) + gamma ** c * (int(not disj) - int(disj)), c
-    return int(disj), len(ctr)
+        if click == disj:
+            return int(conj) + gamma ** c * (int(disj) - int(conj)), c
+    return int(conj), len(ctr)
 
 def overlap(l1, l2):
     return len(set(l1) & l2)
@@ -22,4 +23,4 @@ class ucb_settings:
         self.__dict__ = s
         
     def __str__(self):
-        return '\n    '.join([str(k) + ' ' + str(v) for k, v in self.__dict__.items() if not k in ['arms', 'ctrh', 'users', 'U', 'V', 'x']])
+        return '\n    '.join([str(k) + ' ' + str(v) for k, v in self.__dict__.items() if not k in ['arms', 'ctrh', 'users', 'U', 'V', 'x', 'A']])

@@ -8,23 +8,6 @@ import random
 import logging
 logger = logging.getLogger('Agent')
 
-def monkey(candidates, K=8, T=150000, verbose=False):
-    def agent(environment):
-        score = 0
-        children, adults = candidates
-        movies = children + adults
-        for t in range(1, T):
-            recc = random.sample(movies, K)
-            c = environment(recc)
-            reward = int(isinstance(c, int))
-            score += reward
-            if verbose:
-                print('Agent: Score={0}/{1}'.format(score, t))
-            else:
-                if t % 10000 == 0:
-                    print('Agent: Score={0}/{1}'.format(score, t))
-    return agent
-
 def contextual_cascading_monkey(e, s, T):
     score = [0]
     for t in range(1, T):
@@ -47,7 +30,7 @@ def absolute_cascading_ucb(e, s, T):
         recc = [p[1] for p in heapq.nlargest(s.K, [(U[arm], arm) for arm in s.arms])]
         r, c = e(recc)
         for k in range(min(s.K, c+1)):
-            W[recc[k]] = ((b[recc[k]]) * W[recc[k]] + ((k == c) ^ s.disj)) / (b[recc[k]] + 1)
+            W[recc[k]] = ((b[recc[k]]) * W[recc[k]] + ((k == c) == s.disj)) / (b[recc[k]] + 1)
             b[recc[k]] += 1
         score.append(score[-1] + r)
     logger.info('Absolute play score {0}/{1}'.format(score[-1], T))
@@ -71,7 +54,7 @@ def contextual_cascading_sherry(e, s, T):
         r, c = e(recc)
         V += sum([s.gamma ** (2*k) * np.outer(x[recc[k]], x[recc[k]]) for k in range(min(s.K, c+1))])
         X = np.concatenate([X] + [s.gamma ** k * x[recc[k]].reshape(1, s.d) for k in range(min(s.K, c+1))])
-        Y = np.concatenate([Y] + [s.gamma ** k * ((k == c) ^ s.disj) * np.ones(1) for k in range(min(s.K, c+1))])
+        Y = np.concatenate([Y] + [s.gamma ** k * ((k == c) == s.disj) * np.ones(1) for k in range(min(s.K, c+1))])
         theta = np.linalg.inv(X.T.dot(X) + lamb * np.eye(s.d)).dot(X.T.dot(Y))
         beta = np.sqrt(np.linalg.slogdet(V)[1] - ldV - 2 * np.log(delta)) + np.sqrt(lamb)
         score.append(score[-1] + r)
