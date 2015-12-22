@@ -13,6 +13,9 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\cS}{\mathcal{S}}
+
 \begin{document}
 
 C3UCB Draft \hfill Fall 2015
@@ -25,37 +28,63 @@ C3UCB Draft \hfill Fall 2015
 
 \vspace*{2\baselineskip}
 
-\section{Synthetic dataset}
+\section{Preliminary}
 
-Let $I=\{e_1,e_2,\dots,e_L\}$ be a set of arms, each associated with a $d$-dimensional vector $\mu_i$ randomly drawn from $\{x\in \mathbb{R}^d : \|x\|_2=1\}$. At round $t$, the context corresponding to the $i$-th arm, denoted as $x_{t,i}$, is generated using $x_{t,i}=(\mu_i+h\cdot b_{t,i})/\|\mu_i+h\cdot b_{t,i}\|_2$, where $b_{t,i}$ is randomly drawn from $\{x\in \mathbb{R}^d : \|x\|_2=1\}$ and $h$ is a constant throughout the experiment. The expectation of the Bernoulli realization of an arm $e\in I$ is $w_t(e)=\theta_\ast^Tx_i + \epsilon_{i,t}$, where $\theta_\ast$ s.t. $\|\theta_\ast\|_2=1$ is randomly initialized and holds throughout the experiment, and $\epsilon_{i,t}\sim N(\mu_i,\sigma_i)$ i.i.d. be the fluctuation. In this experiment, the set of avaiable superarms $S$ is $\{A\subseteq I:|A|=k\}$. The following approaches were tested:
+\subsection{Synthetic dataset}
 
-\begin{enumerate}
+Let $\cS = \{x \in \RR^d : \|x\|_2 = 1 \}$ be the unit ball of $\RR^d$. 
+Let $E = \{1,...,L\}$ be the set of all base arms. 
+We randomly choose $\theta_{\ast}$ with $\|\theta_{\ast}\|_2 = 1$ and randomly assign a $\mu_i \in \cS$ to $i$ for any $i \in E$.
+At each time $t$, we choose $b_{t,i} \in \cS$ randomly for any base arm $i$.
+Also we fix a constant $h$ to balance weights of $\mu_i$ and disturbance $b_{t,i}$.
+Let $x_{t,i} = \frac{\mu_i + h b_{t,i}}{\|\mu_i+h\cdot b_{t,i}\|_2}$ be the context of base arm $i$ at time $t$.
+And the weight for base arm $i$ at time $t$ is $w_t(i) = \theta_{\ast}^{\top}x_{t,i} + \epsilon_{t,i}$ where $\epsilon_{t,i} \sim N(\mu_i, \sigma_i)$ for fixed $\sigma_i$.
 
-  \item Li Shuai et al. Use linear regression on $\mathbf{O_t}$ observed arms and then UCB to select candidated.
+\subsection{MovieLens}
 
-  \item 2014 Qin Lijing et al. Same w/ Li but takes more information (from $\mathbf{O_t}$ to $k$) with a full feedback. 
+Let $L$ be the number of all movies and let $M$ be the number of all users. 
+The MovieLens dataset is a big matrix $A \in \RR^{M \times L}$ where $A(i,j) \in \{0,1\}$ denotes whether user $i$ has watched movie $j$ or not.
+We split $A$ to be $H + F$ by putting entry-$1$ of $A$ to $H$ and $F$ with probability $\sim \mathrm{Ber}(p)$ for some fixed $p$.
+We can regard $H$ as know information about history 'What users have watched' and regard $F$ as future criterion.
+We use $H$ to derive feature vectors of both users and movies by SVD decomposition $H = USV^{\top}$ where $U = (u_1; ...;u_M)$ and $V = (v_1;...;v_L)$.
+At every time $t$, use $x_{t,i} = u_{i}v_j^{\top}$ as the context information of base arm $i$ and randomly choose a user $I_t$.
+And use $w_t(j) = F(I_t,j)$ as the weight of base arm $j$.
 
-  \item 2015 Kveton Branislav et al. Combinatorial Cascading UCB which maintains its upper confidence bound purely by the historical payoff of the superarms selected. The contextual information $x_{i,t}$ is totally ignored so it can only catch the $\theta_\ast^T\mu$ part while suffers a lot from noisy.
+Notice that for this case, fixed number of base arms, it might have problem if we use $(u_{I_t}, v_j)$ as context information.
+Since to find the best arm, it is equivalent to find the best one with highest weights sum, so is equivalent to the best one with highest $\theta_{v}^{\top}x$.
 
-  \item Random.
+The measurement for MovieLens is accuracy because we don't know the true $\theta_{\ast}$.
 
-\end{enumerate}
+\section{Disjunctive case}
 
-\section{Movielens}
+\subsection{Need to involve Contextual information}
 
-This section introduced Movielens dataset and its movie recommendation challenge. Let $L=\#\text{movies}$, Movielens is a matrix $A\in \{0,1\}^{\#\text{users}\cdot L}$ where each entry $A_{ij}$ is a boolean clickthrough indicator for the $i$-th user and the $j$-th movie. We split $A=A^1+A^2$, by randomly putting hot entries in $A$ into $A^1$ and $A^2$ according to a bernulli distribution. At round $t$, a user indexed $i_t$ is randomly selected from a predefined set of users, and the agent is required to recommend movies using $A^1$ and $\mathcal{H}_t$ such that $A^2_{i_tj}=1$ for as many those recommended $j$s as possible.
+We experiment both on synthetic data and MovieLens. We compare our method with $\gamma_k = 1$ to the algorithm in Cascading Bandits(ICML'2015) with $L= , K= ,$
 
-We formulate the movie recommendation problem into a combinatorial bandit problem. Let $A^1=USV^T$ be the SVD decomposition and the movies $I=\{e_1,\dots,e_L\}$ be the set of arms, we define the context associated with $e_j$, at round $t$, as $x_{t,e_j}=u_{i_t}^Tv_j$, where $u_l$, $v_l$ denote the $l$-th row of $U$, $V$, respectively. Upon received a super arm $A\in \{A\subseteq I: |A|=k\}$, the reward $r_t$ is calculated using its definition and $w_t(e_j)=A^2_{i_te_j}$. Some notes follows:
+\subsection{Need to involve position discount parameter $\gamma$}
 
-\begin{enumerate}
+We experiment both on synthetic data and MovieLens. We compare our method with $\gamma_k = \gamma^{k-1}$ to the algorithm in Cascading Bandits(ICML'2015) with $L= , K= , \gamma_k=1$.
 
-  \item Define $x_{t,e_j}=(u_{i_t}, v_j)$ is not applicable because the argmax over arms will ignore the stochastic part of the context.
+\subsection{Cascading Information}
 
-  \item Split users into training and testing, as 2014 Qin Lijing et al. did, is not applicable because the context is constant for each arm.
+We experiment both on synthetic data and MovieLens. We compare our method with $\gamma_k = \gamma^{k-1}$ to the algorithm in Qin Lijing(2014) with $L= , K= , \gamma_k=1$.
 
-  \item Measurement for Movielens is accuracy instead of regret because we have no access to the true $\theta_\ast$, if there is one.
 
-\end{enumerate}
+\section{Conjunctive case}
+
+\subsection{Need to involve Contextual information}
+
+We experiment on synthetic data. We compare our method with $\gamma_k = 1$ to the algorithm in Cascading Bandits(ICML'2015) with $L= , K= ,$
+
+\subsection{Need to involve position discount parameter $\gamma$}
+
+We experiment on synthetic data. We compare our method with $\gamma_k = \gamma^{k-1}$ to the algorithm in Cascading Bandits(ICML'2015) with $L= , K= , \gamma_k=1$.
+
+\subsection{Cascading Information}
+
+We experiment on synthetic data. We compare our method with $\gamma_k = \gamma^{k-1}$ to the algorithm in Qin Lijing(2014) with $L= , K= , \gamma_k=1$.
+
+\section{Results}
 
 An example output, with $T=10000$, is listed below.
 
