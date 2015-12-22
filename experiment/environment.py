@@ -56,7 +56,10 @@ def contextual_cascading_movielens(s):
     def environment(recommend=None):
         if recommend is None:
             user[0] = random.sample(s.users, 1)[0]
-            return {arm: np.outer(s.U[user[0]], s.V[arm]).flatten() for arm in s.arms}
+            exc = s.A.getrow(user[0])
+            if len([arm for arm in s.arms if exc[0, arm] == 0]) < s.K + 2:
+                return environment()
+            return {arm: np.outer(s.U[user[0]], s.V[arm]).flatten() for arm in s.arms if exc[0, arm] == 0}
         else:
             ctr = [arm in s.ctrh[user[0]] for arm in recommend]
             r, c = reward(ctr, s.gamma, s.disj)
@@ -70,7 +73,10 @@ def contextual_full_movielens(s):
     def environment(recommend=None):
         if recommend is None:
             user[0] = random.sample(s.users, 1)[0]
-            return {arm: np.outer(s.U[user[0]], s.V[arm]).flatten() for arm in s.arms}
+            exc = s.A.getrow(user[0])
+            if len([arm for arm in s.arms if exc[0, arm] == 0]) < s.K + 2:
+                return environment()
+            return {arm: np.outer(s.U[user[0]], s.V[arm]).flatten() for arm in s.arms if exc[0, arm] == 0}
         else:
             ctr = [arm in s.ctrh[user[0]] for arm in recommend]
             r, _ = reward(ctr, s.gamma, s.disj)

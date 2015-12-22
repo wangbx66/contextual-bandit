@@ -47,7 +47,7 @@ def flowtest_movielens(T, kw):
     s = contextual_movielens_rng(**kw)
     exploit1, explore1 = contextual_cascading_monkey(*contextual_cascading_movielens_environment(s), T=T)
     exploit2, explore2 = contextual_cascading_sherry(*contextual_cascading_movielens_environment(s), T=T)
-    exploit3, explore3 = contextual_full_monkey(*contextual_full_movielens_environment(s), T=T)
+    #exploit3, explore3 = contextual_full_monkey(*contextual_full_movielens_environment(s), T=T)
     exploit4, explore4 = contextual_full_lijing(*contextual_full_movielens_environment(s), T=T)
     exploit5, explore5 = absolute_cascading_ucb(*contextual_cascading_movielens_environment(s), T=T)
     plt.plot(range(T), exploit1, 'r--', range(T), exploit2, 'r--', range(T), exploit4, 'b--', range(T), exploit5, 'b--')

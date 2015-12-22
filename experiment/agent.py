@@ -49,8 +49,8 @@ def contextual_cascading_sherry(e, s, T):
     timestamp = time.time()
     for t in range (1, T):
         x = e()
-        U = {arm:theta.dot(x[arm]) + beta * x[arm].dot(np.linalg.inv(V)).dot(x[arm]) for arm in s.arms}
-        recc = [p[1] for p in heapq.nlargest(s.K, [(U[arm], arm) for arm in s.arms])]
+        U = {arm:theta.dot(x[arm]) + beta * x[arm].dot(np.linalg.inv(V)).dot(x[arm]) for arm in x}
+        recc = [p[1] for p in heapq.nlargest(s.K, [(U[arm], arm) for arm in x])]
         r, c = e(recc)
         V += sum([s.gamma ** (2*k) * np.outer(x[recc[k]], x[recc[k]]) for k in range(min(s.K, c+1))])
         X = np.concatenate([X] + [s.gamma ** k * x[recc[k]].reshape(1, s.d) for k in range(min(s.K, c+1))])
@@ -77,8 +77,8 @@ def contextual_full_lijing(e, s, T):
     score = [0]
     for t in range (1, T):
         x = e()
-        U = {arm:theta.dot(x[arm]) + beta * x[arm].dot(np.linalg.inv(V)).dot(x[arm]) for arm in s.arms}
-        recc = [p[1] for p in heapq.nlargest(s.K, [(U[arm], arm) for arm in s.arms])]
+        U = {arm:theta.dot(x[arm]) + beta * x[arm].dot(np.linalg.inv(V)).dot(x[arm]) for arm in x}
+        recc = [p[1] for p in heapq.nlargest(s.K, [(U[arm], arm) for arm in x])]
         r, ctr = e(recc)
         V += sum([s.gamma ** (2*k) * np.outer(x[recc[k]], x[recc[k]]) for k in range(len(recc))])
         b += sum([ctr[k] * x[recc[k]] for k in range(len(recc))])
