@@ -55,7 +55,7 @@ def flowtest_movielens(T, kw):
 #kw = {'L':20, 'd':10, 'h':0.75, 'K':4, 'gamma':0.95, 'eps':0.1, 'v':0.35, 'disj':True}
 #kw = {'L':20, 'd':10, 'h':0.35, 'K':4, 'gamma':0.95, 'eps':0.1, 'v':0.35, 'disj':False}
 #flowtest_monkey(T=1000, kw=kw)
-kw = {'L':25, 'portion':0.2, 'd':5, 'K':5, 'h':60, 'gamma':0.95, 'disj':True}
+kw = {'L':90, 'portion':0.2, 'd':5, 'K':4, 'h':60, 'gamma':0.95, 'disj':True}
 flowtest_movielens(T=1000, kw=kw)
 
 logfile.close()
