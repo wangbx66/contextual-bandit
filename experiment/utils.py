@@ -8,6 +8,10 @@ def red(s):
 def uni(x):
     return x/np.sqrt(x.dot(x))
 
+def suni(d):
+    x = np.abs(np.random.normal(0, 1, d))
+    return uni(x)
+
 def reward(ctr, gamma, disj):
     conj = not disj
     for c, click in enumerate(ctr):
