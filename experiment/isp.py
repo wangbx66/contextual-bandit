@@ -1,10 +1,10 @@
 import logging
 logger = logging.getLogger('ISP')
 
+import networkx
+
 from utils import ucb_settings
 from utils import suni
-
-import networkx
 
 def reachable(G, u, v):
     return networkx.has_path(G, u, v)

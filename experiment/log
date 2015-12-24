@@ -699,3 +699,11 @@ Agent-INFO: Lijing play score 1066.7115803152617/3000
 Agent-INFO: theta cosine similarity 0.8973723580220443
 Environment-INFO: Initializing environment "Contextual ISP"
 Environment-INFO: Initializing environment "Contextual ISP" done
+Agent-INFO: Absolute play score 973.1993803736849/3000
+Environment-INFO: Initializing environment "Contextual ISP"
+Environment-INFO: Initializing environment "Contextual ISP" done
+Agent-INFO: Monkey play score 791.3275413170037/3000
+Environment-INFO: Initializing environment "Contextual ISP"
+Environment-INFO: Initializing environment "Contextual ISP" done
+Agent-INFO: Sherry play score 1189.278544803273/3000
+Agent-INFO: theta cosine similarity 0.8614466961633543

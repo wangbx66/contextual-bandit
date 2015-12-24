@@ -76,11 +76,3 @@ def contextual_isp(s, cascade):
             return (r, c) if cascade else (r, [int(click) for click in ctr])
     logger.info('Initializing environment "Contextual ISP" done')
     return environment, ucb_settings(arms=s.G.edges(), L=len(s.G.edges()), d=s.d, gamma=s.gamma, disj=s.disj, cascade=cascade, oracle=isp_oracle, theta=s.theta)
-
-#from isp import contextual_isp_rng
-#for i in range(15):
-#    e, s = contextual_isp(contextual_isp_rng(), cascade=False)
-#    x, p = e()
-#    U={arm: 1 for arm in x}
-#    recc=isp_oracle(U, *p)
-#    r,c=e(recc)
