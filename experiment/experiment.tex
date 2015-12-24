@@ -55,6 +55,23 @@ Since to find the best arm, it is equivalent to find the best one with highest w
 
 The measurement for MovieLens is accuracy because we don't know the true $\theta_{\ast}$.
 
+\subsection{Routing}
+
+Let $G=(V,E=\{e_1,...,e_L\})$ be the topology representation of an ISP network, G is then symmetric by it's definition. 
+When a package is sent from the source node, it's returned back to the source after trying to bypass an edge with high latency.
+The routing is failed if so, and the source will receive the routing history till the failing edge.
+The agent is then motivated to assign an routing path, which can be recognized as an simple path in $G$ from the source node to the destination node, so as to aviod edges with high latency. 
+Assume we have some sort of tell about the dynamics of the network condition between the hosts, where the information is encoded in a $d$-dimentional vector, the network reuting problem is to find the routing path least likely to involve an edge with high latency.
+Denote $x_{i,t}$ be the vector associated with edge $e_i$, at time $t$, assume the corresponding latency is drawn from an exponential distribution with mean $1 - \theta_{\ast}^{\top}x_{t,i}$ independently,
+and define the latency is high iff it's greater than a constant tolerance value.
+We formulate the network routing as an contextual combinatorial cascading problem.
+
+Let $E=\{e_1,...,e_L\}$ be the set of arms, and $x_{i,t}$ be the context associated with arm $e_i$ at time $t$.
+In order to send a package from $u_t$ to $v_t$,
+the agent have to choose an superarm from $$S=\{A=(e_{k_1},...,e_{k_n}):e_{k_j}\in E, e_{k_1},...,e_{k_n} \text{is a simple path of } G \text{ from } u_t \text{ to } v_t\}$$
+To find the preferred superarm, the agent assigns an weight $\hat{\theta}^{\top}x_{i,t}$ to $e_i$, and runs shortest path algorithm on $G$.
+After the agent choose the shortest path as the superarm, the reward and the first ever edge with high latency, if any, is feedbacked.
+
 \section{Disjunctive case}
 
 \subsection{Need to involve Contextual information}

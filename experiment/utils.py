@@ -12,6 +12,10 @@ def suni(d):
     x = np.abs(np.random.normal(0, 1, d))
     return uni(x)
 
+def disturb(x, h):
+    y = x + h * np.random.normal(0, 1, x.shape)
+    return uni(y)
+
 def reward(ctr, gamma, disj):
     conj = not disj
     for c, click in enumerate(ctr):
@@ -27,4 +31,4 @@ class ucb_settings:
         self.__dict__ = s
         
     def __str__(self):
-        return '\n    '.join([str(k) + ' ' + str(v) for k, v in self.__dict__.items() if not k in ['arms', 'ctrh', 'users', 'U', 'V', 'x', 'A']])
+        return '\n    '.join([str(k) + ' ' + str(v) for k, v in self.__dict__.items() if not k in ['arms', 'ctrh', 'users', 'U', 'V', 'x', 'A', 'oracle', 'theta']])
