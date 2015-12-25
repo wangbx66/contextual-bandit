@@ -15,6 +15,7 @@
 
 \newcommand{\RR}{\mathbb{R}}
 \newcommand{\cS}{\mathcal{S}}
+\DeclareMathOperator*{\argmin}{arg\,min}
 
 \begin{document}
 
@@ -57,19 +58,22 @@ The measurement for MovieLens is accuracy because we don't know the true $\theta
 
 \subsection{Routing}
 
-Let $G=(V,E=\{e_1,...,e_L\})$ be the topology representation of an ISP network, G is then symmetric by it's definition. 
-When a package is sent from the source node, it's returned back to the source after trying to bypass an edge with high latency.
-The routing is failed if so, and the source will receive the routing history till the failing edge.
-The agent is then motivated to assign an routing path, which can be recognized as an simple path in $G$ from the source node to the destination node, so as to aviod edges with high latency. 
-Assume we have some sort of tell about the dynamics of the network condition between the hosts, where the information is encoded in a $d$-dimentional vector, the network reuting problem is to find the routing path least likely to involve an edge with high latency.
+Let $G=(V,E=\{e_1,...,e_L\})$ be the topology representation of an ISP network, $G$ is then symmetric by it's definition. 
+Considering the scinario where a package is sent from its source node to its destination, it's returned back to the source after trying to bypass an edge with high latency.
+And the routing is failed if so, and the source will receive the routing history till the failing edge.
+The agent is then motivated to assign an routing path, which can be recognized as an simple path in $G$ from the source node to the destination node, so as to avoid edges with high latency. 
+Assume we have some sort of tell about the dynamics of the network conditions between the hosts, each being encoded in a $d$-dimentional vector, the network routing problem is to find the routing path least likely to involve an edge with high latency.
 Denote $x_{i,t}$ be the vector associated with edge $e_i$, at time $t$, assume the corresponding latency is drawn from an exponential distribution with mean $1 - \theta_{\ast}^{\top}x_{t,i}$ independently,
-and define the latency is high iff it's greater than a constant tolerance value.
+and define the latency is high iff it's greater than a constant tolerance value $\tau$.
 We formulate the network routing as an contextual combinatorial cascading problem.
 
 Let $E=\{e_1,...,e_L\}$ be the set of arms, and $x_{i,t}$ be the context associated with arm $e_i$ at time $t$.
 In order to send a package from $u_t$ to $v_t$,
-the agent have to choose an superarm from $$S=\{A=(e_{k_1},...,e_{k_n}):e_{k_j}\in E, e_{k_1},...,e_{k_n} \text{is a simple path of } G \text{ from } u_t \text{ to } v_t\}$$
-To find the preferred superarm, the agent assigns an weight $\hat{\theta}^{\top}x_{i,t}$ to $e_i$, and runs shortest path algorithm on $G$.
+the agent have to choose an superarm from $$S=\{A=(e_{k_1},...,e_{k_n}):e_{k_j}\in E, e_{k_1},...,e_{k_n} \text{is a simple path of } G \text{ from } u_t \text{ to } v_t\},$$
+with the expected payoffs (opt out discount) $$E[r_A]=\Pi_{1\leq i\leq n(A)}(1-\exp(-\tau/(1-\theta_{\ast}^{\top}x_{k_i,t}))).$$
+The agent finds $A_t$ by running shortest path algorithm on $G$ with weight $\hat{\theta}^{\top}x_{k_i,t}$ assigned to $e_i$, which yields $$A_t=\argmin_{Z\in S}\sum_{1\leq i\leq n(Z)}\hat{\theta}^{\top}x_{k_i,t}.$$
+We have then $$\max_{A\in S}E[r_A]/E[r_{A_t}]\leq \alpha(\tau, d) = (1-e^{-\tau})^d/(1-e^{-\tau / d}).$$
+Hence we can realize the $\alpha(\tau, d)$ oracle using shortest path algorithm.
 After the agent choose the shortest path as the superarm, the reward and the first ever edge with high latency, if any, is feedbacked.
 
 \section{Disjunctive case}
