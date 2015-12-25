@@ -70,11 +70,12 @@ We formulate the network routing as an contextual combinatorial cascading proble
 Let $E=\{e_1,...,e_L\}$ be the set of arms, and $x_{i,t}$ be the context associated with arm $e_i$ at time $t$.
 In order to send a package from $u_t$ to $v_t$,
 the agent have to choose an superarm from $$S=\{A=(e_{k_1},...,e_{k_n}):e_{k_j}\in E, e_{k_1},...,e_{k_n} \text{is a simple path of } G \text{ from } u_t \text{ to } v_t\},$$
-with the expected payoffs (opt out discount) $$E[r_A]=\Pi_{1\leq i\leq n(A)}(1-\exp(-\tau/(1-\theta_{\ast}^{\top}x_{k_i,t}))).$$
-The agent finds $A_t$ by running shortest path algorithm on $G$ with weight $\hat{\theta}^{\top}x_{k_i,t}$ assigned to $e_i$, which yields $$A_t=\argmin_{Z\in S}\sum_{1\leq i\leq n(Z)}\hat{\theta}^{\top}x_{k_i,t}.$$
-We have then $$\max_{A\in S}E[r_A]/E[r_{A_t}]\leq \alpha(\tau, d) = (1-e^{-\tau})^d/(1-e^{-\tau / d}).$$
-Hence we can realize the $\alpha(\tau, d)$ oracle using shortest path algorithm.
-After the agent choose the shortest path as the superarm, the reward and the first ever edge with high latency, if any, is feedbacked.
+with the expected payoffs (opt out discount) $$E[r_A]=\Pi_{1\leq i\leq n(A)}(1-\exp(-\tau/(1-\theta_{\ast}^{\top}x_{k(A)_i,t}))),$$
+where $n(A)$ and $k(A)_i$ is the amount of arms in superarm $A$, and the index of the $i$-th arm, separately.
+The agent finds $A_t$ by running shortest path algorithm on $G$ with weight $\hat{\theta}^{\top}x_{k_i,t}$ assigned to $e_i$, which yields $$A_t=\argmin_{Z\in S}\sum_{1\leq i\leq n(Z)}\hat{\theta}^{\top}x_{k(Z)_i,t}.$$
+We have then $$E[r_{A_t}]/\min_{A\in S}E[r_A]\geq \alpha(\tau, G) = (1-e^{-\tau/|V|})/(1-e^{-\tau})^{|V|},$$
+which shows that we can realize the $\alpha(\tau, G)$-approximation oracle using shortest path algorithm.
+After the agent chooses the shortest path as the superarm, the reward and the first ever edge with high latency, if any, is feedbacked.
 
 \section{Disjunctive case}
 
