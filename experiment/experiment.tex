@@ -58,23 +58,31 @@ The measurement for MovieLens is accuracy because we don't know the true $\theta
 
 \subsection{Routing}
 
-Let $G=(V,E=\{e_1,...,e_L\})$ be the topology representation of an ISP network, $G$ is then symmetric by it's definition. 
+Let $G=(V,E=\{e_1,...,e_L\})$ be the topology representation of an ISP network. $G$ is symmetric by it's definition. 
 Considering the scinario where a package is sent from its source node to its destination, it's returned back to the source after trying to bypass an edge with high latency.
 And the routing is failed if so, and the source will receive the routing history till the failing edge.
 The agent is then motivated to assign an routing path, which can be recognized as an simple path in $G$ from the source node to the destination node, so as to avoid edges with high latency. 
 Assume we have some sort of tell about the dynamics of the network conditions between the hosts, each being encoded in a $d$-dimentional vector, the network routing problem is to find the routing path least likely to involve an edge with high latency.
 Denote $x_{i,t}$ be the vector associated with edge $e_i$, at time $t$, assume the corresponding latency is drawn from an exponential distribution with mean $1 - \theta_{\ast}^{\top}x_{t,i}$ independently,
 and define the latency is high iff it's greater than a constant tolerance value $\tau$.
-We formulate the network routing as an contextual combinatorial cascading problem.
+We formulate the network routing problem as an contextual combinatorial cascading problem.
 
 Let $E=\{e_1,...,e_L\}$ be the set of arms, and $x_{i,t}$ be the context associated with arm $e_i$ at time $t$.
 In order to send a package from $u_t$ to $v_t$,
 the agent have to choose an superarm from $$S=\{A=(e_{k_1},...,e_{k_n}):e_{k_j}\in E, e_{k_1},...,e_{k_n} \text{is a simple path of } G \text{ from } u_t \text{ to } v_t\},$$
-with the expected payoffs (opt out discount) $$E[r_A]=\Pi_{1\leq i\leq n(A)}(1-\exp(-\tau/(1-\theta_{\ast}^{\top}x_{k(A)_i,t}))),$$
-where $n(A)$ and $k(A)_i$ is the amount of arms in superarm $A$, and the index of the $i$-th arm, separately.
-The agent finds $A_t$ by running shortest path algorithm on $G$ with weight $\hat{\theta}^{\top}x_{k_i,t}$ assigned to $e_i$, which yields $$A_t=\argmin_{Z\in S}\sum_{1\leq i\leq n(Z)}\hat{\theta}^{\top}x_{k(Z)_i,t}.$$
-We have then $$E[r_{A_t}]/\min_{A\in S}E[r_A]\geq \alpha(\tau, G) = (1-e^{-\tau/|V|})/(1-e^{-\tau})^{|V|},$$
-which shows that we can realize the $\alpha(\tau, G)$-approximation oracle using shortest path algorithm.
+with the expected payoffs (opt out discount) $$E[r_A|\theta]=\Pi_{1\leq i\leq n(A)}(1-\exp(-\tau/(1-\theta^{\top}x_{k(A)_i,t}))),$$
+where $n(A)$ and $k(A)_i$ are the amount of arms in superarm $A$, and the index of the $i$-th arm, separately.
+The agent finds $A_t$ by running shortest path algorithm on $G$ with weight $\hat{\theta}^{\top}x_{k_i,t}$ assigned to $e_i$, which yields $$A_t=\argmin_{A\in S}\sum_{1\leq i\leq n(A)}\hat{\theta}^{\top}x_{k(A)_i,t}.$$
+For $A\in S$, denote $\hat{\mu}(A)_i=1-\hat{\theta}^{\top}x_{k(A_t)_i,t},$ we have then 
+\begin{align*}
+  E[r_{A_t}|\hat{\theta}]/E[r_A|\hat{\theta}] &= \frac{\Pi_{1\leq i\leq n(A_t)}(1-e^{-\tau/\hat{\mu}(A_t)_i})}{\Pi_{1\leq i\leq n(A)}(1-e^{-\tau/\hat{\mu}(A)_i})}\\
+  &\geq \min_{0\leq \sigma \leq n(A), \sum_i \hat{\mu}(A_t)_i=\sum_i \hat{\mu}(A)_i=\sigma}\frac{\Pi_{1\leq i\leq n(A_t)}(1-e^{-\tau/\hat{\mu}(A_t)_i})}{\Pi_{1\leq i\leq n(A)}(1-e^{-\tau/\hat{\mu}(A)_i})}\\
+  &\geq \min_{0\leq \sigma \leq n(A)}\frac{(1-e^{-\tau})^\sigma}{(1-e^{-\tau n(A)/\sigma})^{n(A)}}\\
+  &\geq \min_{0\leq \sigma \leq n(A)}\frac{1-e^{-\tau/\sigma}}{(1-e^{-\tau n(A)/\sigma})^{n(A)}}\\
+  &\geq 1-e^{-\tau/n(A)}/(1-e^{-\tau})^{n(A)}\\
+  &\geq (1-e^{-\tau/|V|})/(1-e^{-\tau})^{|V|}.\\
+\end{align*}
+Let $\alpha(\tau, G)=(1-e^{-\tau/|V|})/(1-e^{-\tau})^{|V|}$, the above inequality shows that we can realize the $\alpha(\tau, G)$-approximation oracle using shortest path algorithm.
 After the agent chooses the shortest path as the superarm, the reward and the first ever edge with high latency, if any, is feedbacked.
 
 \section{Disjunctive case}
@@ -108,7 +116,7 @@ We experiment on synthetic data. We compare our method with $\gamma_k = \gamma^{
 
 \section{Results}
 
-An example output, with $T=10000$, is listed below.
+Example results, with $T=10000$ and $T=30000$ seperately, are listed on Table~\ref{movielens} and Table~\ref{isp}.
 
 \begin{table}
     \centering
@@ -125,6 +133,24 @@ An example output, with $T=10000$, is listed below.
 		\bottomrule
 	\end{tabular}
 	\caption{\textbf{Cumulative reward w.r.t different baselines, under Movielens setting.}}
-	\label{daily}
+	\label{movielens}
+\end{table}
+
+\begin{table}
+    \centering
+    \renewcommand{\arraystretch}{1.2}
+	\begin{tabular}{lc}
+	    \toprule
+		\textbf{Algorithm}  &\textbf{Cumulative Reward $\sum_{t=1}^Tr_i $}\\
+		\midrule
+		Li		    &7676.54 \\
+		Qin		    &7165.70 \\
+		Monkey		    &5428.52 \\
+		Kveton		    &5468.97 \\
+		Perfect Play		    &N/A \\
+		\bottomrule
+	\end{tabular}
+	\caption{\textbf{Cumulative reward w.r.t different baselines, under ISP routing setting.}}
+	\label{isp}
 \end{table}
 \end{document}
