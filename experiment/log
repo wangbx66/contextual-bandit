@@ -707,3 +707,63 @@ Environment-INFO: Initializing environment "Contextual ISP"
 Environment-INFO: Initializing environment "Contextual ISP" done
 Agent-INFO: Sherry play score 1189.278544803273/3000
 Agent-INFO: theta cosine similarity 0.8614466961633543
+Main-INFO: ===== Numpy/Python random seed = 120
+Main-INFO: ISP flowtest
+Main-INFO: Require rng initialization
+Main-INFO: gamma 0.95
+    d 15
+    disj False
+    isp 1221
+    tlc 0.8
+    h 0.35
+ISP-INFO: Initializing random settings "ISP" complete
+ISP-INFO: L 4510
+    h 0.35
+    disj False
+    tlc 0.8
+    gamma 0.95
+    d 15
+Environment-INFO: Initializing environment "Contextual ISP"
+Environment-INFO: Initializing environment "Contextual ISP" done
+Agent-INFO: Monkey play score 561.3769551804332/3000
+Environment-INFO: Initializing environment "Contextual ISP"
+Environment-INFO: Initializing environment "Contextual ISP" done
+Agent-INFO: Sherry play score 798.1950882008722/3000
+Agent-INFO: theta cosine similarity 0.926674158592042
+Environment-INFO: Initializing environment "Contextual ISP"
+Environment-INFO: Initializing environment "Contextual ISP" done
+Agent-INFO: Lijing play score 732.2612307851605/3000
+Agent-INFO: theta cosine similarity 0.9465817799110549
+Environment-INFO: Initializing environment "Contextual ISP"
+Environment-INFO: Initializing environment "Contextual ISP" done
+Agent-INFO: Absolute play score 679.4559594464256/3000
+Main-INFO: ===== Numpy/Python random seed = 11
+Main-INFO: ISP flowtest
+Main-INFO: Require rng initialization
+Main-INFO: tlc 0.8
+    h 0.35
+    gamma 0.95
+    isp 1221
+    d 15
+    disj False
+ISP-INFO: Initializing random settings "ISP" complete
+ISP-INFO: tlc 0.8
+    h 0.35
+    gamma 0.95
+    d 15
+    L 4510
+    disj False
+Environment-INFO: Initializing environment "Contextual ISP"
+Environment-INFO: Initializing environment "Contextual ISP" done
+Agent-INFO: Monkey play score 5428.526540367508/30000
+Environment-INFO: Initializing environment "Contextual ISP"
+Environment-INFO: Initializing environment "Contextual ISP" done
+Agent-INFO: Sherry play score 7676.548355919315/30000
+Agent-INFO: theta cosine similarity 0.9185967928172879
+Environment-INFO: Initializing environment "Contextual ISP"
+Environment-INFO: Initializing environment "Contextual ISP" done
+Agent-INFO: Lijing play score 7165.702895627816/30000
+Agent-INFO: theta cosine similarity 0.9485159164165863
+Environment-INFO: Initializing environment "Contextual ISP"
+Environment-INFO: Initializing environment "Contextual ISP" done
+Agent-INFO: Absolute play score 5468.975015977836/30000
