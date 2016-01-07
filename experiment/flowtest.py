@@ -62,12 +62,13 @@ def flowtest_isp(T, kw):
     plt.plot(range(T), exploit1, 'r--', range(T), exploit2, 'r--', range(T), exploit3, 'b--', range(T), exploit4, 'b--')
 
 #kw = {'L':20, 'd':10, 'h':0.35, 'K':4, 'gamma':0.95, 'eps':0.1, 'v':0.35, 'disj':True}
-#kw = {'L':20, 'd':10, 'h':0.75, 'K':4, 'gamma':0.95, 'eps':0.1, 'v':0.35, 'disj':False}
+#kw = {'L':20, 'd':10, 'h':0.75, 'K':4, 'gamma':0.95, 'eps':0.1, 'v':0.35, 'sort': False, 'disj':False}
 #flowtest_monkey(T=3000, kw=kw)
 
-#kw = {'L':90, 'portion':0.2, 'd':5, 'K':4, 'h':60, 'gamma':0.95, 'disj':True}
-#flowtest_movielens(T=1000, kw=kw)
+kw = {'L':90, 'portion':0.2, 'd':5, 'K':4, 'h':60, 'gamma':0.95, 'sort': False, 'disj':True}
+flowtest_movielens(T=1000, kw=kw)
 
-kw = {'isp':1221, 'd':10, 'h':0.35, 'tlc':1, 'gamma':0.95, 'disj':False}
-flowtest_isp(T=3000, kw=kw)
+#kw = {'isp':1221, 'd':15, 'h':0.35, 'tlc':0.8, 'gamma':0.95, 'disj':False}
+#flowtest_isp(T=30000, kw=kw)
+
 logfile.close()

@@ -14,17 +14,17 @@ from utils import ucb_settings
 from isp import isp_oracle
 from isp import reachable
 
-def contextual_monkey_rng(L=20, d=10, h=0.35, K=4, gamma=0.95, eps=0.1, v=0.35, disj=False):
+def contextual_monkey_rng(L=20, d=10, h=0.35, K=4, gamma=0.95, eps=0.1, v=0.35, sort=False, disj=False):
     arms = list(range(L))
     x = {arm: np.random.uniform(0, 1, d) for arm in arms}
     theta = h * uni(np.random.uniform(0, 1, d))
     logger.info('Initializing random settings "Contextual Monkey" complete')
-    s = ucb_settings(arms=arms, L=L, x=x, theta=theta, K=K, d=d, gamma=gamma, eps=eps, v=v, disj=disj)
+    s = ucb_settings(arms=arms, L=L, x=x, theta=theta, K=K, d=d, gamma=gamma, eps=eps, v=v, sort=sort, disj=disj)
     logger.info(s)
     return s
 
-def argmax_oracle(U, K):
-    return [p[1] for p in heapq.nlargest(K, [(U[arm], arm) for arm in U])]
+def argmax_oracle(U, K, sort):
+    return [p[1] for p in heapq.nlargest(K, [(U[arm], arm) for arm in U])[::2*sort-1]]
 
 def contextual_monkey(s, cascade):
     logger.info('Initializing environment "Contextual Monkey"')
@@ -33,7 +33,7 @@ def contextual_monkey(s, cascade):
         if recommend == None:
             for arm in s.x:
                 xt[arm] = uni(s.x[arm] + np.random.uniform(-s.v, s.v, s.d))
-            return xt, (s.K,)
+            return xt, (s.K, s.sort)
         else:
             ctr = [np.random.uniform(0, 1) < s.theta.dot(xt[arm]) + np.random.normal(0, s.eps) for arm in recommend]
             r, c = reward(ctr, s.gamma, s.disj)
@@ -50,7 +50,7 @@ def contextual_movielens(s, cascade):
             exc = s.A.getrow(user[0])
             if len([arm for arm in s.arms if exc[0, arm] == 0]) < s.K + 2:
                 return environment()
-            return {arm: np.outer(s.U[user[0]], s.V[arm]).flatten() for arm in s.arms if exc[0, arm] == 0}, (s.K,)
+            return {arm: np.outer(s.U[user[0]], s.V[arm]).flatten() for arm in s.arms if exc[0, arm] == 0}, (s.K, s.sort)
         else:
             ctr = [arm in s.ctrh[user[0]] for arm in recommend]
             r, c = reward(ctr, s.gamma, s.disj)
