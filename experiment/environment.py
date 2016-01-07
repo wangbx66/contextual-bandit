@@ -14,19 +14,19 @@ from utils import ucb_settings
 from isp import isp_oracle
 from isp import reachable
 
-def contextual_monkey_rng(L=20, d=10, h=0.35, K=4, gamma=0.95, rgamma=0.95, eps=0.1, v=0.35, sort=False, disj=False):
+def contextual_monkey_rng(L=20, d=10, h=0.35, K=4, gamma=0.95, eps=0.1, v=0.35, sort=False, disj=False):
     arms = list(range(L))
     x = {arm: np.random.uniform(0, 1, d) for arm in arms}
     theta = h * uni(np.random.uniform(0, 1, d))
     logger.info('Initializing random settings "Contextual Monkey" complete')
-    s = ucb_settings(arms=arms, L=L, x=x, theta=theta, K=K, d=d, gamma=gamma, rgamma=rgamma, eps=eps, v=v, sort=sort, disj=disj)
+    s = ucb_settings(arms=arms, L=L, x=x, theta=theta, K=K, d=d, gamma=gamma, eps=eps, v=v, sort=sort, disj=disj)
     logger.info(s)
     return s
 
 def argmax_oracle(U, K, sort):
     return [p[1] for p in heapq.nlargest(K, [(U[arm], arm) for arm in U])[::2*sort-1]]
 
-def contextual_monkey(s, cascade):
+def contextual_monkey(s, cascade, rgamma):
     logger.info('Initializing environment "Contextual Monkey"')
     xt = {arm: s.x[arm] for arm in s.x}
     def environment(recommend=None):
@@ -39,9 +39,9 @@ def contextual_monkey(s, cascade):
             r, c = reward(ctr, s.gamma, s.disj)
             return (r, c) if cascade else (r, [int(click) for click in ctr])
     logger.info('Initializing environment "Contextual Monkey" complete')
-    return environment, ucb_settings(arms=s.arms, L=s.L, d=s.d, gamma=s.gamma, rgamma=s.rgamma, disj=s.disj, cascade=cascade, oracle=argmax_oracle, theta=s.theta)
+    return environment, ucb_settings(arms=s.arms, L=s.L, d=s.d, gamma=1-rgamma*(1-s.gamma), disj=s.disj, cascade=cascade, oracle=argmax_oracle, theta=s.theta)
 
-def contextual_movielens(s, cascade):
+def contextual_movielens(s, cascade, rgamma):
     logger.info('Initializing environment "Contextual Movielens"')
     user = random.sample(s.users, 1)
     def environment(recommend=None):
@@ -56,9 +56,9 @@ def contextual_movielens(s, cascade):
             r, c = reward(ctr, s.gamma, s.disj)
             return (r, c) if cascade else (r, [int(click) for click in ctr])
     logger.info('Initializing environment "Contextual Movielens" done')
-    return environment, ucb_settings(arms=s.arms, L=s.L, d=s.d ** 2, gamma=s.gamma, runtimegamma=s.runtimegamma, disj=s.disj, cascade=cascade, oracle=argmax_oracle)
+    return environment, ucb_settings(arms=s.arms, L=s.L, d=s.d ** 2, gamma=1-rgamma*(1-s.gamma), runtimegamma=s.runtimegamma, disj=s.disj, cascade=cascade, oracle=argmax_oracle)
 
-def contextual_isp(s, cascade):
+def contextual_isp(s, cascade, rgamma):
     logger.info('Initializing environment "Contextual ISP"')
     p = random.sample(s.G.nodes(), 2)
     xt = {arm: s.x[arm] for arm in s.x}
@@ -75,4 +75,4 @@ def contextual_isp(s, cascade):
             r, c = reward(ctr, s.gamma, s.disj)
             return (r, c) if cascade else (r, [int(click) for click in ctr])
     logger.info('Initializing environment "Contextual ISP" done')
-    return environment, ucb_settings(arms=s.G.edges(), L=len(s.G.edges()), d=s.d, gamma=s.gamma, disj=s.disj, cascade=cascade, oracle=isp_oracle, theta=s.theta)
+    return environment, ucb_settings(arms=s.G.edges(), L=len(s.G.edges()), d=s.d, gamma=1-rgamma*(1-s.gamma), disj=s.disj, cascade=cascade, oracle=isp_oracle, theta=s.theta)

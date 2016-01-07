@@ -45,8 +45,8 @@ def absolute_cascading_gammaucb(e, s, T):
         recc = s.oracle(U, *params)
         r, c = e(recc)
         for k in range(min(len(recc), c+1)):
-            W[recc[k]] = (s.rgamma ** (2*k) * (b[recc[k]]) * W[recc[k]] + ((k == c) == s.disj)) / (b[recc[k]] + 1)
-            b[recc[k]] += s.rgamma ** k
+            W[recc[k]] = (s.gamma ** (2*k) * (b[recc[k]]) * W[recc[k]] + ((k == c) == s.disj)) / (b[recc[k]] + 1)
+            b[recc[k]] += s.gamma ** k
         score.append(score[-1] + r)
     logger.info('Absolute(Gamma) play score {0}/{1}'.format(score[-1], T))
     return score, 0
@@ -66,9 +66,9 @@ def contextual_cascading_sherry(e, s, T, delta=0.9, lamb=0.1):
         U = {arm: theta.dot(x[arm]) + beta * x[arm].dot(np.linalg.inv(V)).dot(x[arm]) for arm in x}
         recc = s.oracle(U, *params)
         r, c = e(recc)
-        V += sum([s.rgamma ** (2*k) * np.outer(x[recc[k]], x[recc[k]]) for k in range(min(len(recc), c+1))])
-        X = np.concatenate([X] + [s.rgamma ** k * x[recc[k]].reshape(1, s.d) for k in range(min(len(recc), c+1))])
-        Y = np.concatenate([Y] + [s.rgamma ** k * ((k == c) == s.disj) * np.ones(1) for k in range(min(len(recc), c+1))])
+        V += sum([s.gamma ** (2*k) * np.outer(x[recc[k]], x[recc[k]]) for k in range(min(len(recc), c+1))])
+        X = np.concatenate([X] + [s.gamma ** k * x[recc[k]].reshape(1, s.d) for k in range(min(len(recc), c+1))])
+        Y = np.concatenate([Y] + [s.gamma ** k * ((k == c) == s.disj) * np.ones(1) for k in range(min(len(recc), c+1))])
         theta = np.linalg.inv(X.T.dot(X) + lamb * np.eye(s.d)).dot(X.T.dot(Y))
         beta = np.sqrt(np.linalg.slogdet(V)[1] - ldV - 2 * np.log(delta)) + np.sqrt(lamb)
         score.append(score[-1] + r)
