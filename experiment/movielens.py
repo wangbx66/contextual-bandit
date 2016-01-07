@@ -13,8 +13,8 @@ from utils import ucb_settings
 from utils import overlap
 
 def movielens_data():
-    fpr = open('movielens/ratings.csv')
-    fpt = open('movielens/tags.csv')
+    fpr = open('movielens/ratings.csv', encoding='utf-8')
+    fpt = open('movielens/tags.csv', encoding='utf-8')
     gr = csv.reader(fpr, delimiter=',', quotechar='"')
     gt = csv.reader(fpt, delimiter=',', quotechar='"')
     gr.__next__()

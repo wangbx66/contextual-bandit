@@ -178,6 +178,8 @@ The cascade model is popular to describe user behaviors in recommendation system
 
 Now personalized recommendation is a basic feature of websites to improve user satisfaction by providing attractive content to meet specific user's need. Personalization includes storing user features and historical information, managing content set, analysis of user behaviors and providing suitable content to the user. Usually, both users and content are represented by feature sets. User features may contain basic attributes, like age, gender and nationality, and historical behaviors. Content features may contain categories and descriptive information. Because the views of different users on the same content can vary significantly, exploration and exploitation have to be exercised at an individual level and be able to cross different contents.
 
+Stochastic online learning with combinatorial actions has been studies with semi-bandit feedback \cite{chen2013combinatorial}.
+
 \section{Related Work}
 
 Our work generalizes both the cascading bandits of \cite{kveton2015cascading} and combinatorial cascading bandits of \cite{kveton2015combinatorial} to involve contextual information and position discount. In cascading bandits of \cite{kveton2015cascading}, the feasible set contains any list of $K$ items out of $L$ ground items. Our work generalizes the feasible set to be any set of lists of at most $K$ items, like \cite{kveton2015combinatorial}. In both \cite{kveton2015cascading} and \cite{kveton2015combinatorial}, even though they define the feasible actions as lists, they regard them as sets. The order of a feasible action does not affect the regret bound, which might have problem in real application, especially for recommendations.
@@ -510,7 +512,14 @@ $$
 % $$
 %   R(T) \leq \EE[\Delta N_{A_2}] \leq \frac{c \log(T)}{p_{A_2} \Delta}.
 % $$
-	
+
+\section{Experiments}
+
+\section{Conclusions}
+
+In this paper, we propose contextual combinatorial cascading bandits, a class of contextual combinatorial bandits with partial observations.
+
+
 % In the unusual situation where you want a paper to appear in the
 % references without citing it in the main text, use \nocite
 %\nocite{langley00}

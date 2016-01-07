@@ -56,7 +56,7 @@ def contextual_movielens(s, cascade, rgamma, sort):
             r, c = reward(ctr, s.gamma, s.disj)
             return (r, c) if cascade else (r, [int(click) for click in ctr])
     logger.info('Initializing environment "Contextual Movielens" done')
-    return environment, ucb_settings(arms=s.arms, L=s.L, d=s.d ** 2, gamma=1-rgamma*(1-s.gamma), runtimegamma=s.runtimegamma, disj=s.disj, cascade=cascade, oracle=argmax_oracle)
+    return environment, ucb_settings(arms=s.arms, L=s.L, d=s.d ** 2, gamma=1-rgamma*(1-s.gamma), disj=s.disj, cascade=cascade, oracle=argmax_oracle)
 
 def contextual_isp(s, cascade, rgamma):
     logger.info('Initializing environment "Contextual ISP"')
