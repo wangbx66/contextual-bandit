@@ -21,7 +21,7 @@ def movielens_data():
     gt.__next__()
     return chain(gr, gt)
 
-def contextual_movielens_rng(L=None, portion=0.5, d=15, K=6, h=None, gamma=0.95, sort=False, disj=False):
+def contextual_movielens_rng(L=None, portion=0.5, d=15, K=6, h=None, gamma=0.95, disj=False):
     cox = []
     coy = []
     history = {}
@@ -56,6 +56,6 @@ def contextual_movielens_rng(L=None, portion=0.5, d=15, K=6, h=None, gamma=0.95,
     selected_movies = set([x[1] for x in sorted([(movies[movie], movie) for movie in movies])[-L:]])
     eligable_users = [x[1] for x in sorted([(overlap(history[user], selected_movies), user) for user in history])[-h:]]
     logger.info('Initializing random settings "Contextual Movielens" complete')
-    s = ucb_settings(L=L, d=d, K=K, gamma=gamma, sort=sort, disj=disj, users=eligable_users, arms=selected_movies, ctrh=history, U=U, V=V, A=A.astype(np.int32))
+    s = ucb_settings(L=L, d=d, K=K, gamma=gamma, disj=disj, users=eligable_users, arms=selected_movies, ctrh=history, U=U, V=V, A=A.astype(np.int32))
     logger.info(s)
     return s
