@@ -802,3 +802,163 @@ Agent-INFO: theta cosine similarity 0.9240600433102567
 Environment-INFO: Initializing environment "Contextual Monkey"
 Environment-INFO: Initializing environment "Contextual Monkey" complete
 Agent-INFO: Absolute play score 462.95337500001006/3000
+Main-INFO: ===== Numpy/Python random seed = 323
+Main-INFO: Monkey flowtest
+Main-INFO: Require rng initialization
+Main-INFO: sort False
+    h 0.75
+    eps 0.1
+    L 20
+    K 4
+    disj False
+    gamma 0.95
+    v 0.35
+    d 10
+Environment-INFO: Initializing random settings "Contextual Monkey" complete
+Environment-INFO: sort False
+    eps 0.1
+    L 20
+    v 0.35
+    disj False
+    K 4
+    gamma 0.95
+    d 10
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Sherry play score 605.5842499999993/3000
+Agent-INFO: theta cosine similarity 0.9873640263038838
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Monkey play score 381.711625000008/3000
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Lijing play score 585.586875000003/3000
+Agent-INFO: theta cosine similarity 0.8816690502695544
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Absolute play score 479.00437500001084/3000
+Main-INFO: ===== Numpy/Python random seed = 146
+Main-INFO: Movielens flowtest
+Main-INFO: Require rng initialization
+Main-INFO: d 5
+    h 60
+    portion 0.2
+    L 90
+    sort False
+    K 4
+    disj True
+    gamma 0.95
+Main-INFO: ===== Numpy/Python random seed = 313
+Main-INFO: Monkey flowtest
+Main-INFO: Require rng initialization
+Main-INFO: eps 0.1
+    sort False
+    v 0.35
+    d 10
+    disj False
+    L 20
+    gamma 0.95
+    h 0.75
+    K 4
+    runtimegamma 1
+Environment-INFO: Initializing random settings "Contextual Monkey" complete
+Environment-INFO: sort False
+    eps 0.1
+    runtimegamma 1
+    gamma 0.95
+    K 4
+    L 20
+    v 0.35
+    disj False
+    d 10
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Sherry play score 666.6156249999974/3000
+Agent-INFO: theta cosine similarity 0.9793267762352152
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Monkey play score 413.24487500000964/3000
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Lijing play score 702.3011249999926/3000
+Agent-INFO: theta cosine similarity 0.9873875313512311
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Absolute play score 496.3363750000108/3000
+Main-INFO: ===== Numpy/Python random seed = 336
+Main-INFO: Monkey flowtest
+Main-INFO: Require rng initialization
+Main-INFO: d 10
+    disj False
+    h 0.75
+    rgamma 1
+    eps 0.1
+    sort False
+    v 0.35
+    L 20
+    gamma 0.95
+    K 4
+Environment-INFO: Initializing random settings "Contextual Monkey" complete
+Environment-INFO: d 10
+    K 4
+    rgamma 1
+    L 20
+    v 0.35
+    eps 0.1
+    gamma 0.95
+    disj False
+    sort False
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Sherry play score 536.0917500000088/3000
+Agent-INFO: theta cosine similarity 0.9836321205486334
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Monkey play score 330.7071250000066/3000
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Lijing play score 597.635125000002/3000
+Agent-INFO: theta cosine similarity 0.9960605814864275
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Absolute play score 438.7641250000096/3000
+Main-INFO: ===== Numpy/Python random seed = 251
+Main-INFO: Monkey flowtest
+Main-INFO: Require rng initialization
+Main-INFO: sort False
+    d 10
+    eps 0.1
+    L 20
+    h 0.75
+    v 0.35
+    disj False
+    K 4
+    gamma 0.95
+    rgamma 0.95
+Environment-INFO: Initializing random settings "Contextual Monkey" complete
+Environment-INFO: sort False
+    disj False
+    L 20
+    gamma 0.95
+    eps 0.1
+    d 10
+    v 0.35
+    K 4
+    rgamma 0.95
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Sherry play score 637.678249999997/3000
+Agent-INFO: theta cosine similarity 0.9865689865866577
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Monkey play score 458.06475000001114/3000
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Lijing play score 724.1466249999933/3000
+Agent-INFO: theta cosine similarity 0.9983704103378884
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Absolute play score 516.1627500000118/3000
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Absolute play score 474.1656250000119/3000

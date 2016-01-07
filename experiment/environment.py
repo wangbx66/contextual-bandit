@@ -14,12 +14,12 @@ from utils import ucb_settings
 from isp import isp_oracle
 from isp import reachable
 
-def contextual_monkey_rng(L=20, d=10, h=0.35, K=4, gamma=0.95, eps=0.1, v=0.35, sort=False, disj=False):
+def contextual_monkey_rng(L=20, d=10, h=0.35, K=4, gamma=0.95, rgamma=0.95, eps=0.1, v=0.35, sort=False, disj=False):
     arms = list(range(L))
     x = {arm: np.random.uniform(0, 1, d) for arm in arms}
     theta = h * uni(np.random.uniform(0, 1, d))
     logger.info('Initializing random settings "Contextual Monkey" complete')
-    s = ucb_settings(arms=arms, L=L, x=x, theta=theta, K=K, d=d, gamma=gamma, eps=eps, v=v, sort=sort, disj=disj)
+    s = ucb_settings(arms=arms, L=L, x=x, theta=theta, K=K, d=d, gamma=gamma, rgamma=rgamma, eps=eps, v=v, sort=sort, disj=disj)
     logger.info(s)
     return s
 
@@ -39,7 +39,7 @@ def contextual_monkey(s, cascade):
             r, c = reward(ctr, s.gamma, s.disj)
             return (r, c) if cascade else (r, [int(click) for click in ctr])
     logger.info('Initializing environment "Contextual Monkey" complete')
-    return environment, ucb_settings(arms=s.arms, L=s.L, d=s.d, gamma=s.gamma, disj=s.disj, cascade=cascade, oracle=argmax_oracle, theta=s.theta)
+    return environment, ucb_settings(arms=s.arms, L=s.L, d=s.d, gamma=s.gamma, rgamma=s.rgamma, disj=s.disj, cascade=cascade, oracle=argmax_oracle, theta=s.theta)
 
 def contextual_movielens(s, cascade):
     logger.info('Initializing environment "Contextual Movielens"')
@@ -56,7 +56,7 @@ def contextual_movielens(s, cascade):
             r, c = reward(ctr, s.gamma, s.disj)
             return (r, c) if cascade else (r, [int(click) for click in ctr])
     logger.info('Initializing environment "Contextual Movielens" done')
-    return environment, ucb_settings(arms=s.arms, L=s.L, d=s.d ** 2, gamma=s.gamma, disj=s.disj, cascade=cascade, oracle=argmax_oracle)
+    return environment, ucb_settings(arms=s.arms, L=s.L, d=s.d ** 2, gamma=s.gamma, runtimegamma=s.runtimegamma, disj=s.disj, cascade=cascade, oracle=argmax_oracle)
 
 def contextual_isp(s, cascade):
     logger.info('Initializing environment "Contextual ISP"')
