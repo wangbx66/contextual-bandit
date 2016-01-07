@@ -174,14 +174,11 @@ The purpose of this document is to provide both the basic paper template and sub
 	
 \section{Introduction}
 
-
+The cascade model is popular to describe user behavior in recommendation systems. When recommended with a list of items, such as web pages or advertisements, the user checks from the first item to the last and selects the first attractive item. The items before the selected one are not attractive and the items after the selected one are unobserved. Also in networking routing problem, if we want to check whether a path is unblocked, we can just stop checking if an blocked edge appears. The cascade model is useful to describe such kind of partial-observation problem. In both recommendation and network routing problem, historical information will usually help to provide more effective choices. 
 
 \section{Related Work}
 
-Our work generalizes both the cascading bandits of \cite{kveton2015cascading} and combinatorial cascading bandits of \cite{kveton2015combinatorial} to involve contextual information and position discount.
-In cascading bandits of \cite{kveton2015cascading}, the feasible set contains any list of $K$ items out of $L$ ground items.
-Our work generalizes the feasible set to be any set of lists of at most $K$ items, like \cite{kveton2015combinatorial}.
-In both \cite{kveton2015cascading} and \cite{kveton2015combinatorial}, even though they define the feasible actions as lists, they regard them as sets. The order of a feasible action does not affect the regret bound, which might have problem in real application, especially for recommendations.
+Our work generalizes both the cascading bandits of \cite{kveton2015cascading} and combinatorial cascading bandits of \cite{kveton2015combinatorial} to involve contextual information and position discount. In cascading bandits of \cite{kveton2015cascading}, the feasible set contains any list of $K$ items out of $L$ ground items. Our work generalizes the feasible set to be any set of lists of at most $K$ items, like \cite{kveton2015combinatorial}. In both \cite{kveton2015cascading} and \cite{kveton2015combinatorial}, even though they define the feasible actions as lists, they regard them as sets. The order of a feasible action does not affect the regret bound, which might have problem in real application, especially for recommendations.
 
 In \cite{kveton2015cascading}, they found that recommending items in chosen action in increasing order of their UCBs has better performance than in decreasing order of their UCBs.
 This result might conflict with recommendations in real world.
@@ -480,33 +477,39 @@ We also define $p^* = \min_{1 \leq t \leq T} \min_{A \in \cS} ~ p_{t, A}$ to be 
 Suppose we have such a graph: 
 $$
   \xymatrix{
-  	S_0 \ar[r]^{0.8} \ar[d]_{0.9} & B \ar[dr]^{0.8} &\\
-  	C \ar[r]_{0.8} & D \ar[r]_{0.7} &S_1
+  	S_0 \ar[r]^{\mu_{11}} \ar[d]_{\mu_{21}} & B_1 \ar[d]^{\mu_{12}} &\\
+  	B_2 \ar[r]_{\mu_{22}} & S_1
   }
 $$
-There are two paths in this graph: $A_1 = \{S_0 \to B \to S_1\}$ and $A_2 = \{S_0 \to C \to D \to S_1\}$. 
-Let the feasible action set be $\cS = \{A_1, A_2\}.$ The numbers on the edges denote the probability of that edge being unblocked. 
-For example, the probability of $C \to D$ being unblocked is $0.8$. 
+There are two paths in this graph: $A_1 = \{S_0 \to B_1 \to S_1\}$ and $A_2 = \{S_0 \to B_2 \to S_1\}$. 
+Let the feasible action set be $\cS = \{A_1, A_2\}.$ The $\mu$'s on the edges denote the probability of that edge being unblocked. 
+For example, the probability of $S_0 \to B_2$ being unblocked is $\mu_3$. 
 When we select a path, we get reward $1$ if and only if the path is unblocked and get reward $0$ if the path is blocked somewhere. 
-So the optimal action is $A_1$ with expected reward $0.64$ and $A_2$ is suboptimal with expected reward $0.504$.
+Suppose we have $\mu_3 \geq \mu_1 \geq \mu_1\mu_2 > \mu_3 \mu_4$.
+So the optimal action is $A_1$ with expected reward $\mu_1 \mu_2$ and $A_2$ is suboptimal with expected reward $\mu_3 \mu_4$.
 
-Next we analyze those times when the learning agent selects path $A_2$ instead of the optimal $A_1$. 
-Notice that if the observed edges are $S_0 \to C \to D$ or $S_0 \to C$, we will not abandon $A_2$ because the expected rewards are $0.9 \times 0.8$ and $0.9$, higher than $0.64$. 
-Only the times when all edges in $A_2$ being observed will help to recognize $A_2$ and abandon it. 
-Recall that the probability of all edges of $A_2$ being observed is $p_{A_2} = 0.9 \times 0.8 = 0.72.$ 
-So we have
+Similar to the proof of Lai and Robbins 1985, we could get
 $$
-  \EE[N_{A_2}]p_{A_2} \leq \frac{c \log(T)}{\Delta^2},
+	\EE[N_{A_2}]\mu_{21} \leq \frac{c \log(T)}{kl(\mu_{22}, \frac{\mu_{11}\mu_{12}}{\mu_{21}})}
 $$
-where $N_{A_2}$ is the number of times that learning agent selects $A_2$ and $\Delta$ is the difference of the best expected reward minus the expected reward of $A_2$.
-Therefore,
-$$
-  \EE[N_{A_2}] \leq \frac{c \log(T)}{p_{A_2} \Delta^2}
-$$
-and
-$$
-  R(T) \leq \EE[\Delta N_{A_2}] \leq \frac{c \log(T)}{p_{A_2} \Delta}.
-$$
+
+%Next we analyze those times when the learning agent selects path $A_2$ instead of the optimal $A_1$. 
+%Notice that if the observed edges are $S_0 \to C \to D$ or $S_0 \to C$, we will not abandon $A_2$ because the expected rewards are $0.9 \times 0.8$ and $0.9$, higher than $0.64$. 
+%Only the times when all edges in $A_2$ being observed will help to recognize $A_2$ and abandon it. 
+%Recall that the probability of all edges of $A_2$ being observed is $p_{A_2} = 0.9 \times 0.8 = 0.72.$ 
+%So we have
+% $$
+%   \EE[N_{A_2}]p_{A_2} \leq \frac{c \log(T)}{\Delta^2},
+% $$
+%where $N_{A_2}$ is the number of times that learning agent selects $A_2$ and $\Delta$ is the difference of the best expected reward minus the expected reward of $A_2$.
+%Therefore,
+% $$
+%   \EE[N_{A_2}] \leq \frac{c \log(T)}{p_{A_2} \Delta^2}
+% $$
+% and
+% $$
+%   R(T) \leq \EE[\Delta N_{A_2}] \leq \frac{c \log(T)}{p_{A_2} \Delta}.
+% $$
 	
 % In the unusual situation where you want a paper to appear in the
 % references without citing it in the main text, use \nocite
