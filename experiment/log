@@ -767,3 +767,38 @@ Agent-INFO: theta cosine similarity 0.9485159164165863
 Environment-INFO: Initializing environment "Contextual ISP"
 Environment-INFO: Initializing environment "Contextual ISP" done
 Agent-INFO: Absolute play score 5468.975015977836/30000
+Main-INFO: ===== Numpy/Python random seed = 214
+Main-INFO: Monkey flowtest
+Main-INFO: Require rng initialization
+Main-INFO: v 0.35
+    L 20
+    d 10
+    K 4
+    sort False
+    gamma 0.95
+    disj False
+    h 0.75
+    eps 0.1
+Environment-INFO: Initializing random settings "Contextual Monkey" complete
+Environment-INFO: sort False
+    L 20
+    d 10
+    K 4
+    v 0.35
+    gamma 0.95
+    disj False
+    eps 0.1
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Sherry play score 586.2403750000032/3000
+Agent-INFO: theta cosine similarity 0.9773241887717768
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Monkey play score 358.96125000000825/3000
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Lijing play score 593.3756250000013/3000
+Agent-INFO: theta cosine similarity 0.9240600433102567
+Environment-INFO: Initializing environment "Contextual Monkey"
+Environment-INFO: Initializing environment "Contextual Monkey" complete
+Agent-INFO: Absolute play score 462.95337500001006/3000
