@@ -27,7 +27,7 @@ def argmax_oracle(U, K, sort):
     return [p[1] for p in heapq.nlargest(K, [(U[arm], arm) for arm in U])[::2*sort-1]]
 
 def contextual_monkey(s, cascade, rgamma, sort):
-    logger.info('Initializing environment "Contextual Monkey"')
+    logger.info('Initializing environment "Contextual Monkey"| cascade:{0} rgamma:{1} sort:{2}'.format(cascade, rgamma, sort))
     xt = {arm: s.x[arm] for arm in s.x}
     def environment(recommend=None):
         if recommend == None:
@@ -42,7 +42,7 @@ def contextual_monkey(s, cascade, rgamma, sort):
     return environment, ucb_settings(arms=s.arms, L=s.L, d=s.d, gamma=1-rgamma*(1-s.gamma), disj=s.disj, cascade=cascade, oracle=argmax_oracle, theta=s.theta)
 
 def contextual_movielens(s, cascade, rgamma, sort):
-    logger.info('Initializing environment "Contextual Movielens"')
+    logger.info('Initializing environment "Contextual Movielens"| cascade:{0} rgamma:{1} sort:{2}'.format(cascade, rgamma, sort))
     user = random.sample(s.users, 1)
     def environment(recommend=None):
         if recommend is None:
@@ -59,7 +59,7 @@ def contextual_movielens(s, cascade, rgamma, sort):
     return environment, ucb_settings(arms=s.arms, L=s.L, d=s.d ** 2, gamma=1-rgamma*(1-s.gamma), disj=s.disj, cascade=cascade, oracle=argmax_oracle)
 
 def contextual_isp(s, cascade, rgamma):
-    logger.info('Initializing environment "Contextual ISP"')
+    logger.info('Initializing environment "Contextual ISP"| cascade:{0} rgamma:{1}'.format(cascade, rgamma))
     p = random.sample(s.G.nodes(), 2)
     xt = {arm: s.x[arm] for arm in s.x}
     def environment(recommend=None):
