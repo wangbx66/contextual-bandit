@@ -73,7 +73,7 @@ the agent have to choose an superarm from $$S=\{A=(e_{k_1},...,e_{k_n}):e_{k_j}\
 with the expected payoffs (opt out discount) $$E[r_A|\theta]=\Pi_{1\leq i\leq n(A)}(1-\exp(-\tau/(1-\theta^{\top}x_{k(A)_i,t}))),$$
 where $n(A)$ and $k(A)_i$ are the amount of arms in superarm $A$, and the index of the $i$-th arm, separately.
 The agent finds $A_t$ by running shortest path algorithm on $G$ with weight $\hat{\theta}^{\top}x_{k_i,t}$ assigned to $e_i$, which yields $$A_t=\argmin_{A\in S}\sum_{1\leq i\leq n(A)}\hat{\theta}^{\top}x_{k(A)_i,t}.$$
-For $A\in S$, denote $\hat{\mu}(A)_i=1-\hat{\theta}^{\top}x_{k(A_t)_i,t},$ we have then 
+For $A\in S$, denote $\hat{\mu}(A)_i=1-\hat{\theta}^{\top}x_{k(A)_i,t},$ we have then 
 \begin{align*}
   E[r_{A_t}|\hat{\theta}]/E[r_A|\hat{\theta}] &= \frac{\Pi_{1\leq i\leq n(A_t)}(1-e^{-\tau/\hat{\mu}(A_t)_i})}{\Pi_{1\leq i\leq n(A)}(1-e^{-\tau/\hat{\mu}(A)_i})}\\
   &\geq \min_{0\leq \sigma \leq n(A), \sum_i \hat{\mu}(A_t)_i=\sum_i \hat{\mu}(A)_i=\sigma}\frac{\Pi_{1\leq i\leq n(A_t)}(1-e^{-\tau/\hat{\mu}(A_t)_i})}{\Pi_{1\leq i\leq n(A)}(1-e^{-\tau/\hat{\mu}(A)_i})}\\
