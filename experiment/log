@@ -1700,3 +1700,40 @@ Movielens-INFO: disj True
     L 20
 Environment-INFO: Initializing environment "Contextual Movielens"
 Environment-INFO: Initializing environment "Contextual Movielens" done
+Agent-INFO: Sherry play score 267.41999999999996/300
+Environment-INFO: Initializing environment "Contextual Movielens"
+Environment-INFO: Initializing environment "Contextual Movielens" done
+Agent-INFO: Monkey play score 854.0050000000051/1000
+Environment-INFO: Initializing environment "Contextual Movielens"
+Environment-INFO: Initializing environment "Contextual Movielens" done
+Agent-INFO: Sherry play score 257.36249999999995/300
+Environment-INFO: Initializing environment "Contextual Movielens"
+Environment-INFO: Initializing environment "Contextual Movielens" done
+Agent-INFO: Sherry play score 260.5249999999999/300
+Environment-INFO: Initializing environment "Contextual Movielens"
+Environment-INFO: Initializing environment "Contextual Movielens" done
+Agent-INFO: Sherry play score 251.77749999999992/300
+Main-INFO: ===== Numpy/Python random seed = 154
+Main-INFO: Movielens flowtest
+Main-INFO: Require rng initialization
+Main-INFO: K 4
+    disj True
+    portion 0.2
+    h 60
+    L 100
+    d 5
+    gamma 0.95
+Movielens-INFO: Initializing random settings "Contextual Movielens" complete
+Movielens-INFO: K 4
+    disj True
+    L 100
+    d 5
+    gamma 0.95
+Environment-INFO: Initializing environment "Contextual Movielens"
+Environment-INFO: Initializing environment "Contextual Movielens" done
+Agent-INFO: Sherry play score 862.6626250000029/1000
+Environment-INFO: Initializing environment "Contextual Movielens"
+Environment-INFO: Initializing environment "Contextual Movielens" done
+Agent-INFO: Sherry play score 865.4793750000039/1000
+Environment-INFO: Initializing environment "Contextual Movielens"
+Environment-INFO: Initializing environment "Contextual Movielens" done

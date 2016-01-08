@@ -55,10 +55,12 @@ def flowtest_movielens(T, kw):
     exploit2, explore2 = contextual_cascading_sherry(*contextual_movielens(s, cascade=True, rgamma=False, sort=False), T=T)
     exploit3, explore3 = contextual_cascading_sherry(*contextual_movielens(s, cascade=True, rgamma=False, sort=True), T=T)
     # exploit2, explore2 = contextual_cascading_monkey(*contextual_movielens(s, cascade=True, rgamma=True, sort=False), T=T)
-    # exploit3, explore3 = contextual_full_lijing(*contextual_movielens(s, cascade=False, rgamma=True, sort=False), T=T)
-    # exploit4, explore4 = absolute_cascading_ucb(*contextual_movielens(s, cascade=True, rgamma=True, sort=False), T=T)
-    # plt.plot(range(T), exploit1, 'r--', range(T), exploit2, 'r--', range(T), exploit3, 'b--', range(T), exploit4, 'b--')
-    plt.plot(range(T), exploit1, 'r--', range(T), exploit2, 'b--', range(T), exploit3, 'g--')
+    exploit4, explore4 = contextual_full_lijing(*contextual_movielens(s, cascade=False, rgamma=False, sort=False), T=T)
+    exploit5, explore5 = absolute_cascading_ucb(*contextual_movielens(s, cascade=True, rgamma=True, sort=False), T=T)
+    exploit6, explore6 = absolute_cascading_ucb(*contextual_movielens(s, cascade=True, rgamma=False, sort=False), T=T)
+    exploit7, explore7 = absolute_cascading_ucb(*contextual_movielens(s, cascade=True, rgamma=False, sort=True), T=T)
+    plt.plot(range(T), exploit1, 'r--', range(T), exploit2, 'b--', range(T), exploit3, 'g--', range(T), exploit4, 'b--', range(T), exploit5, 'y--', range(T), exploit6, 'k--', range(T), exploit7, 'm--')
+    #plt.plot(range(T), exploit1, 'r--', range(T), exploit2, 'b--', range(T), exploit3, 'g--')
 
 def flowtest_isp(T, kw):
     logger.info('ISP flowtest')
@@ -76,8 +78,8 @@ def flowtest_isp(T, kw):
 # flowtest_monkey(T=3000, kw=kw)
 
 
-kw = {'L':20, 'portion':0.2, 'd':5, 'K':3, 'h':60, 'gamma':0.95, 'disj':True}
-flowtest_movielens(T=300, kw=kw)
+kw = {'L':100, 'portion':0.2, 'd':5, 'K':4, 'h':60, 'gamma':0.95, 'disj':True}
+flowtest_movielens(T=1000, kw=kw)
 
 #kw = {'isp':1221, 'd':15, 'h':0.35, 'tlc':0.8, 'gamma':0.95, 'disj':False}
 #flowtest_isp(T=30000, kw=kw)
