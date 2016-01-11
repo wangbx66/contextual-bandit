@@ -188,13 +188,13 @@ The main contributions of this paper can be listed as follows: (1) We propose a 
 
 \section{Related Work}
 
-Our work generalizes both the cascading bandits of \cite{kveton2015cascading} and combinatorial cascading bandits of \cite{kveton2015combinatorial} to involve contextual information and position discount. In cascading bandits of \cite{kveton2015cascading}, the feasible set contains any list of $K$ items out of $L$ ground items. Our work generalizes the feasible set to be any set of lists of at most $K$ items, like \cite{kveton2015combinatorial}. In both \cite{kveton2015cascading} and \cite{kveton2015combinatorial}, even though they define the feasible actions as lists, they regard them as sets. The order of a feasible action does not affect the regret bound, which might have problem in real application, especially for recommendations.
+Our work generalizes combinatorial cascading bandits of \cite{kveton2015combinatorial} to involve contextual information and position discount. Our generalization expands the applicability of this model and we evaluate it on two real-world problems. \cite{kveton2015cascading} introduced the cascading model to the multi-armed bandit framework and the feasible set is a uniform matroid. They found that recommending items in increasing order of their UCBs has a better performance than in decreasing order of their UCBs. To improve the quality of user experience, it is natural to list items with higher preference first and then lower preference items. Our work extends this part by introducing position discounted parameters. Under our setting, the items with higher UCB will come first. \cite{combes2015learning} considers a similar recommendation model to cascading bandits with position discount but they assume that a user is interested in a single topic only. In our setting, users and items are represented by feature vectors which is more general.
 
-In \cite{kveton2015cascading}, they found that recommending items in chosen action in increasing order of their UCBs has better performance than in decreasing order of their UCBs.
-This result might conflict with recommendations in real world.
-To improve the quality of user experience, we usually list items with higher preference first and then lower preference items.
-Our work extends this part by introducing position discounted parameters.
-Under our setting, the items with higher preference will come first.
+Our work considers contextual combinatorial bandits with cascading feedback and nonlinear reward. \cite{li2010contextual} studied multi-armed bandit with context information. \cite{qin2014contextual} introduced contextual combinatorial bandit with semi-bandit feedback and nonlinear reward. Their setting is more informative than ours but our algorithm is competitive to theirs.
+
+Our problem is a combinatorial partial monitoring problem where the learning agent may observe part of chosen items. \cite{agrawal1989asymptotically,bartok2012adaptive} studied partial monitoring problems but their algorithm is inefficient in our setting. \cite{lin2014combinatorial} studied combinatorial partial monitoring problem and their feedback is a fixed (with respect to chosen action) combination of weights. If chosen action is fixed, the combination of the weights to constitute feedback is not fixed in our setting.
+
+A newer version of \cite{chen2013combinatorial} considers probabilistic triggering base arms in stochastic combinatorial semi-bandit
 	
 \section{Problem Formulation}
 
