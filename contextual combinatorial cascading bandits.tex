@@ -47,6 +47,15 @@
 \usepackage{ifthen}
 \usepackage[usenames]{color}
 \usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{epstopdf}
+%\usepackage{epsfig}
+%\usepackage{times}
+%\usepackage{helvet}
+%\usepackage{courier}
+%\usepackage{graphicx,subfigure}
+%\usepackage{pdfpages}
+%\usepackage{multirow}
+%\usepackage{multicol}
 
 \newcommand{\bbeta}{\boldsymbol{\beta}}
 \newcommand{\EE}{\mathbb{E}}
@@ -520,6 +529,18 @@ $$
 % $$
 
 \section{Experiments}
+
+\begin{figure}
+	\centering
+	\subfigure[10k samples, \qquad KL div=31.049573]{
+		\includegraphics[height = 1.8cm, width = 2.6 cm]{network3-1.eps}}
+	\subfigure[100k samples, \qquad KL div=0.006563]{
+		\includegraphics[height = 1.8cm, width = 2.6 cm]{network4-1.eps}}
+	\subfigure[1000k samples, \qquad KL div=0.000644]{
+		\includegraphics[height = 1.8cm, width = 2.6 cm]{network4-1.eps}}
+	\caption{sample number and accuracy}
+	\label{fig:sample number} % 用于交叉引用
+\end{figure}
 
 \section{Conclusions}
 
