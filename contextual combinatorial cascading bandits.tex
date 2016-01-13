@@ -530,13 +530,33 @@ $$
 
 \section{Experiments}
 
+We evaluate $C^3$-UCB in three experiments.
+
+\subsection{Synthetic}
+
+
+
+\subsection{MovieLens}
+
+
+
+\subsection{Network Routing}
+
+In the last experiment, we evaluate $C^3$-UCB on a problem of network routing. We experiment on six networks from the {\it RocketFuel} dataset\cite{spring2004measuring}.
+
+The ground set $E$ is the set of links in the network and the feasible action set $\cS$ is the set of all paths in the network. Before learning, the environment randomly chooses a $d$-dimensional vector $\theta \in [0,1]^d$. At each time $t$, any link $e$ is assigned with a random $d$-dimensional context vector $x_{t,e}$ and the corresponding latency follows exponential distribution with mean $1-\theta^{\top}x$, which has been scaled into $[0,1]$. We call the latency is {\it high} if it is larger than a threshold $\tau$. A pair of source and terminal nodes $(v_s, v_t)$ are chosen randomly. The agent recommends a feasible path $A = (a_1,...,a_{|A|})$ from $v_s$ to $v_t$ with expected reward
+$$
+\prod_{k=1}^{|A|} (1- \exp(-\frac{\tau}{1-\theta^{\top}x_{t,a_k}})).
+$$
+Notice that the expression is not of the form $\prod_{k=1}^{|A|}\theta_*^{\top}x_{t,a_k}$ in our model. However, our algorithm could also apply to it.
+
 \begin{figure}
 	\centering
-	\subfigure[10k samples, \qquad KL div=31.049573]{
+	\subfigure[Network 1755]{
 		\includegraphics[height = 1.8cm, width = 2.6 cm]{network3-1.eps}}
-	\subfigure[100k samples, \qquad KL div=0.006563]{
+	\subfigure[Network ]{
 		\includegraphics[height = 1.8cm, width = 2.6 cm]{network4-1.eps}}
-	\subfigure[1000k samples, \qquad KL div=0.000644]{
+	\subfigure[Network]{
 		\includegraphics[height = 1.8cm, width = 2.6 cm]{network4-1.eps}}
 	\caption{sample number and accuracy}
 	\label{fig:sample number} % 用于交叉引用
