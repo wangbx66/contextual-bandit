@@ -2,6 +2,7 @@
 
 # cache
 *~
+exploit*
 
 # csv files from movielens
 *.csv

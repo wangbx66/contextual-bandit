@@ -2096,3 +2096,37 @@ Agent-INFO: Sherry play score 3584.2577023179056/10000
 Agent-INFO: theta cosine similarity 0.9641540208724438
 Environment-INFO: Initializing environment "Contextual ISP"| cascade:False rgamma:False
 Environment-INFO: Initializing environment "Contextual ISP" done
+Main-INFO: ===== Numpy/Python random seed = 149
+Main-INFO: ISP flowtest
+Main-INFO: Require rng initialization
+Main-INFO: tlc 0.8
+    disj False
+    gamma 0.95
+    h 0.35
+    isp 1239
+    d 15
+ISP-INFO: Initializing random settings "ISP" complete
+ISP-INFO: tlc 0.8
+    disj False
+    gamma 0.95
+    h 0.35
+    L 12929
+    d 15
+Environment-INFO: Initializing environment "Contextual ISP"| cascade:True rgamma:True
+Environment-INFO: Initializing environment "Contextual ISP" done
+Agent-INFO: Sherry play score 35.06410675156252/500
+Agent-INFO: theta cosine similarity 0.8511321297556648
+Environment-INFO: Initializing environment "Contextual ISP"| cascade:True rgamma:False
+Environment-INFO: Initializing environment "Contextual ISP" done
+Agent-INFO: Sherry play score 31.130354720312543/500
+Agent-INFO: theta cosine similarity 0.6249001731841499
+Environment-INFO: Initializing environment "Contextual ISP"| cascade:False rgamma:False
+Environment-INFO: Initializing environment "Contextual ISP" done
+Agent-INFO: Lijing play score 40.39035073749993/500
+Agent-INFO: theta cosine similarity 0.9306702431795181
+Environment-INFO: Initializing environment "Contextual ISP"| cascade:True rgamma:True
+Environment-INFO: Initializing environment "Contextual ISP" done
+Agent-INFO: Absolute play score 30.189449547656313/500
+Environment-INFO: Initializing environment "Contextual ISP"| cascade:True rgamma:False
+Environment-INFO: Initializing environment "Contextual ISP" done
+Agent-INFO: Absolute play score 36.35382093749996/500

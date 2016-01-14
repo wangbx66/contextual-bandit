@@ -109,6 +109,6 @@ def flowtest_isp(T, kw):
 #flowtest_movielens(T=1000, kw=kw)
 
 kw = {'isp':1239, 'd':15, 'h':0.35, 'tlc':0.8, 'gamma':0.95, 'disj':False}
-flowtest_isp(T=10000, kw=kw)
+flowtest_isp(T=500, kw=kw)
 plt.show()
 logfile.close()
