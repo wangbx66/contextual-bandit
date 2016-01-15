@@ -535,26 +535,42 @@ We evaluate $C^3$-UCB in three experiments.
 
 \subsection{Synthetic}
 
-In the first experiment, we compare $C^3$-UCB to $C^2$UCB and CombCascade on two synthetic problems. chiao tsing path
+In the first experiment, we compare $C^3$-UCB to $C^2$UCB and CombCascade on synthetic problems. This problem is a contextual cascading bandit with $L=20$ items and $K=4$, where at each time $t$ the agent recommends $K$ items to the user. At first, we randomly choose $\theta_* \in \RR^d$ with $\|\theta_{\ast}\|_2 = 1$. Then at each time $t$, we randomly assign $x_{t,a} \in \RR^d$ with $\theta_*^{\top}x_{t,a} \in [0,1]$ to arm $a$. And the weight for arm $a$ at time $t$ is a random sample from Bernoulli distribution with mean $\theta_*^{\top}x_{t,a}$.
 
-Let $\cB = \{x \in \RR^d : \|x\|_2 = 1 \}$ be the unit ball of $\RR^d$ and let $E = \{1,...,L\}$ be the set of all base arms. We randomly choose $\theta_{\ast}$ with $\|\theta_{\ast}\|_2 = 1$ and randomly assign a $\mu_i \in \cB$ to $i$ for any $i \in E$. At each time $t$, $b_{t,i} \in \cB$ is randomly assigned to base arm $i$. Also we fix a constant $h$ to balance weights of $\mu_i$ and disturbance $b_{t,i}$. Let $x_{t,i} = \frac{\mu_i + h b_{t,i}}{\|\mu_i+h\cdot b_{t,i}\|_2}$ be the context of base arm $i$ at time $t$. And the weight for base arm $i$ at time $t$ is $w_t(i) = \theta_{\ast}^{\top}x_{t,i} + \epsilon_{t,i}$ where $\epsilon_{t,i} \sim N(\mu_i, \sigma_i)$ for fixed $\sigma_i$.
+We experiment on four settings and report our results in Figure \ref{fig:synthetic}. The first experiment is with disjunctive objective and $\gamma=1$ and the second is also with disjunctive objective but with $\gamma=0.95$. The third experiment is conducted with conjunctive objective and $\gamma=1$. The fourth experiment is using network 1755 structure. The algorithm $C^2$UCB has semi-bandit feedback and our algorithm has only cascading feedback. However from the results, our performance is competitive to their's. The $CombCascade$ algorithm does not make use of contextual information, so it is not as good as the other two algorithms. 
+
+\begin{figure*}
+	\centering
+	\subfigure[Disjunctive, $\gamma=1$]{
+		\includegraphics[height = 3 cm, width = 5 cm]{synD-1.eps}}
+	\subfigure[Disjunctive, $\gamma=0.95$]{
+		\includegraphics[height = 3 cm, width = 5 cm]{synD-95.eps}}
+	\subfigure[Network 3257 ]{
+		\includegraphics[height = 3 cm, width = 5 cm]{network4-1.eps}}
+	\subfigure[Conjunctive, network 1755, $\gamma=1$ ]{
+		\includegraphics[height = 3 cm, width = 5 cm]{network3B-1.eps}}
+	\caption{Synthetic Data Set, L=20, K=4}
+	\label{fig:synthetic} % 用于交叉引用
+\end{figure*}
 
 \subsection{MovieLens}
 
 In this experiment, we evaluate $C^3$-UCB on a problem of contextual recommendations. We experiment on {\it MovieLens} dataset\cite{lam2013movie} of March 2015.
 
-The Learning problem is formulated as follows. There is a big sparse matrix $A \in \{0,1\}^{N_u \times N_m}$ where $A(u,m) = 1$ denotes user $u$ has watched movie $m$.We split $A$ to be $H + F$ by putting entry-$1$ of $A$ to $H$ and $F$ with probability $\sim \mathrm{Ber}(p)$ for some fixed $p$. We can regard $H$ as know information about history 'What users have watched' and regard $F$ as future criterion. We use $H$ to derive feature vectors of both users and movies by SVD decomposition $H = USV^{\top}$ where $U = (u_1; ...;u_M)$ and $V = (v_1;...;v_L)$. At every time $t$, use $x_{t,i} = u_{i}v_j^{\top}$ as the context information of base arm $i$ and randomly choose a user $I_t$. And use $w_t(j) = F(I_t,j)$ as the weight of base arm $j$.
+The Learning problem is formulated as follows. There is a big sparse matrix $A \in \{0,1\}^{N_u \times N_m}$ where $A(u,m) = 1$ denotes user $u$ has watched movie $m$. We split $A$ to be $H + F$ by putting entry-$1$ in $A$ to $H$ and $F$ with probability $\sim \mathrm{Ber}(p)$ for some fixed $p$. We can regard $H$ as known information about history 'what users have watched' and regard $F$ as future criterion. We use $H$ to derive feature vectors of both users and movies by SVD decomposition $H = VSZ^{\top}$ where $V = (v_1; ...;v_{N_u})$ and $Z = (z_1;...;z_{N_m})$. At every time $t$, use $x_{t,i} = v_{i}z_j^{\top}$ as the context information of base arm $i$ and randomly choose a user $u_t$. And use $w_t(m) = F(u_t,m)$ as the weight of movie $m$.
+
+Notice that 
 
 Notice that for this case, fixed number of base arms, it might have problem if we use $(u_{I_t}, v_j)$ as context information.
 Since to find the best arm, it is equivalent to find the best one with highest weights sum, so is equivalent to the best one with highest $\theta_{v}^{\top}x$.
 
-\begin{figure}
+\begin{figure*}
 	\centering
 	\subfigure[MovieLens]{
 		\includegraphics[height = 3cm, width = 5 cm]{movie-1.eps}}
 	\caption{MovieLens}
 	\label{fig:movielens} % 用于交叉引用
-\end{figure}
+\end{figure*}
 
 \subsection{Network Routing}
 
