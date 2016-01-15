@@ -6,7 +6,9 @@ logger = logging.getLogger('Environment')
 import numpy as np
 
 from utils import red
+from utils import pendium
 from utils import uni
+from utils import suni
 from utils import disturb
 from utils import reward
 from utils import ucb_settings
@@ -16,8 +18,8 @@ from isp import reachable
 
 def contextual_monkey_rng(L=20, d=10, h=0.35, K=4, gamma=0.95, eps=0.1, v=0.35, disj=False):
     arms = list(range(L))
-    x = {arm: np.random.uniform(0, 1, d) for arm in arms}
-    theta = h * uni(np.random.uniform(0, 1, d))
+    x = {arm: suni(d) for arm in arms}
+    theta = h * suni(d)
     logger.info('Initializing random settings "Contextual Monkey" complete')
     s = ucb_settings(arms=arms, L=L, x=x, theta=theta, K=K, d=d, gamma=gamma, eps=eps, v=v, disj=disj)
     logger.info(s)
@@ -32,10 +34,10 @@ def contextual_monkey(s, cascade, rgamma, sort):
     def environment(recommend=None):
         if recommend == None:
             for arm in s.x:
-                xt[arm] = uni(s.x[arm] + np.random.uniform(-s.v, s.v, s.d))
+                xt[arm] = uni(s.x[arm] + s.v * suni(s.d))
             return xt, (s.K, sort)
         else:
-            ctr = [np.random.uniform(0, 1) < s.theta.dot(xt[arm]) + np.random.normal(0, s.eps) for arm in recommend]
+            ctr = [pendium() < s.theta.dot(xt[arm]) + np.random.normal(0, s.eps) for arm in recommend]
             r, c = reward(ctr, s.gamma, s.disj)
             return (r, c) if cascade else (r, [int(click) for click in ctr])
     logger.info('Initializing environment "Contextual Monkey" complete')
@@ -71,7 +73,8 @@ def contextual_isp(s, cascade, rgamma):
                 xt[arm] = disturb(s.x[arm], s.h)
             return xt, (s.G, p[0], p[1])
         else:
-            ctr = [s.tlc > np.random.exponential(1 - s.theta.dot(xt[arm])) for arm in recommend]
+            #ctr = [s.tlc > np.random.exponential(1 - s.theta.dot(xt[arm])) for arm in recommend]
+            ctr = [pendium() < s.theta.dot(xt[arm]) for arm in recommend]
             r, c = reward(ctr, s.gamma, s.disj)
             return (r, c) if cascade else (r, [int(click) for click in ctr])
     logger.info('Initializing environment "Contextual ISP" done')

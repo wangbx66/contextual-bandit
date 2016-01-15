@@ -1,5 +1,4 @@
 import csv
-import random
 from itertools import chain
 
 import logging
@@ -10,7 +9,9 @@ from scipy import sparse
 from scipy.sparse.linalg import svds
 
 from utils import ucb_settings
-from utils import overlap
+
+def overlap(l1, l2):
+    return len(set(l1) & l2)
 
 def movielens_data():
     fpr = open('movielens/ratings.csv', encoding='utf-8')
