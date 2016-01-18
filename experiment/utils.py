@@ -25,17 +25,13 @@ def scat(d):
     v = random.sample(x, 1)[0]
     return v / v.sum()
 
-def squni(d, linear=1):
-    Z = np.random.uniform(0, 1, (d, d))
+def squni(d, linear=0.6):
+    Z = np.random.uniform(-1, 1, (d, d))
     V = Z.dot(np.linalg.inv(sqrtm(Z.T.dot(Z))))
     theta = suni(d)
-    theta *= 1.145 * linear
+    theta *= linear / np.abs(V.dot(theta)).max()
     lamb = suni(d)
-    alpha = lamb + V.dot(theta)
-    if all(alpha > 0) or all(alpha < 0):
-        return squni(d, linear)
-    theta /= np.abs(alpha).max()
-    lamb /= np.abs(alpha).max()
+    lamb *= (1 - linear) / np.abs(lamb).max()
     Q = V.dot(np.diagflat(lamb)).dot(V.T)
     return theta, Q, lamb, V
 

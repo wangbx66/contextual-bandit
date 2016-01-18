@@ -35,8 +35,9 @@ def absolute_cascading_ucb(e, s, T):
     logger.info('Absolute play score {0}/{1}'.format(score[-1], T))
     return score, 0
 
-def contextual_cascading_sherry(e, s, T, delta=0.9, lamb=0.1):
+def contextual_cascading_sherry(e, s, T, delta=0.9, lamb=0.1, gamma=0):
     assert s.cascade
+    gamma = s.gamma if not gamma else gamma
     theta = np.zeros(s.d)
     beta = 0
     V = lamb * np.eye(s.d)
@@ -46,20 +47,21 @@ def contextual_cascading_sherry(e, s, T, delta=0.9, lamb=0.1):
     score = [0]
     timestamp = time.time()
     for t in range(1, T):
+        #print('Turn No.{0}'.format(t))
         x, params = e()
         U = {arm: theta.dot(x[arm]) + beta * x[arm].dot(np.linalg.inv(V)).dot(x[arm]) for arm in x}
-        recc = s.oracle(U, *params)
+        recc = s.oracle(U, *params[:-1], gamma)
         r, c = e(recc)
-        V += sum([s.gamma ** (2*k) * np.outer(x[recc[k]], x[recc[k]]) for k in range(min(len(recc), c+1))])
-        X = np.concatenate([X] + [s.gamma ** k * x[recc[k]].reshape(1, s.d) for k in range(min(len(recc), c+1))])
-        Y = np.concatenate([Y] + [s.gamma ** k * ((k == c) == s.disj) * np.ones(1) for k in range(min(len(recc), c+1))])
+        V += sum([gamma ** (2*k) * np.outer(x[recc[k]], x[recc[k]]) for k in range(min(len(recc), c+1))])
+        X = np.concatenate([X] + [gamma ** k * x[recc[k]].reshape(1, s.d) for k in range(min(len(recc), c+1))])
+        Y = np.concatenate([Y] + [gamma ** k * ((k == c) == s.disj) * np.ones(1) for k in range(min(len(recc), c+1))])
         theta = np.linalg.inv(X.T.dot(X) + lamb * np.eye(s.d)).dot(X.T.dot(Y))
         beta = np.sqrt(np.linalg.slogdet(V)[1] - ldV - 2 * np.log(delta)) + np.sqrt(lamb)
         score.append(score[-1] + r)
         #logger.debug(r)
-        if t % 500 == 0:
-            logger.debug('Sherry {0} rounds with {1}s elapsed'.format(t, int(time.time() - timestamp)))
-    logger.info('Sherry play score {0}/{1}'.format(score[-1], T))
+        #if t % 500 == 0:
+        #    logger.debug('Sherry {0} rounds with {1}s elapsed'.format(t, int(time.time() - timestamp)))
+    logger.info('Sherry play score {0}/{1}, gamma={2}'.format(score[-1], T, gamma))
     if 'theta' in s.__dict__:
         logger.info('theta cosine similarity {0}'.format(1 - cosine(s.theta, theta)))
         return score, 1 - cosine(s.theta, theta)

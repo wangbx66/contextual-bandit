@@ -67,8 +67,17 @@ def flowtest_isp(T, kw):
     logger.info('\n    '.join(str(k) + ' ' + str(v) for k, v in kw.items()))
     s = contextual_isp_rng(**kw)
     #exploit1, explore1 = contextual_cascading_monkey(*contextual_isp(s, cascade=True, rgamma=True), T=T)
-    exploit1, explore1 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=True), T=T)
-    exploit2, explore2 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=False), T=T)
+    exploit1, explore1 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=True), T=T, gamma=1)
+    exploit1, explore1 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=True), T=T, gamma=0.98)
+    exploit1, explore1 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=True), T=T, gamma=0.96)
+    exploit1, explore1 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=True), T=T, gamma=0.94)
+    exploit1, explore1 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=True), T=T, gamma=0.92)
+    exploit1, explore1 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=True), T=T, gamma=0.9)
+    exploit2, explore2 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=False), T=T, gamma=0.88)
+    exploit2, explore2 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=False), T=T, gamma=0.86)
+    exploit2, explore2 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=False), T=T, gamma=0.84)
+    exploit2, explore2 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=False), T=T, gamma=0.82)
+    exploit2, explore2 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=False), T=T, gamma=0.80)
     exploit3, explore3 = contextual_full_lijing(*contextual_isp(s, cascade=False, rgamma=False), T=T)
     exploit4, explore4 = absolute_cascading_ucb(*contextual_isp(s, cascade=True, rgamma=True), T=T)
     exploit5, explore5 = absolute_cascading_ucb(*contextual_isp(s, cascade=True, rgamma=False), T=T)
@@ -108,7 +117,7 @@ def flowtest_isp(T, kw):
 #kw = {'L':100, 'portion':0.2, 'd':5, 'K':4, 'h':60, 'gamma':0.95, 'disj':True}
 #flowtest_movielens(T=1000, kw=kw)
 
-kw = {'isp':1239, 'd':15, 'h':0.35, 'tlc':0.8, 'gamma':0.95, 'disj':False}
-flowtest_isp(T=500, kw=kw)
+kw = {'isp':6461, 'd':5, 'h':0.35, 'tlc':0.8, 'gamma':0.90, 'disj':False}
+flowtest_isp(T=1500, kw=kw)
 plt.show()
 logfile.close()

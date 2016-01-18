@@ -14,6 +14,7 @@ from utils import reward
 from utils import ucb_settings
 
 from isp import isp_oracle
+from isp import isp_Coracle
 from isp import reachable
 
 def contextual_monkey_rng(L=20, d=10, h=0.35, K=4, gamma=0.95, eps=0.1, v=0.35, disj=False):
@@ -71,11 +72,11 @@ def contextual_isp(s, cascade, rgamma):
                 return environment()
             for arm in s.x:
                 xt[arm] = disturb(s.x[arm], s.h)
-            return xt, (s.G, p[0], p[1])
+            return xt, (s.G, p[0], p[1], s.gamma)
         else:
             #ctr = [s.tlc > np.random.exponential(1 - s.theta.dot(xt[arm])) for arm in recommend]
             ctr = [pendium() < s.theta.dot(xt[arm]) for arm in recommend]
             r, c = reward(ctr, s.gamma, s.disj)
             return (r, c) if cascade else (r, [int(click) for click in ctr])
     logger.info('Initializing environment "Contextual ISP" done')
-    return environment, ucb_settings(arms=s.G.edges(), L=len(s.G.edges()), d=s.d, gamma=1-rgamma*(1-s.gamma), disj=s.disj, cascade=cascade, oracle=isp_oracle, theta=s.theta)
+    return environment, ucb_settings(arms=s.G.edges(), L=len(s.G.edges()), d=s.d, gamma=1-rgamma*(1-s.gamma), disj=s.disj, cascade=cascade, oracle=isp_Coracle, theta=s.theta)
