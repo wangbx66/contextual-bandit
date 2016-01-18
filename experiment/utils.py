@@ -19,6 +19,10 @@ def suni(d):
     return uni(x)
 
 def scat(d):
+    x = np.random.exponential(1, d)
+    return x / x.sum()
+
+def scat1(d):
     e = uni(np.ones(d))
     x = [abs(suni(d)) for _ in range(int(15**(np.sqrt(d))))]
     x = [v for v in x if np.random.uniform() < v.dot(e)]

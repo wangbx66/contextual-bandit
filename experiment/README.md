@@ -1,4 +1,4 @@
-# Bandit
+# Bandit Experiment
 
 ## Experiment Dependency
 
