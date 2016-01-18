@@ -56,7 +56,6 @@
 %\usepackage{pdfpages}
 %\usepackage{multirow}
 %\usepackage{multicol}
-
 \newcommand{\bbeta}{\boldsymbol{\beta}}
 \newcommand{\EE}{\mathbb{E}}
 \newcommand{\II}{\mathbb{I}}
@@ -77,6 +76,7 @@
 \newcommand{\cA}{\mathcal{A}}
 \newcommand{\cB}{\mathcal{B}}
 \newcommand{\cH}{\mathcal{H}}
+\newcommand{\cO}{\mathcal{O}}
 \newcommand{\cS}{\mathcal{S}}
 \newcommand{\argmax}{\mathrm{argmax}}
 \newcommand{\trace}{\mathrm{trace}}
@@ -205,117 +205,152 @@ Our work considers contextual combinatorial bandits with cascading feedback and 
 Our problem is a combinatorial partial monitoring problem where the learning agent may observe part of chosen items. \cite{agrawal1989asymptotically,bartok2012adaptive} studied partial monitoring problems but their algorithm is inefficient in our setting. \cite{lin2014combinatorial} studied combinatorial partial monitoring problem and their feedback is a fixed (with respect to chosen action) combination of weights. If chosen action is fixed, the combination of the weights to constitute feedback is not fixed in our setting.
 
 A newer version of \cite{chen2013combinatorial} considers probabilistic triggering base arms in stochastic combinatorial semi-bandit
-	
-\section{Problem Formulation}
 
-We formulate the problem of {\em contextual combinatorial cascading bandit} as follows. 
-Suppose we have a finite set  $E=\{1,...,L\}$ of $L$ \textit{ground items},  also referred to as {\em base arms}. 
-Let $\Pi^k=\{(a_1,...,a_k): a_1,...,a_k \in E, a_i \neq a_j \text{ for any } i \neq j\}$ be the set of all $k$-tuples of distinct items from $E$. 
-We call each of such tuples an {\em action} of length $k$. We will use $|A|$ to denote the length of an action $A$.
-Let $\Pi^{\leq K}= \cup_{k=1}^K \Pi^{k}$ denote the set of all actions with length at most $K$, and let $\cS \subseteq \Pi^{\leq K}$ be the set of \textit{feasible actions} with length at most $K$. 
+% and / or case	
+% \section{Problem Formulation}
+
+% We formulate the problem of {\em contextual combinatorial cascading bandit} as follows. 
+% Suppose we have a finite set  $E=\{1,...,L\}$ of $L$ \textit{ground items},  also referred to as {\em base arms}. 
+% Let $\Pi^k=\{(a_1,...,a_k): a_1,...,a_k \in E, a_i \neq a_j \text{ for any } i \neq j\}$ be the set of all $k$-tuples of distinct items from $E$. 
+% We call each of such tuples an {\em action} of length $k$. We will use $|A|$ to denote the length of an action $A$.
+% Let $\Pi^{\leq K}= \cup_{k=1}^K \Pi^{k}$ denote the set of all actions with length at most $K$, and let $\cS \subseteq \Pi^{\leq K}$ be the set of \textit{feasible actions} with length at most $K$. 
+
+% As a convention, we always use boldface symbols to represent random variables.
+
+% At time $t$, feature vectors $x_{t,a} \in \RR^{d \times 1}$ with $\norm{x_{t,a}}_2 \leq 1$ for every base arm $a \in E$ are revealed to the learning agent; the feature vectors combine both the information of the user and the corresponding base arm. \shengyu{Add a standard/typical example (just one sentence) to illustrate the combination?} Then the learning agent recommends a feasible action $\bA_t=(\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t) \in \cS$ to a user, where notice that the length of the action is not fixed. Starting from the first item $\ba_{1}^t$, the user checks the items $(\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t)$ one by one in that order. The checking process stops if the user clicks \shengyu{selects?} on one item or has checked all items without clicking \shengyu{selecting?} anyone. We use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ as the {\em weight} of base arm $a$ at time $t$ to indicate whether the user has clicked on $a$ or not. 
+
+% Let $\cH_t$ denote the history before the learning agent chooses action at time $t$.
+% Thus $\cH_t$ contains all information and observations at time $s < t$ and context information at time $t$. Given history $\cH_t$, we assume $\bw_{t,a}$'s are mutually independent and satisfy
+% \begin{equation} % eq:expectation
+%   \label{eq:expectation}
+%   \EE[\bw_{t,a} | \cH_t] = \theta_{\ast}^{\top} x_{t,a},
+% \end{equation}
+% where $\theta_{\ast}$ is an unknown $d$-dimensional vector with the assumption that $\norm{\theta_{\ast}}_2 \leq 1$ and $0 \leq \theta_{\ast}^{\top} x_{t,a} \leq 1$ for all $t, a$. 
+% We define random variable $\bO_t$ as the number of observed base arms in $\bA_t$, that is, for some $k=1,2,\ldots, \abs{\bA_t}$, 
+% $$
+%   \bO_t = k, \text{ if } \bw_t(\ba_j^t)=0, \forall\, j < k \text{ and } \bw_t(\ba_k^t) = 1,
+% $$
+% or 
+% $$
+%   \bO_t = \abs{\bA_t}, \text{ if }\bw_t(\ba_j^t) = 0, ~~ \forall\, j \leq \abs{\bA_t}.
+% $$
+% At the end of every time $t$, the agent observes the first $\bO_t$ items of $\bA_t$. We say that item $a$ is {\it observed} if $a = \ba_k^t$ for some $k \leq \bO_t$. 
+% Thus, $\cH_t$ consists of $\{x_s, \bA_s = (\ba_{1}^s,...,\ba_{\abs{\bA_s}}^s), \bO_s, \bw_s(\ba_k^s),x_t \mid  k \in[\bO_s], 1 \le s<t \}$.
+
+% The agent receives some reward if the user clicks on some item. Suppose we consider the position discount: if the user clicks on the $k$-th item, then the learning agent receives reward $0 \leq \gamma_k \leq 1$. Usually the importance of the positions is decreasing: the first position is most important. So it is a reasonable assumption that
+% $$
+%   1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_K \geq 0.
+% $$
+% At the end of time $t$, the learning agent observes $\bO_t, \bw_t(\ba_k^t), k \leq \bO_t$ and receives reward
+% $$
+%   \br_t = \bw_t(\ba_{\bO_t}^t) \gamma_{\bO_t} = \bigvee_{k=1}^{\abs{\bA_t}} \gamma_k \bw_t(\ba_k^t).
+% $$
+% where we use the notation that $\bigvee_{k=1}^n a_k = \max_{1 \leq k \leq n} a_k$. Notice that the order of $\bA_t$ affects both the feed back and the reward.
+
+% Now let us introduce a function $f$ on $A = (a_1,...,a_{\abs{A}}) \in \cS, w = (w(1),...,w(L))$ by
+% \begin{align}
+%   &f : \cS \times [0,1]^E \to [0,1] \nonumber \\
+%   &f(A,w) = \sum_{k = 1}^{\abs{A}} \gamma_{k} \prod_{i=1}^{k-1} (1 - w(a_i)) w(a_k).
+%   \label{eq:functionf}
+% \end{align}
+% Then we have $\br_t = f(\bA_t, \bw_t)$ and $\EE[\br_t] = f(\bA_t, \theta_{\ast}^{\top}x_t)$ where $x_t = (x_{t,1}, \cdots, x_{t,L}) \in \RR^{d \times L}$. Let 
+% \begin{align*}
+%   A_t^{\ast} &= \argmax_{A\in \cS} f(A,\theta_{\ast}^{\top}x_t),\\
+%   f_t^{\ast} &= f(A_t^{\ast}, \theta_{\ast}^{\top}x_t).
+% \end{align*}
+% The goal of our learning algorithm is to minimize the expected cumulative regret in $T$ steps
+% $$
+%   R(T) = \EE\left[\sum_{t=1}^T R(t, \bA_t)\right].
+% $$
+% where $R(t, A) = f_t^{\ast} - f(A, \theta_{\ast}^{\top}x_t)$.
+
+% The above formulation is on the disjunctive objective, that is, at a time step the agent stops as soon as she reveals a base arm at a position $k$ in the sequence with weight $1$ and she receives reward $\gamma_k$ as the result. 
+% Similarly, we could also consider the case of conjunctive objective. 
+% We also use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ to indicate the weight of item $a$ at time $t$ satisfying Equation \eqref{eq:expectation}). 
+% The learning agent observes all items until the first one with weight $0$. 
+% Suppose we also consider partial reward: if the $k$-th item is the first item with weight $0$, then the learning agent receives reward $\gamma_k'$; if all items have weight $1$, the learning agent receives reward $1$. 
+% The more items the learning agent reveals, the more reward the agent should receive. It is reasonable to assume that
+% $$
+%   0 = \gamma'_1 \leq \gamma'_2 \leq \cdots \leq \gamma'_K \leq 1.
+% $$
+% At the end of time $t$, the learning agent observes $\bO_{\wedge, t}, \bw_t(\ba_k^t), k \leq \bO_{\wedge, t}$ and receives reward $\br_{\wedge, t}$:
+% \begin{align*}
+%   \br_{\wedge, t} &= \begin{cases}
+%     \gamma_{\bO_{\wedge, t}}'  &\text{if } \bw_t(\ba_{\bO_{\wedge, t}}^t) = 0,\\
+%     1 &\text{if } \bw_t(\ba_{\bO_{\wedge, t}}^t) = 1,
+%   \end{cases}\\
+%   &=\begin{cases}
+%     \gamma_{k}'  &\text{if } \bw_t(\ba_{i}^t) = 1, i < k, \bw_t(\ba_{k}^t) = 0,\\
+%     1 &\text{if } \bw_t(\ba_{i}^t) = 1, i\leq \abs{\bA_t}.
+%   \end{cases}
+% \end{align*}
+
+% If we define a function $f_{\wedge}$ on $A = (a_1, \ldots, a_{\abs{A}}) \in \cS, w = (w(1), \ldots, w(L))$ by
+% \begin{align}
+%   &f_{\wedge} : \cS \times [0,1]^E \to [0,1] \nonumber \\
+%   &f_{\wedge}(A,w) = \sum_{k = 1}^{\abs{A}} \gamma_k' \prod_{i = 1}^{k - 1} w(a_i)(1 - w(a_k)) + \prod_{i=1}^{\abs{A}}w(a_i),
+%   \label{eq:functionfstar}
+% \end{align}
+% then we have $\br_{\wedge, t} = f_{\wedge}(\bA_t, \bw_t)$ and $\EE[\br_{\wedge, t}] = f_{\wedge}(\bA_t, \theta_{\ast}^{\top}x_t)$ where $x_t = (x_{t,1}, \cdots, x_{t,L}) \in \RR^{d \times L}$. To simplify notations, we assume 
+% $$
+%   \gamma_k' = 1 - \gamma_k.
+% $$
+% Then it holds that
+% \begin{equation} %eq:ConDisRelation
+%   \label{eq:ConDisRelation}
+%   f_{\wedge}(A, w) = 1 - f(A, 1 - w).
+% \end{equation}
+% Let 
+% \begin{align*}
+%   A_{\wedge, t}^{\ast} &= \argmax_{A\in \cS} f(A,\theta_{\ast}^{\top}x_t),\\
+%   f_{\wedge, t}^{\ast} &= f(A_t^{\ast}, \theta_{\ast}^{\top}x_t).
+% \end{align*}
+% For the conjunctive objective, the goal of our learning algorithm is to minimize the expected cumulative regret in $T$ steps
+% $$
+%   R_{\wedge}(T) = \EE\left[\sum_{t=1}^T R_{\wedge}(t, \bA_t)\right].
+% $$
+% where $R_{\wedge}(t, A) = f_{\wedge, t}^{\ast} - f_{\wedge}(A, \theta_{\ast}^{\top}x_t)$.
+
+\section{Problem Formulation-general case}
+
+We formulate the problem of {\em contextual combinatorial cascading bandit} as follows. Suppose we have a finite set  $E=\{1,...,L\}$ of $L$ \textit{ground items},  also referred to as {\em base arms}. Let $\Pi^k=\{(a_1,...,a_k): a_1,...,a_k \in E, a_i \neq a_j \text{ for any } i \neq j\}$ be the set of all $k$-tuples of distinct items from $E$. We call each of such tuples an {\em action} of length $k$. We will use $|A|$ to denote the length of an action $A$. Let $\Pi^{\leq K}= \cup_{k=1}^K \Pi^{k}$ denote the set of all actions with length at most $K$, and let $\cS \subseteq \Pi^{\leq K}$ be the set of \textit{feasible actions} with length at most $K$. 
 
 As a convention, we always use boldface symbols to represent random variables.
 
-At time $t$, feature vectors $x_{t,a} \in \RR^{d \times 1}$ with $\norm{x_{t,a}}_2 \leq 1$ for every base arm $a \in E$ are revealed to the learning agent; the feature vectors combine both the information of the user and the corresponding base arm. \shengyu{Add a standard/typical example (just one sentence) to illustrate the combination?} Then the learning agent recommends a feasible action $\bA_t=(\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t) \in \cS$ to a user, where notice that the length of the action is not fixed. Starting from the first item $\ba_{1}^t$, the user checks the items $(\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t)$ one by one in that order. The checking process stops if the user clicks \shengyu{selects?} on one item or has checked all items without clicking \shengyu{selecting?} anyone. We use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ as the {\em weight} of base arm $a$ at time $t$ to indicate whether the user has clicked on $a$ or not. 
+At time $t$, feature vectors $x_{t,a} \in \RR^{d \times 1}$ with $\norm{x_{t,a}}_2 \leq 1$ for every base arm $a \in E$ are revealed to the learning agent; the feature vectors combine both the information of the user and the corresponding base arm. \shengyu{Add a standard/typical example (just one sentence) to illustrate the combination?} For example, suppose the user at time $t$ is represented by the feature vector $u_t$ and the feature vector of the base arm $a$ is $v_a$, then we can let $x_{t,a}$ be $(u_t, v_a)$ which combines both the information of the user and the base arm. \shuai{I have added one sentence.} Then the learning agent recommends a feasible action $\bA_t=\{ \ba_{1}^t,...,\ba_{\abs{\bA_t}}^t \} \in \cS$ to the user and notice that the size of the action is not fixed. Then according to the user behavior and the structure of the action $\bA_t$, we observe the weights of fist $\bO_t$ base arms in $\bA_t$. For example in website recommender systems, if the user checks from the first recommended website and stops when she finds one interesting or has checked all websites, then the observed base arms are checked websites. 
 
-Let $\cH_t$ denote the history before the learning agent chooses action at time $t$.
-Thus $\cH_t$ contains all information and observations at time $s < t$ and context information at time $t$. Given history $\cH_t$, we assume $\bw_{t,a}$'s are mutually independent and satisfy
+Let $\cH_t$ denote the history before the learning agent chooses action at time $t$. Thus $\cH_t$ contains all information and observations at time $s < t$ and context information at time $t$. Given history $\cH_t$, we assume $\bw_{t,a}$'s are mutually independent and satisfy
 \begin{equation} % eq:expectation
   \label{eq:expectation}
   \EE[\bw_{t,a} | \cH_t] = \theta_{\ast}^{\top} x_{t,a},
 \end{equation}
 where $\theta_{\ast}$ is an unknown $d$-dimensional vector with the assumption that $\norm{\theta_{\ast}}_2 \leq 1$ and $0 \leq \theta_{\ast}^{\top} x_{t,a} \leq 1$ for all $t, a$. 
-We define random variable $\bO_t$ as the number of observed base arms in $\bA_t$, that is, for some $k=1,2,\ldots, \abs{\bA_t}$, 
-$$
-  \bO_t = k, \text{ if } \bw_t(\ba_j^t)=0, \forall\, j < k \text{ and } \bw_t(\ba_k^t) = 1,
-$$
-or 
-$$
-  \bO_t = \abs{\bA_t}, \text{ if }\bw_t(\ba_j^t) = 0, ~~ \forall\, j \leq \abs{\bA_t}.
-$$
-At the end of every time $t$, the agent observes the first $\bO_t$ items of $\bA_t$. We say that item $a$ is {\it observed} if $a = \ba_k^t$ for some $k \leq \bO_t$. 
-Thus, $\cH_t$ consists of $\{x_s, \bA_s = (\ba_{1}^s,...,\ba_{\abs{\bA_s}}^s), \bO_s, \bw_s(\ba_k^s),x_t \mid  k \in[\bO_s], 1 \le s<t \}$.
 
-The agent receives some reward if the user clicks on some item. Suppose we consider the position discount: if the user clicks on the $k$-th item, then the learning agent receives reward $0 \leq \gamma_k \leq 1$. Usually the importance of the positions is decreasing: the first position is most important. So it is a reasonable assumption that
-$$
-  1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_K \geq 0.
-$$
-At the end of time $t$, the learning agent observes $\bO_t, \bw_t(\ba_k^t), k \leq \bO_t$ and receives reward
-$$
-  \br_t = \bw_t(\ba_{\bO_t}^t) \gamma_{\bO_t} = \bigvee_{k=1}^{\abs{\bA_t}} \gamma_k \bw_t(\ba_k^t).
-$$
-where we use the notation that $\bigvee_{k=1}^n a_k = \max_{1 \leq k \leq n} a_k$. Notice that the order of $\bA_t$ affects both the feed back and the reward.
+We define random variable $\bO_t$ as the number of observed base arms in $\bA_t$. At the end of every time $t$, the agent observes the first $\bO_t$ items of $\bA_t$. We say that item $a$ is {\it observed} if $a = \ba_k^t$ for some $k \leq \bO_t$. Thus, $\cH_t$ consists of $\{x_s, \bA_s = (\ba_{1}^s,...,\ba_{\abs{\bA_s}}^s), \bO_s, \bw_s(\ba_k^s),x_t \mid  k \in[\bO_s], 1 \le s<t \}$.
 
-Now let us introduce a function $f$ on $A = (a_1,...,a_{\abs{A}}) \in \cS, w = (w(1),...,w(L))$ by
-\begin{align}
-  &f : \cS \times [0,1]^E \to [0,1] \nonumber \\
-  &f(A,w) = \sum_{k = 1}^{\abs{A}} \gamma_{k} \prod_{i=1}^{k-1} (1 - w(a_i)) w(a_k).
-  \label{eq:functionf}
-\end{align}
-Then we have $\br_t = f(\bA_t, \bw_t)$ and $\EE[\br_t] = f(\bA_t, \theta_{\ast}^{\top}x_t)$ where $x_t = (x_{t,1}, \cdots, x_{t,L}) \in \RR^{d \times L}$. Let 
-\begin{align*}
-  A_t^{\ast} &= \argmax_{A\in \cS} f(A,\theta_{\ast}^{\top}x_t),\\
-  f_t^{\ast} &= f(A_t^{\ast}, \theta_{\ast}^{\top}x_t).
-\end{align*}
-The goal of our learning algorithm is to minimize the expected cumulative regret in $T$ steps
-$$
-  R(T) = \EE\left[\sum_{t=1}^T R(t, \bA_t)\right].
-$$
-where $R(t, A) = f_t^{\ast} - f(A, \theta_{\ast}^{\top}x_t)$.
+We consider the position discount. For example in recommender systems, the positions to display advertisements might have difference prices, hence of different value when user clicks on it.
 
-The above formulation is on the disjunctive objective, that is, at a time step the agent stops as soon as she reveals a base arm at a position $k$ in the sequence with weight $1$ and she receives reward $\gamma_k$ as the result. 
-Similarly, we could also consider the case of conjunctive objective. 
-We also use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ to indicate the weight of item $a$ at time $t$ satisfying Equation \eqref{eq:expectation}). 
-The learning agent observes all items until the first one with weight $0$. 
-Suppose we also consider partial reward: if the $k$-th item is the first item with weight $0$, then the learning agent receives reward $\gamma_k'$; if all items have weight $1$, the learning agent receives reward $1$. 
-The more items the learning agent reveals, the more reward the agent should receive. It is reasonable to assume that
-$$
-  0 = \gamma'_1 \leq \gamma'_2 \leq \cdots \leq \gamma'_K \leq 1.
-$$
-At the end of time $t$, the learning agent observes $\bO_{\wedge, t}, \bw_t(\ba_k^t), k \leq \bO_{\wedge, t}$ and receives reward $\br_{\wedge, t}$:
-\begin{align*}
-  \br_{\wedge, t} &= \begin{cases}
-    \gamma_{\bO_{\wedge, t}}'  &\text{if } \bw_t(\ba_{\bO_{\wedge, t}}^t) = 0,\\
-    1 &\text{if } \bw_t(\ba_{\bO_{\wedge, t}}^t) = 1,
-  \end{cases}\\
-  &=\begin{cases}
-    \gamma_{k}'  &\text{if } \bw_t(\ba_{i}^t) = 1, i < k, \bw_t(\ba_{k}^t) = 0,\\
-    1 &\text{if } \bw_t(\ba_{i}^t) = 1, i\leq \abs{\bA_t}.
-  \end{cases}
-\end{align*}
+The reward function on round $t$ is an application dependent function. We assume the expected reward function $f(A, w)$ of an action $A$ with expected weights $w$ satisfy the following assumptions.
 
-If we define a function $f_{\wedge}$ on $A = (a_1, \ldots, a_{\abs{A}}) \in \cS, w = (w(1), \ldots, w(L))$ by
-\begin{align}
-  &f_{\wedge} : \cS \times [0,1]^E \to [0,1] \nonumber \\
-  &f_{\wedge}(A,w) = \sum_{k = 1}^{\abs{A}} \gamma_k' \prod_{i = 1}^{k - 1} w(a_i)(1 - w(a_k)) + \prod_{i=1}^{\abs{A}}w(a_i),
-  \label{eq:functionfstar}
-\end{align}
-then we have $\br_{\wedge, t} = f_{\wedge}(\bA_t, \bw_t)$ and $\EE[\br_{\wedge, t}] = f_{\wedge}(\bA_t, \theta_{\ast}^{\top}x_t)$ where $x_t = (x_{t,1}, \cdots, x_{t,L}) \in \RR^{d \times L}$. To simplify notations, we assume 
-$$
-  \gamma_k' = 1 - \gamma_k.
-$$
-Then it holds that
-\begin{equation} %eq:ConDisRelation
-  \label{eq:ConDisRelation}
-  f_{\wedge}(A, w) = 1 - f(A, 1 - w).
-\end{equation}
-Let 
-\begin{align*}
-  A_{\wedge, t}^{\ast} &= \argmax_{A\in \cS} f(A,\theta_{\ast}^{\top}x_t),\\
-  f_{\wedge, t}^{\ast} &= f(A_t^{\ast}, \theta_{\ast}^{\top}x_t).
-\end{align*}
-For the conjunctive objective, the goal of our learning algorithm is to minimize the expected cumulative regret in $T$ steps
-$$
-  R_{\wedge}(T) = \EE\left[\sum_{t=1}^T R_{\wedge}(t, \bA_t)\right].
-$$
-where $R_{\wedge}(t, A) = f_{\wedge, t}^{\ast} - f_{\wedge}(A, \theta_{\ast}^{\top}x_t)$.
+Monotonicity The expected reward $f(A, w)$ is a non-decreasing with respect to $w$. For any $d$ dimension vectors $w$ and $w'$, if $w(i) \leq w'(i)$, we have $f(A, w) \leq f(A, w')$.
 
+Lipschitz continuity The expected reward function f(A, w) is a Lipschitz continuous with respect to $w$ together with position discount $\gamma$. In particular, there is a constant $B>0$ such that, for any $w$ and $w'$, we have
+$$
+	|f(A, w) - f(A, w')| \leq B\sqrt{\sum_{i \in Ind(A)} \gamma_i^2(w(i) - w'(i))^2}
+$$
 
+We don't require the agent knows how the function $f(A, w)$ is defined. We only assume the agent has access to an oracle $\cO(A, w)$. More precisely, an oracle $\cO(\cS, w)$ is  called an $\alpha$-approximation oracle for some $\alpha \leq 1$, if given input $w$ and $\cS$, the oracle always returns an action(super arm) $A = \cO(r, \cS) \in \cS$ satisfying $f(w, S) \geq \alpha opt_{w, \cS}$ where $opt_{w, \cS} = \max_{s \in \cS}$ f(r, S).
+
+The $\alpha$-regret on time $t$ can be written as
+$$
+R_t = \alpha opt_{w_t} - f(w_t, A_t).
+$$
+Our goal is to minimize the cumulative regret $R = \sum_{t=1}^n R_t$.
 
 \section{Algorithms and Results}
 
 \subsection{Algorithm}
-	
+
 At time $t$, we denote $\EE_t[\cdot] = \EE[\cdot | \cH_t]$, where $\cH_t$ is the history a time $t$ before the learning agent chooses her action. By Equation \eqref{eq:expectation}, we have 
 $$
   \EE[(\gamma_k \bw_{s,\ba_k^s}) | \cH_{s}] = \theta_*^{\top} (\gamma_k x_{s,\ba_k^s}).
@@ -332,13 +367,12 @@ where $\bX_t \in \RR^{(\sum_{s=1}^{t}\bO_s) \times d}$ is the matrix whose rows 
 $$
   \bV_t = \bX_t^{\top} \bX_t + \lambda I = \lambda I + \sum_{s=1}^{t} \sum_{k=1}^{\bO_s} \gamma_k^2 x_{s,\ba_k^s}x_{s,\ba_k^s}^{\top}.
 $$
-Then $\bV_t \in \RR^{d \times d}$ is a symmetric positive definite matrix. 
-For any symmetric positive definite matrix $V \in \RR^{d \times d} $ and any vector $x \in \RR^{d \times 1}$, we define the $2$-norm of $x$ based on $V$ to be $\norm{x}_V = (x^{\top} V x)^{\frac{1}{2}}$.
-In the following, we will mainly use notations for the disjunctive objective when the two cases are similar.
+Then $\bV_t \in \RR^{d \times d}$ is a symmetric positive definite matrix. For any symmetric positive definite matrix $V \in \RR^{d \times d} $ and any vector $x \in \RR^{d \times 1}$, we define the $2$-norm of $x$ based on $V$ to be $\norm{x}_V = (x^{\top} V x)^{\frac{1}{2}}$.
+%In the following, we will mainly use notations for the disjunctive objective when the two cases are similar.
 
 Next we build on a good estimate of differences between $\hat{\theta}_t$ and $\theta_*$ by Theorem 2 in \cite{abbasi2011improved}, which states the following results.
-	
-\begin{theorem}[\cite{abbasi2011improved}] %estimate of theta
+
+\begin{lemma} $\mathrm{\cite{abbasi2011improved}}$ %estimate of theta
   \label{thm:theta_estimate}
   Let 
   \begin{equation}
@@ -349,7 +383,7 @@ Next we build on a good estimate of differences between $\hat{\theta}_t$ and $\t
     \label{eq:estimateTheta}
     \norm{\hat{\theta}_t - \theta_{\ast}}_{\bV_{t}} \leq \bbeta_{t}(\delta).
   \end{equation}
-\end{theorem}
+\end{lemma}
 
 This theorem states that with high probability, the estimate $\hat{\theta}$ lies in the ellipsoid centered at $\theta_*$ with confidence radius $\bbeta_t(\delta)$ under $\bV_t$ norm. 
 Building on this, we can define an upper confidence bound of the expected weight of base arm $a$ by
@@ -358,54 +392,63 @@ Building on this, we can define an upper confidence bound of the expected weight
   \bU_t(a) = \min\left\{\hat{\theta}_{t-1}^{\top}x_{t,a} + \bbeta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}, 1 \right\}.
 \end{equation}
 
-The fact that $\bU_t(a)$ is an upper confidence bound of expected weight $\theta_*^{\top}x_{t,a}$ is proved in the following lemma.
+The fact that $\bU_t(a)$ is an upper confidence bound of expected weight $w_{t, a} = \theta_*^{\top} x_{t,a}$ is proved in the following lemma.
 \begin{lemma} %estimate of U
   \label{lem:estimateU}
   When Eq.\eqref{eq:estimateTheta} holds for time $t-1$, we have
   $$
-    0 \leq \bU_t(a) - \theta_{\ast}^{\top}x_{t,a} \leq 2\bbeta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}.
+    0 \leq \bU_t(a) - w_{t,a} \leq 2 \bbeta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}.
   $$
 \end{lemma}
 \begin{proof}
-  \begin{align*}
-    \abs{\hat{\theta}_{t-1}^{\top}x_{t,a} - \theta_{\ast}^{\top}x_{t,a}} &\leq \norm{\hat{\theta}_{t-1} - \theta_{\ast}}_{\bV_{t-1}} \norm{x_{t,a}}_{\bV_{t-1}^{-1}} \\
-    &\leq \bbeta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}.
-  \end{align*}
+	$w_{t, a} = \theta_*^{\top} x_{t,a}$. First by Holder's inequality,
+	\begin{align*}
+		\abs{\hat{\theta}_{t-1}^{\top}x_{t,a} - \theta_{\ast}^{\top}x_{t,a}} &\leq \norm{\hat{\theta}_{t-1} - \theta_{\ast}}_{\bV_{t-1}} \norm{x_{t,a}}_{\bV_{t-1}^{-1}} \\
+		&\leq \bbeta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}.
+	\end{align*}
+	Then
+	\begin{align*}
+		\bU_t(a) - w_{t,a} &\leq \hat{\theta}_{t-1}^{\top}x_{t,a} + \bbeta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}} - \theta_{\ast}^{\top}x_{t,a} \\
+		&\leq 2 \bbeta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}},
+	\end{align*}
+	and 
+	\begin{align*}
+		&\bU_t(a) - w_{t,a} \\
+		&\qquad \geq \min\{\hat{\theta}_{t-1}^{\top}x_{t,a} + \bbeta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}} - \theta_*^{\top} x_{t,a}, 1 - \theta_*^{\top} x_{t,a}  \} \\
+		&\qquad \geq 0		
+	\end{align*}
 \end{proof}
 
-Our proposed algorithm, C$^3$-UCB, is described in Algorithm \ref{alg:ConComCascade}. 
-First, the learning agent computes the upper confidence bounds (UCBs) $\bU_t \in [0,1]^{E}$ on the expected weights of all base arms in $E$. 
-Second, she uses the computed UCBs $\bU_t$ to select an action $\bA_t$. 
-Third, she plays $\bA_t$ and observes all feedback of base arms until first $0$ weight come out; the learning agent observes $\bO_t$ base arms and $\bw_t(\ba_k^t), k \in [\bO_t]$, where 
-$$
-  \bw_t(\ba_{k}^t) = \begin{cases} 0, ~~k < \bO_t\\ 1, ~~k = \bO_t\end{cases}
-$$ 
-or
-$$
-  \bw_t(\ba_k^t) = 0, k \leq \bO_t = \abs{\bA_t}.
-$$
+Our proposed algorithm, C$^3$-UCB, is described in Algorithm \ref{alg:ConComCascade}. First, the learning agent computes the upper confidence bounds (UCBs) $\bU_t \in [0,1]^{E}$ on the expected weights of all base arms in $E$. Second, she uses the computed UCBs $\bU_t$ to select an action $\bA_t$. Third, she checks from the first base arm in $\bA_t$ and stops after checking the $\bO_t$-th base arm.
+% Third, she plays $\bA_t$ and observes all feedback of base arms until first $0$ weight come out; the learning agent observes $\bO_t$ base arms and $\bw_t(\ba_k^t), k \in [\bO_t]$, where 
+% $$
+%   \bw_t(\ba_{k}^t) = \begin{cases} 0, ~~k < \bO_t\\ 1, ~~k = \bO_t\end{cases}
+% $$ 
+% or
+% $$
+%   \bw_t(\ba_k^t) = 0, k \leq \bO_t = \abs{\bA_t}.
+% $$
 Then, the learning agent updates $\bV_t, \bX_t, \bY_t$ in order to get a newer estimate $\hat{\theta}_t$ of $\theta_*$ and new confidence radius $\bbeta_t(\delta)$. 
 In this part, we use the notation $[A; B]$ to denote the matrix obtained by stacking A and B vertically like $\begin{pmatrix} A\\ B\end{pmatrix}$.
+
 
 \begin{algorithm} %C^3-UCB algorithm
   \caption{C$^3$-UCB}
   \label{alg:ConComCascade}
   \begin{algorithmic}[1]
-    \STATE {//Initialization}
-    \STATE {Parameters: $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_K \geq 0$}
-    \STATE {Parameters: $\delta > 0, \lambda \geq C_\gamma = \sum_{k=1}^{K} \gamma_k^2$}
-    \STATE {$\hat{\theta}_0 = 0, \bbeta_0(\delta) = 1, \bV_0 = \lambda I, \bX_0=\emptyset, \bY_0=\emptyset$}
+  	\STATE {Parameters:}
+  	\STATE {\qquad $\gamma_k\in[0,1], k \leq K; \delta > 0; \lambda \geq C_\gamma = \sum_{k=1}^{K} \gamma_k^2$}
+  	\STATE {Initialization:}
+    \STATE {\qquad $\hat{\theta}_0 = 0, \bbeta_0(\delta) = 1, \bV_0 = \lambda I, \bX_0=\emptyset, \bY_0=\emptyset$}
 
     \FORALL {$t=1,2,\ldots$}
       \STATE {Obtain context $x_{t,a}$ for all $a\in E$}
-      \STATE {//Compute UCBs}
-      \STATE {$\forall a\in E: $}
-      \STATE {$\bU_t(a) \leftarrow \min\{\hat{\theta}_{t-1}^{\top}x_{t,a} + \bbeta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}, 1\}$}
+      \STATE {$\forall a\in E$, compute}
+      \STATE {~~ $\bU_t(a) = \min\{\hat{\theta}_{t-1}^{\top}x_{t,a} + \bbeta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}, 1\}$} 
       
       \STATE {//Choose action $\bA_t$ using UCBs $\bU_t$}
-      \STATE { $\bA_t=(\ba_1^t,...,\ba_{\abs{\bA_t}}^t) \leftarrow \argmax_{A \in \cS} f(A, \bU_t)$ } 
-      \STATE {//In the conjunctive case, use $f_{\wedge}$ in stead of $f$}
-      \STATE {Play $\bA_t$ and observe $\bO_t, \bw_t(\ba_k^t), k\in[\bO_t]$}
+      \STATE { $\bA_t=(\ba_1^t,...,\ba_{\abs{\bA_t}}^t) \leftarrow \cO_{\cS}(\bU_t)$ } 
+      \STATE {Play $\bA_t$ and observe $\bO_t； \bw_t(\ba_k^t), k\in[\bO_t]$}
       
       \STATE {//Update statistics}
       \STATE {$\bV_{t} \leftarrow \bV_{t-1} + \sum_{k=1}^{\bO_t} \gamma_k^2 x_{t, \ba_k^t}x_{t, \ba_k^t}^{\top}$}
@@ -420,53 +463,61 @@ In this part, we use the notation $[A; B]$ to denote the matrix obtained by stac
 
 \subsection{Results}
 
-To state our main theorem, we need some definitions. Let
-$$
-  f_{\wedge}^* = \min_{1 \leq t \leq T} f_{\wedge, t}^{\ast}
-$$
-denote the best expected reward of all time under the conjunctive objective.
-Let $p_{t, A}$ (resp., $p_{\wedge, t, A}$) be the {\em probability of full observation of $A$}, that is the probability that all base arms of $A = (a_1, \ldots, a_{\abs{A}})$ are observed under the disjunctive objective (resp., conjunctive objective) when under the context of time $t$, that is 
-\begin{align*}
-  &p_{t, A} = \prod_{k=1}^{\abs{A}-1} (1 - \theta_{\ast}^{\top} x_{t, a_k^t}),\\
-  &p_{\wedge, t, A} = \prod_{k=1}^{\abs{A}-1} (\theta_{\ast}^{\top} x_{t, a_k^t}).
-\end{align*}
-We also define $p^* = \min_{1 \leq t \leq T} \min_{A \in \cS} ~ p_{t, A}$ to be the minimal probability over all time that an action could have all base arms observed under the disjunctive objective. The following is the main theorem on the regret achieved by our C$^3$-UCB algorithm, for both the disjunctive and conjunctive objectives.
+To state our main theorem, we need some definitions. Let $p_{t, A}$ be the {\em probability of full observation of $A$}, that is the probability that all base arms of $A = (a_1, \ldots, a_{\abs{A}})$ will be observed at time $t$. Let $p^* = \min_{1 \leq t \leq T} \min_{A \in \cS} ~ p_{t, A}$ to be the minimal probability that an action could have all base arms observed over all time. The following is the main theorem on the regret achieved by our C$^3$-UCB algorithm.
+
 \begin{theorem} %main theorem
-  \label{thm:main}
-  Suppose $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_{K} \geq 0$ and $\gamma_k' = 1 - \gamma_k, \gamma'_K \leq \frac{1}{4}f_{\wedge}^{\ast}$. 
-  Let regularization parameter $\lambda$ satisfy $\lambda \geq C_\gamma$, where $C_\gamma = \sum_{k=1}^{K} \gamma_k^2$. 
-  Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regrets of our algorithm, C$^3$-UCB for both the conjunctive and disjunctive objectives, satisfy
-  \begin{align}
-    R(T) &\le \frac{\sqrt{2}}{p^*} \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))}  \nonumber \\
-    &\qquad \cdot \left(\sqrt{d\ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda}\right) \nonumber \\
-    &=O\left(\frac{d}{p^*} \sqrt{TK} \ln \left(\frac{C_\gamma T}{\delta^{2/d}}\right) \right),
-  \end{align}
-  \begin{align}
-    R_{\wedge}(T) &\le \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))} \nonumber \\
-    &\qquad \cdot \left(\sqrt{d\ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda}\right) \nonumber \\
-    &=O\left(\frac{d}{f_{\wedge}^{\ast}}\sqrt{TK} \ln \left(\frac{C_\gamma T}{\delta^{2/d}}\right) \right).
-  \end{align}
+	\label{thm:main}
+	Suppose the expected reward function, with parameters $\gamma_k, k\leq K$, is a function of expected weights of base arms and satisfies the requirements stated in section 3. Assume there is an $\alpha$-approximation oracle $\cO$. Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regrets of our algorithm, C$^3$-UCB, satisfy
+	\begin{align}
+		R(T) &\le \frac{\sqrt{2}}{p^*} \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))}  \nonumber \\
+		&\qquad \cdot \left(\sqrt{d\ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda}\right) \nonumber \\
+		&=O\left(\frac{d}{p^*} \sqrt{TK} \ln \left(\frac{C_\gamma T}{\delta^{2/d}}\right) \right).
+	\end{align}
 \end{theorem}
+\begin{proof} [of Theorem \ref{thm:main}] %proof outline of main theorem
+	The complete proof is in the Appendix. The main idea is to reduce the regret at time $t$, $R(t, \bA_t)$, to the case that all items in $\bA_t$ have been observed. In particular,
+	\begin{align*}
+    	&\EE[R(t, \bA_t)|\cH_t] \\
+    	&\qquad = \EE \left[ \left. R(t, \bA_t) \EE \left[ \left. \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t = \abs{\bA_t}\} \right| \bA_t \right]  \right| \cH_t \right]\\
+    	&\qquad \leq \frac{1}{p^*} \EE \left[ \left. R(t, \bA_t) \bOne\{\bO_t = \abs{\bA_t}\} \right| \cH_t \right].
+    % &\EE_t[R_{\wedge}(t, \bA_t)] \\
+    % &\qquad \EE \left[ \left. R_{\wedge}(t, \bA_t) \EE \left[ \left. \frac{1}{p_{\wedge, t, \bA_t}} \bOne\{\bO_t\geq\abs{\bA_t}\} \right| \bA_t \right]  \right| \cH_t \right] \\
+    \end{align*}
+    Also, by monotonicity and Lipschitz continuity,
+    $$
+    	R(t, \bA_t) \leq C \sqrt{\sum_{k=1}^{\bO_t} \bbeta_{t-1}(\delta) \| \gamma_k x_{t, \ba_k^t} \|_{\bV_{t-1}}^2}
+    $$
 
-\wei{I hided some paragraphs trying to explain the proof here.
-	We will re-write a proof outline after revising the proofs.}
 
-\begin{proof} %proof outline of main theorem
-  The proof is in Appendix. 
-  The main idea is to reduce our analysis to that of CombCascade in \cite{kveton2015combinatorial}. 
-  This reduction is challenging for two reasons. 
-  First, our setting has contextual information. 
-  Second, we consider position-discounted weight $\gamma$.
+	our analysis to that of CombCascade in \cite{kveton2015combinatorial}. This reduction is challenging for two reasons. First, our setting has contextual information. Second, we consider position-discounted weight $\gamma$.
 
-  Our analysis can be trivially reduced to contextual combinatorial semi-bandits by conditioning on the event of observing all items. 
-  Then we can express the expected regret at time $t$ conditioned on the history $\cH_t$ as:
-  \begin{align*}
-    &\EE[R(t, \bA_t)|\cH_t] \\
-    &\qquad = \EE \left[ \left. R(t, \bA_t) \EE \left[ \left. \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t\geq\abs{\bA_t}\} \right| \bA_t \right]  \right| \cH_t \right],\\
-    &\EE_t[R_{\wedge}(t, \bA_t)] \\
-    &\qquad \EE \left[ \left. R_{\wedge}(t, \bA_t) \EE \left[ \left. \frac{1}{p_{\wedge, t, \bA_t}} \bOne\{\bO_t\geq\abs{\bA_t}\} \right| \bA_t \right]  \right| \cH_t \right] \\
-  \end{align*}
-  and anaylize our problem under the assumption that all items in $\bA_t$ are observed. This reduction might be problematic because the probability $p_{\wedge, t, \bA_t}$ for the conjunctive case can be low.
+	Our analysis can be trivially reduced to contextual combinatorial semi-bandits by conditioning on the event of observing all items. Then we can express the expected regret at time $t$ conditioned on the history $\cH_t$ as:
+	\begin{align*}
+    	&\EE[R(t, \bA_t)|\cH_t] \\
+    	&\qquad = \EE \left[ \left. R(t, \bA_t) \EE \left[ \left. \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t\geq\abs{\bA_t}\} \right| \bA_t \right]  \right| \cH_t \right],\\
+    % &\EE_t[R_{\wedge}(t, \bA_t)] \\
+    % &\qquad \EE \left[ \left. R_{\wedge}(t, \bA_t) \EE \left[ \left. \frac{1}{p_{\wedge, t, \bA_t}} \bOne\{\bO_t\geq\abs{\bA_t}\} \right| \bA_t \right]  \right| \cH_t \right] \\
+    \end{align*}
+    and anaylize our problem under the assumption that all items in $\bA_t$ are observed. 
+
+
+
+
+\end{proof}
+
+
+In the special case of single-choice-recommendations, the learning agent recommends a list of items to the user. Then the user checks from the first item and stops if she finds one interesting or has checked all items. Suppose we also consider position discount here. If the user interests in the $k$-th item, then the learning agent will receive reward $\gamma_k$. It is easy to check that in this case, the expected reward function is $f(A, w) = f(A,w) = \sum_{k = 1}^{\abs{A}} \gamma_{k} \prod_{i=1}^{k-1} (1 - w(a_i)) w(a_k)$. And if the parameters satisfy $1\geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$, then $f$ satisfies the requirements. (We leave all these verifications in appendix.) In this case, $p(t,A) p^* = $ Then we have
+\begin{corollary}
+	In the problem of single-choice-recommendations, the expected reward function is $f(A, w) = f(A,w) = \sum_{k = 1}^{\abs{A}} \gamma_{k} \prod_{i=1}^{k-1} (1 - w(a_i)) w(a_k)$. Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regrets of our algorithm, C$^3$-UCB, satisfy
+	\begin{align}
+		R(T) &\le \frac{\sqrt{2}}{p^*} \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))}  \nonumber \\
+		&\qquad \cdot \left(\sqrt{d\ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda}\right) \nonumber \\
+		&=O\left(\frac{d}{p^*} \sqrt{TK} \ln \left(\frac{C_\gamma T}{\delta^{2/d}}\right) \right).
+	\end{align}
+\end{corollary}
+
+
+This reduction might be problematic because the probability $p_{\wedge, t, \bA_t}$ for the conjunctive case can be low.
 
   Then we use a prefix to replace $\bA_t$ such that the probability of observing all items is close to $f_{\wedge}^{\ast}$ and the gaps are close to those of the original solutions.
   \begin{lemma}
@@ -488,28 +539,84 @@ We also define $p^* = \min_{1 \leq t \leq T} \min_{A \in \cS} ~ p_{t, A}$ to be 
   	\CLemmaDetVt
   \end{lemma}
   Then we can use a mean inequality to derive the result.
-\end{proof}
 
-\subsection{Lower Bounds}
+In the problem of network transportations or sequential task processing, $p^*$ defined above might be very small. So we have the following improvements. Suppose we also consider position discount here.  
+\begin{theorem} %main theorem
+	\label{thm:conjunctive}
+	Suppose $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_{K} \geq 0$ and $\gamma_k' = 1 - \gamma_k, \gamma'_K \leq \frac{1}{4} f_{\wedge}^{\ast}$. 
+	Let regularization parameter $\lambda$ satisfy $\lambda \geq C_\gamma$, where $C_\gamma = \sum_{k=1}^{K} \gamma_k^2$. 
+	Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regrets of our algorithm, C$^3$-UCB for both the conjunctive and disjunctive objectives, satisfy
+	\begin{align}
+	R_{\wedge}(T) &\le \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))} \nonumber \\
+	&\qquad \cdot \left(\sqrt{d\ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda}\right) \nonumber \\
+	&=O\left(\frac{d}{f_{\wedge}^{\ast}}\sqrt{TK} \ln \left(\frac{C_\gamma T}{\delta^{2/d}}\right) \right).
+	\end{align}
+\end{theorem}
 
-Suppose we have such a graph: 
-$$
-  \xymatrix{
-  	S_0 \ar[r]^{\mu_{11}} \ar[d]_{\mu_{21}} & B_1 \ar[d]^{\mu_{12}} &\\
-  	B_2 \ar[r]_{\mu_{22}} & S_1
-  }
-$$
-There are two paths in this graph: $A_1 = \{S_0 \to B_1 \to S_1\}$ and $A_2 = \{S_0 \to B_2 \to S_1\}$. 
-Let the feasible action set be $\cS = \{A_1, A_2\}.$ The $\mu$'s on the edges denote the probability of that edge being unblocked. 
-For example, the probability of $S_0 \to B_2$ being unblocked is $\mu_3$. 
-When we select a path, we get reward $1$ if and only if the path is unblocked and get reward $0$ if the path is blocked somewhere. 
-Suppose we have $\mu_3 \geq \mu_1 \geq \mu_1\mu_2 > \mu_3 \mu_4$.
-So the optimal action is $A_1$ with expected reward $\mu_1 \mu_2$ and $A_2$ is suboptimal with expected reward $\mu_3 \mu_4$.
+The proof of this theorem is different in the following lemmas.
 
-Similar to the proof of Lai and Robbins 1985, we could get
-$$
-	\EE[N_{A_2}]\mu_{21} \leq \frac{c \log(T)}{kl(\mu_{22}, \frac{\mu_{11}\mu_{12}}{\mu_{21}})}
-$$
+\subsection{Dissutions}
+
+Our setting generalizes several existing works but not limited to them. Our setting generalizes cascading bandit and combinatorial bandit to involve position discount, 
+
+to involve context
+
+there are cases that can not be fit into their 
+
+our method generalize Qin's method and has a regret bound proof.
+
+% are observed under the disjunctive objective (resp., conjunctive objective) when under the context of time $t$, that is 
+
+% To state our main theorem, we need some definitions. Let
+% $$
+%   f_{\wedge}^* = \min_{1 \leq t \leq T} f_{\wedge, t}^{\ast}
+% $$
+% denote the best expected reward of all time under the conjunctive objective.
+% Let $p_{t, A}$ (resp., $p_{\wedge, t, A}$) be the {\em probability of full observation of $A$}, that is the probability that all base arms of $A = (a_1, \ldots, a_{\abs{A}})$ are observed under the disjunctive objective (resp., conjunctive objective) when under the context of time $t$, that is 
+% \begin{align*}
+%   &p_{t, A} = \prod_{k=1}^{\abs{A}-1} (1 - \theta_{\ast}^{\top} x_{t, a_k^t}),\\
+%   &p_{\wedge, t, A} = \prod_{k=1}^{\abs{A}-1} (\theta_{\ast}^{\top} x_{t, a_k^t}).
+% \end{align*}
+% We also define $p^* = \min_{1 \leq t \leq T} \min_{A \in \cS} ~ p_{t, A}$ to be the minimal probability over all time that an action could have all base arms observed under the disjunctive objective. The following is the main theorem on the regret achieved by our C$^3$-UCB algorithm, for both the disjunctive and conjunctive objectives.
+% \begin{theorem} %main theorem
+%   \label{thm:main}
+%   Suppose $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_{K} \geq 0$ and $\gamma_k' = 1 - \gamma_k, \gamma'_K \leq \frac{1}{4}f_{\wedge}^{\ast}$. 
+%   Let regularization parameter $\lambda$ satisfy $\lambda \geq C_\gamma$, where $C_\gamma = \sum_{k=1}^{K} \gamma_k^2$. 
+%   Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regrets of our algorithm, C$^3$-UCB for both the conjunctive and disjunctive objectives, satisfy
+%   \begin{align}
+%     R(T) &\le \frac{\sqrt{2}}{p^*} \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))}  \nonumber \\
+%     &\qquad \cdot \left(\sqrt{d\ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda}\right) \nonumber \\
+%     &=O\left(\frac{d}{p^*} \sqrt{TK} \ln \left(\frac{C_\gamma T}{\delta^{2/d}}\right) \right),
+%   \end{align}
+%   \begin{align}
+%     R_{\wedge}(T) &\le \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \sqrt{TKd\ln(1 + C_\gamma T/(\lambda d))} \nonumber \\
+%     &\qquad \cdot \left(\sqrt{d\ln \left( \frac{1 + C_\gamma T/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda}\right) \nonumber \\
+%     &=O\left(\frac{d}{f_{\wedge}^{\ast}}\sqrt{TK} \ln \left(\frac{C_\gamma T}{\delta^{2/d}}\right) \right).
+%   \end{align}
+% \end{theorem}
+
+
+
+% \subsection{Lower Bounds}
+
+% Suppose we have such a graph: 
+% $$
+%   \xymatrix{
+%   	S_0 \ar[r]^{\mu_{11}} \ar[d]_{\mu_{21}} & B_1 \ar[d]^{\mu_{12}} &\\
+%   	B_2 \ar[r]_{\mu_{22}} & S_1
+%   }
+% $$
+% There are two paths in this graph: $A_1 = \{S_0 \to B_1 \to S_1\}$ and $A_2 = \{S_0 \to B_2 \to S_1\}$. 
+% Let the feasible action set be $\cS = \{A_1, A_2\}.$ The $\mu$'s on the edges denote the probability of that edge being unblocked. 
+% For example, the probability of $S_0 \to B_2$ being unblocked is $\mu_3$. 
+% When we select a path, we get reward $1$ if and only if the path is unblocked and get reward $0$ if the path is blocked somewhere. 
+% Suppose we have $\mu_3 \geq \mu_1 \geq \mu_1\mu_2 > \mu_3 \mu_4$.
+% So the optimal action is $A_1$ with expected reward $\mu_1 \mu_2$ and $A_2$ is suboptimal with expected reward $\mu_3 \mu_4$.
+
+% Similar to the proof of Lai and Robbins 1985, we could get
+% $$
+% 	\EE[N_{A_2}]\mu_{21} \leq \frac{c \log(T)}{kl(\mu_{22}, \frac{\mu_{11}\mu_{12}}{\mu_{21}})}
+% $$
 
 %Next we analyze those times when the learning agent selects path $A_2$ instead of the optimal $A_1$. 
 %Notice that if the observed edges are $S_0 \to C \to D$ or $S_0 \to C$, we will not abandon $A_2$ because the expected rewards are $0.9 \times 0.8$ and $0.9$, higher than $0.64$. 
