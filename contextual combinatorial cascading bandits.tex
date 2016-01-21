@@ -573,32 +573,35 @@ In the problem of network transportations or sequential task processing, $p^*$ d
 \end{proof}
 
 
-  
-
-
-
-
-
 \subsection{Dissutions}
 
-1. Our setting generalizes theirs, and our results with restricted to theirs is of same order except log
+In the above, we formulate the general setting of contextual combinatorial cascading bandit with position discount. This setting generalizes several existing results. 
 
-2. there is also other problem that can't be explained in their model even if without context information
+If our setting restricts to the setting of combinatorial cascading bandit \cite{kveton2015combinatorial}, our regret bound is of order $O\left(\frac{L}{f^*}\sqrt{nK}\ln(n)\right)$ which has an additional term $\sqrt{\frac{L\ln(n)}{f^*}}$ than their result; the reason is that the best regret bound for stochastic MAB is $O(\frac{\ln(n)}{\Delta})$, which has been achieved by a lot of methods, while the best regret bound for linear bandit is $O\left(\frac{\ln^2(n)}{\Delta}\right)$ by \cite{abbasi2011improved}.
 
-Our setting generalizes several existing works but not limited to them. Our setting generalizes cascading bandit and combinatorial bandit to involve position discount, 
+If our setting restricts to contextual combinatorial bandit \cite{qin2014contextual}, the random variable $\bO_t$ of observed base arms is $|\bA_t|$, which the number of base arms in chosen action $\bA_t$, and the minimal probability $p^*$ of observing all base arms in chosen actions should always be $1$. So our regret bound is of the same order with theirs. Notice that when applying their setting, the bound $C$ for Lipschitz continuity in our problem should be $\sqrt{K}$.
 
-to involve context
-
-there are cases that can not be fit into their 
-
-our method generalize Qin's method and has a regret bound proof.
-
-network latency
-
-If the latency of every edge $e$ follows exponential distribution with mean of $\theta_*^{\top}x_{t,e}$. We call the latency is {\it high} if it is larger than a threshold $\tau$. A path is blocked if some of its edges has high latency. So a path is unblocked with probability
+Our setting generalizes several existing works but not limited to them. For example, in medical treatment, a patient will be recommended with a series of treatments. The patient has to take the treatments one by one, so the series of treatment actually is a list. Suppose the effect, after taking a treatment, is represented by a Beta random variable $\bw$ with a mean $w = \theta_*^{\top}x$, where $\theta_*$ is unknown linear coefficients and $x$ denotes the context, which might include the conditions of the patient and the properties of the treatment. We say that the treatment is successful if the effect $\bw$ is larger than a threshold $\tau$. So a treatment $a$ is successful with probability
+\begin{equation}
+\label{eq:betaTau}
+1 - \frac{B(\tau; \alpha, \beta_0)}{B(\alpha, \beta_0)},
+\end{equation}
+where $B$ is the incomplete Beta function, $\alpha = \frac{\beta_0 w}{1- w} > 1$ and $\beta_0 > 1$ is a fixed number. We say that a series of treatment $A = (a_1, \ldots, a_{|A|})$ is successful (value $1$) if and only if all treatments in $A$ are successful. So the expected reward function is
 $$
-\prod_{k=1}^{|A|} (1 - \exp(-(\theta_*^{\top}x_{t,a_k^t})\tau).
+f(A, w) = \prod_{k=1}^{|A|} (1 - \frac{B(\tau; \alpha_{a_k}, \beta_0)}{B(\alpha_{a_k}, \beta_0)}),
 $$
+where $\alpha_{a_k} = \frac{\beta_0 w_{a_k}}{1- w_{a_k}}$ and $w_a = \theta_*^{\top}x_{a}$.
+
+By the expression of $f$, it is a function of the expected reward $w$. Next, because $B(\tau; \alpha, \beta_0), B(\alpha, \beta_0)$ are decreasing with respect to $\alpha$ and $\alpha$ is in increasing with respect to $w$, then Eq.~\eqref{eq:betaTau} is increasing with respect to $w$. Therefore, the expected reward has the property of monotonicity. For the Lipschitz continuity, by the Lipschitz continuity of expected reward function, defined in Eq.~\eqref{eq:AndRewardFunc}, and the continuity of Beta function, we can get $f$ also satisfies the Lipschitz continuity.
+
+Thus this expected reward function satisfies our setting but can not be fit into previous works. Similarly, a lot of such kind of reward functions, where the real reward is obtained by a second process of observed weight.
+
+% network latency
+
+% If the latency of every edge $e$ follows exponential distribution with mean of $\theta_*^{\top}x_{t,e}$. We call the latency is {\it high} if it is larger than a threshold $\tau$. A path is blocked if some of its edges has high latency. So a path is unblocked with probability
+% $$
+% \prod_{k=1}^{|A|} (1 - \exp(-(\theta_*^{\top}x_{t,a_k^t})\tau).
+% $$
 
 
 % are observed under the disjunctive objective (resp., conjunctive objective) when under the context of time $t$, that is 
