@@ -170,7 +170,7 @@
 ]
 	
 \begin{abstract} 
-The purpose of this document is to provide both the basic paper template and submission guidelines.
+We propose the {\it contextual combinatorial cascading bandits}, an online partial monitoring game where at each time a learning agent is given a set of context information, then recommends a list of items, and next observes weights from the first item and stops at problem-specific criterion. In recommendation, the stopping criterion might be the first item a user selects. In network, the stopping criterion might be the first edge being blocked in a path. We also considers position discounts in the list order, which means in recommendation the agent will receive discounted reward if the user does not select the first item. We propose a UCB-like algorithm to solve our problem, C$^3$-UCB, and prove a $n$-step regret bound in both the general setting and two special cases. Our work generalizes existing works and also addresses several challenges in our setting, a non-linear reward function with position discount, context information and partial observability. We experiment on both synthetic data and real data and show that our algorithm performs well.
 \end{abstract} 
 	
 \section{Introduction}
@@ -680,53 +680,49 @@ Thus this expected reward function satisfies our setting but can not be fit into
 We evaluate $C^3$-UCB in three experiments.
 
 \subsection{Synthetic}
+\label{sec:ExpSyn}
 
-In the first experiment, we compare $C^3$-UCB to $C^2$UCB and CombCascade on synthetic problems. This problem is a contextual cascading bandit with $L=20$ items and $K=4$, where at each time $t$ the agent recommends $K$ items to the user. At first, we randomly choose $\theta_* \in \RR^d$ with $\|\theta_{\ast}\|_2 = 1$. Then at each time $t$, we randomly assign $x_{t,a} \in \RR^d$ with $\theta_*^{\top}x_{t,a} \in [0,1]$ to arm $a$. And the weight for arm $a$ at time $t$ is a random sample from Bernoulli distribution with mean $\theta_*^{\top}x_{t,a}$.
-
-We experiment on four settings and report our results in Figure \ref{fig:synthetic}. The first experiment is with disjunctive objective and $\gamma=1$ and the second is also with disjunctive objective but with $\gamma=0.95$. The third experiment is conducted with conjunctive objective and $\gamma=1$. The fourth experiment is using network 1755 structure. The algorithm $C^2$UCB has semi-bandit feedback and our algorithm has only cascading feedback. However from the results, our performance is competitive to their's. The $CombCascade$ algorithm does not make use of contextual information, so it is not as good as the other two algorithms. 
-
+% experiment - synthetic - results
 \begin{figure*}
 	\centering
 	\subfigure[Disjunctive, $\gamma=1$]{
-		\includegraphics[height = 3 cm, width = 4 cm]{synD-1.eps}}
+		\includegraphics[height = 3 cm, width = 4 cm]{synD-T10000-L100-K4-1.eps}}
 	\subfigure[Disjunctive, $\gamma=0.95$]{
-		\includegraphics[height = 3 cm, width = 4 cm]{synD-95.eps}}
+		\includegraphics[height = 3 cm, width = 4 cm]{synD-T10000-L100-K4-95.eps}}
 	\subfigure[Conjunctive, $\gamma=1$ ]{
-		\includegraphics[height = 3 cm, width = 4 cm]{synC-1.eps}}
-	\subfigure[Conjunctive, network 1755, $\gamma=1$ ]{
-		\includegraphics[height = 3 cm, width = 4 cm]{network3B-1.eps}}
-	\caption{Synthetic Data Set, L=20, K=4}
+		\includegraphics[height = 3 cm, width = 4 cm]{synC-T10000-L100-K4-1.eps}}
+	\subfigure[Conjunctive, $\gamma=0.95$ ]{
+		\includegraphics[height = 3 cm, width = 4 cm]{synC-T10000-L100-K4-95.eps}}
+	\caption{Synthetic Data Set, L=100, K=4, d=10}
 	\label{fig:synthetic} % 用于交叉引用
 \end{figure*}
 
+In the first experiment, we compare $C^3$-UCB to CombCascade on synthetic problems. This problem is a contextual cascading bandit with $L=100$ items and $K=4$, where at each time $t$ the agent recommends $K$ items to the user. At first, we randomly choose $\theta_* \in \RR^{d-1}$ with $\|\theta_{\ast}\|_2 = 1$ and let $\theta_* = (\frac{\theta}{2}, \frac{1}{2})$. Then at each time $t$, we randomly assign $x'_{t,a} \in \RR^{d-1}$ with $\|x_{t,a}\| = 1$ to arm $a$ and use $x_{t,a} = (x'_{t,a}, 1)$ to be the context information for arm $a$. This processing will guarantee the inner product $\theta_*^{\top}x_{t,a} \in [0,1]$. Next the weight for arm $a$ at time $t$ is a random sample from Bernoulli distribution with mean $\theta_*^{\top}x_{t,a}$.
+
+We experiment on four settings and demonstrate the results in Figure \ref{fig:synthetic}. The first two are of disjunctive objective with different position discount and the last two are of conjunctive objectives. Our algorithm outperforms than {\it CombCascade} algorithm because it does not use the context information.
+
+
 \subsection{MovieLens}
 
-In this experiment, we evaluate $C^3$-UCB on a problem of contextual recommendations. We experiment on {\it MovieLens} dataset\cite{lam2013movie} of March 2015.
-
-The Learning problem is formulated as follows. There is a big sparse matrix $A \in \{0,1\}^{N_u \times N_m}$ where $A(u,m) = 1$ denotes user $u$ has watched movie $m$. We split $A$ to be $H + F$ by putting entry-$1$ in $A$ to $H$ and $F$ with probability $\sim \mathrm{Ber}(p)$ for some fixed $p$. We can regard $H$ as known information about history 'what users have watched' and regard $F$ as future criterion. We use $H$ to derive feature vectors of both users and movies by SVD decomposition $H = VSZ^{\top}$ where $V = (v_1; ...;v_{N_u})$ and $Z = (z_1;...;z_{N_m})$. At every time $t$, use $x_{t,i} = v_{i}z_j^{\top}$ as the context information of base arm $i$ and randomly choose a user $u_t$. And use $w_t(m) = F(u_t,m)$ as the weight of movie $m$.
-
-Notice that 
-
-Notice that for this case, fixed number of base arms, it might have problem if we use $(u_{I_t}, v_j)$ as context information.
-Since to find the best arm, it is equivalent to find the best one with highest weights sum, so is equivalent to the best one with highest $\theta_{v}^{\top}x$.
-
-\begin{figure*}
+\begin{figure}
 	\centering
-	\subfigure[MovieLens]{
-		\includegraphics[height = 3cm, width = 5 cm]{movie-1.eps}}
+	\subfigure[$\gamma = 1$]{
+		\includegraphics[height = 3cm, width = 3.95 cm]{movie-T10000-L100-K4-1.eps}}
+	\subfigure[$\gamma = 0.95$]{
+		\includegraphics[height = 3cm, width = 3.95 cm]{movie-T10000-L100-K4-95.eps}}
 	\caption{MovieLens}
 	\label{fig:movielens} % 用于交叉引用
-\end{figure*}
+\end{figure}
+
+In this experiment, we evaluate $C^3$-UCB on a problem of contextual recommendations. We experiment on {\it MovieLens} dataset\cite{lam2013movie} of 2015.
+
+The Learning problem is formulated as follows. There is a big sparse matrix $A \in \{0,1\}^{N_1 \times N_2}$ where $A(i,j) = 1$ denotes user $i$ has watched movie $j$. We split $A$ to be $H + F$ by putting entry-$1$ in $A$ to $H$ and $F$ with probability $\sim \mathrm{Ber}(p)$ for some fixed $p$. We can regard $H$ as known information about history 'what users have watched' and regard $F$ as future criterion. We use $H$ to derive feature vectors of both users and movies by SVD decomposition, $H = USM^{\top}$ where $U = (u_1; ...;u_{N_1})$ and $M = (m_1;...;m_{N_2})$. At every time $t$, use $x_{t,i} = u_{i}m_j^{\top}$ as the context information of base arm $i$ and randomly choose a user $I_t$. And use $w_t(m) = F(I_t,m)$ as the weight of movie $m$ at time $t$.
+
+This problem is required to recommend fixed number of movies. Notice that it might have problem if we use $(u_{I_t}, m_j)$ as context information. Denote $\theta$ by $(\theta_u, \theta_m)$. So the expected mean of a base arm is of the form $\theta_u^{\top} u_{I_t} + \theta_m^{\top} m_j$ but the first term $\theta_u^{\top} u_{I_t}$ is fixed at time $t$ no matter what $\theta_u$ is. Therefore, to find the best super arm, it is equivalent to rank the scores $\theta_m^{\top} m_j$ for each movie $j$. So to make use of the user's context information, we need some quadratic terms of user's information $u_i$ and movie's information $m_j$. That's why we use the convolution $u_{i}m_j^{\top}$ to denote the context of movie $j$ at time $t$.
+
+We experiment with different position discount and compare our algorithm with {\it CombCascade}. We show the results in Fig.~\ref{fig:movielens}. Our algorithms outperforms theirs, which demonstrate the advantage of introducing context information in real applications.
 
 \subsection{Network Routing}
-
-In the last experiment, we evaluate $C^3$-UCB on a problem of network routing. We experiment on six networks from the {\it RocketFuel} dataset\cite{spring2004measuring}.
-
-The ground set $E$ is the set of links in the network and the feasible action set $\cS$ is the set of all paths in the network. Before learning, the environment randomly chooses a $d$-dimensional vector $\theta \in [0,1]^d$. At each time $t$, any link $e$ is assigned with a random $d$-dimensional context vector $x_{t,e}$ and the corresponding latency follows exponential distribution with mean $1-\theta^{\top}x$, which has been scaled into $[0,1]$. We call the latency is {\it high} if it is larger than a threshold $\tau$. A pair of source and terminal nodes $(v_s, v_t)$ are chosen randomly. The agent recommends a feasible path $A = (a_1,...,a_{|A|})$ from $v_s$ to $v_t$ with expected reward
-$$
-\prod_{k=1}^{|A|} (1- \exp(-\frac{\tau}{1-\theta^{\top}x_{t,a_k}})).
-$$
-Notice that the expression is not of the form $\prod_{k=1}^{|A|}\theta_*^{\top}x_{t,a_k}$ in our model. However, our algorithm could also apply to it.
 
 \begin{figure*}
 	\centering
@@ -737,8 +733,26 @@ Notice that the expression is not of the form $\prod_{k=1}^{|A|}\theta_*^{\top}x
 	\subfigure[Network 3257 ]{
 		\includegraphics[height = 3 cm, width = 5 cm]{network4-1.eps}}
 	\caption{Network with latency}
-	\label{fig:sample number} % 用于交叉引用
+	\label{fig:network} % 用于交叉引用
 \end{figure*}
+
+In the last experiment, we evaluate $C^3$-UCB on a problem of network routing. We experiment on six networks from the {\it RocketFuel} dataset\cite{spring2004measuring}.
+
+The ground set $E$ is the set of links in the network and the feasible action set $\cS$ is the set of all paths in the network. Before learning, the environment randomly chooses a $d$-dimensional vector $\theta_* \in [0,1]^d$ and at each time $t$, any link $e$ is assigned with a random $d$-dimensional context vector $x_{t,e}$. Notice here both $\theta$ and $x$ have been processed like section \ref{sec:ExpSyn} so that $\theta_*^{\top}x \in [0,1]$. The weight for each edge $e$ is a Bernoulli random variable with mean $\theta_*^{\top}x$.
+
+At each time $t$, A pair of source and terminal nodes $(v_s, v_t)$ are chosen randomly. The learning agent recommends a feasible path $A = (a_1,...,a_{|A|})$ between $v_s$ and $v_t$ to maximize the expected reward in the conjunctive objective.
+
+We experiment with different position discounts and on different networks. The results are shown in Fig.~\ref{fig:network}. Our algorithm ourperforms {\it CombCascade} algorithm.
+
+% we randomly generate a pair of starting and ending nodes, and the learning agent chooses a routing path between the two nodes to maximize the expected reward with position discount.
+
+%  and the corresponding latency follows exponential distribution with mean $1-\theta^{\top}x$, which has been scaled into $[0,1]$. We call the latency is {\it high} if it is larger than a threshold $\tau$. 
+% $$
+% \prod_{k=1}^{|A|} (1- \exp(-\frac{\tau}{1-\theta^{\top}x_{t,a_k}})).
+% $$
+% Notice that the expression is not of the form $\prod_{k=1}^{|A|}\theta_*^{\top}x_{t,a_k}$ in our model. However, our algorithm could also apply to it.
+
+% the environment randomly choose 
 
 \section{Conclusions}
 
