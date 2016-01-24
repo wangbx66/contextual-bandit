@@ -17,107 +17,82 @@ logger.info('===== Numpy/Python random seed = {0}'.format(seed))
 import matplotlib.pyplot as plt
 
 from agent import contextual_cascading_sherry
+from agent import contextual_cascading_gsherry
 from agent import contextual_cascading_monkey
 from agent import contextual_full_monkey
 from agent import contextual_full_lijing
 from agent import absolute_cascading_ucb
-from environment import contextual_monkey_rng
-from environment import contextual_monkey
-from movielens import contextual_movielens_rng
-from environment import contextual_movielens
-from isp import contextual_isp_rng
-from environment import contextual_isp
+from environment import contextual
+from environment import c3synthetic_monkey_rng
+from movielens import c3_movielens_rng
+from isp import c3synthetic_isp_rng
+from isp import c3synthetic_Zisp_rng
+from isp import c3synthetic_Cisp_rng
 
-def flowtest_monkey(T, kw):
+def flowtest_monkey(T, **kw):
     logger.info('Monkey flowtest')
     logger.info('Require rng initialization')
     logger.info('\n    '.join(str(k) + ' ' + str(v) for k, v in kw.items()))
-    s = contextual_monkey_rng(**kw)
-    exploit1, explore1 = contextual_cascading_sherry(*contextual_monkey(s, cascade=True, rgamma=True, sort=False), T=T)
-    exploit2, explore2 = contextual_cascading_sherry(*contextual_monkey(s, cascade=True, rgamma=False, sort=False), T=T)
-    exploit3, explore3 = contextual_cascading_sherry(*contextual_monkey(s, cascade=True, rgamma=False, sort=True), T=T)
-    # exploit2, explore2 = contextual_cascading_monkey(*contextual_monkey(s, cascade=True, rgamma=True, sort=False), T=T)
-    exploit4, explore4 = contextual_full_lijing(*contextual_monkey(s, cascade=False, rgamma=False, sort=False), T=T)
-    exploit5, explore5 = absolute_cascading_ucb(*contextual_monkey(s, cascade=True, rgamma=True, sort=False), T=T)
-    exploit6, explore6 = absolute_cascading_ucb(*contextual_monkey(s, cascade=True, rgamma=False, sort=False), T=T)
-    exploit7, explore7 = absolute_cascading_ucb(*contextual_monkey(s, cascade=True, rgamma=False, sort=True), T=T)
-    # exploit6, explore6 = absolute_cascading_gammaucb(*contextual_monkey(s, cascade=True, rgamma=True, sort=False), T=T)
-    # plt.plot(range(T), exploit1, 'or', range(T), exploit2, 'r--', range(T), exploit3, 'r', range(T), exploit4, 'y--', range(T), exploit5, 'b', range(T), exploit6, 'ob', range(T), exploit7, 'b--')
-    plt.plot(range(T), exploit1, 'r--', range(T), exploit2, 'b--', range(T), exploit3, 'g--')
+    s = c3synthetic_monkey_rng(**kw)
+    reward, regret, similarity = contextual_cascading_sherry(contextual(s, cascade=True, rgamma=True, descend=False), T=T)
+    reward, regret, similarity = contextual_cascading_sherry(contextual(s, cascade=True, rgamma=False, descend=False), T=T)
+    reward, regret, similarity = contextual_cascading_sherry(contextual(s, cascade=True, rgamma=False, descend=True), T=T)
+    reward, regret, similarity = contextual_full_lijing(contextual(s, cascade=False, rgamma=False, descend=False), T=T)
+    reward, regret, similarity = absolute_cascading_ucb(contextual(s, cascade=True, rgamma=True, descend=False), T=T)
+    reward, regret, similarity = absolute_cascading_ucb(contextual(s, cascade=True, rgamma=False, descend=False), T=T)
+    reward, regret, similarity = absolute_cascading_ucb(contextual(s, cascade=True, rgamma=False, descend=True), T=T)
 
-def flowtest_movielens(T, kw):
+def flowtest_movielens(T, **kw):
     logger.info('Movielens flowtest')
     logger.info('Require rng initialization')
     logger.info('\n    '.join(str(k) + ' ' + str(v) for k, v in kw.items()))
-    s = contextual_movielens_rng(**kw)
-    exploit1, explore1 = contextual_cascading_sherry(*contextual_movielens(s, cascade=True, rgamma=True, sort=False), T=T)
-    exploit2, explore2 = contextual_cascading_sherry(*contextual_movielens(s, cascade=True, rgamma=False, sort=False), T=T)
-    exploit3, explore3 = contextual_cascading_sherry(*contextual_movielens(s, cascade=True, rgamma=False, sort=True), T=T)
-    # exploit2, explore2 = contextual_cascading_monkey(*contextual_movielens(s, cascade=True, rgamma=True, sort=False), T=T)
-    exploit4, explore4 = contextual_full_lijing(*contextual_movielens(s, cascade=False, rgamma=False, sort=False), T=T)
-    exploit5, explore5 = absolute_cascading_ucb(*contextual_movielens(s, cascade=True, rgamma=True, sort=False), T=T)
-    exploit6, explore6 = absolute_cascading_ucb(*contextual_movielens(s, cascade=True, rgamma=False, sort=False), T=T)
-    exploit7, explore7 = absolute_cascading_ucb(*contextual_movielens(s, cascade=True, rgamma=False, sort=True), T=T)
-    plt.plot(range(T), exploit1, 'r--', range(T), exploit2, 'b--', range(T), exploit3, 'g--', range(T), exploit4, 'b--', range(T), exploit5, 'y--', range(T), exploit6, 'k--', range(T), exploit7, 'm--')
-    #plt.plot(range(T), exploit1, 'r--', range(T), exploit2, 'b--', range(T), exploit3, 'g--')
+    s = c3_movielens_rng(**kw)
+    reward, regret, similarity = contextual_cascading_sherry(contextual(s, cascade=True, rgamma=True, descend=False), T=T)
+    reward, regret, similarity = contextual_cascading_sherry(contextual(s, cascade=True, rgamma=True, descend=True), T=T)
+    reward, regret, similarity = contextual_full_lijing(contextual(s, cascade=False, rgamma=True, descend=False), T=T)
+    reward, regret, similarity = absolute_cascading_ucb(contextual(s, cascade=True, rgamma=True, descend=False), T=T)
+    reward, regret, similarity = absolute_cascading_ucb(contextual(s, cascade=True, rgamma=True, descend=True), T=T)
 
-def flowtest_isp(T, kw):
+def flowtest_isp(T, **kw):
     logger.info('ISP flowtest')
     logger.info('Require rng initialization')
     logger.info('\n    '.join(str(k) + ' ' + str(v) for k, v in kw.items()))
-    s = contextual_isp_rng(**kw)
-    #exploit1, explore1 = contextual_cascading_monkey(*contextual_isp(s, cascade=True, rgamma=True), T=T)
-    exploit1, explore1 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=True), T=T, gamma=1)
-    exploit1, explore1 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=True), T=T, gamma=0.98)
-    exploit1, explore1 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=True), T=T, gamma=0.96)
-    exploit1, explore1 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=True), T=T, gamma=0.94)
-    exploit1, explore1 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=True), T=T, gamma=0.92)
-    exploit1, explore1 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=True), T=T, gamma=0.9)
-    exploit2, explore2 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=False), T=T, gamma=0.88)
-    exploit2, explore2 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=False), T=T, gamma=0.86)
-    exploit2, explore2 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=False), T=T, gamma=0.84)
-    exploit2, explore2 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=False), T=T, gamma=0.82)
-    exploit2, explore2 = contextual_cascading_sherry(*contextual_isp(s, cascade=True, rgamma=False), T=T, gamma=0.80)
-    exploit3, explore3 = contextual_full_lijing(*contextual_isp(s, cascade=False, rgamma=False), T=T)
-    exploit4, explore4 = absolute_cascading_ucb(*contextual_isp(s, cascade=True, rgamma=True), T=T)
-    exploit5, explore5 = absolute_cascading_ucb(*contextual_isp(s, cascade=True, rgamma=False), T=T)
-    # plt.plot(range(T), exploit1, 'r--', range(T), exploit2, 'r--', range(T), exploit3, 'b--', range(T), exploit4, 'b--')
-    plt.plot(range(T), exploit1, 'r--', range(T), exploit2, 'b--', range(T), exploit3, 'g--', range(T), exploit4, 'k--', range(T), exploit5, 'y--')
-    file_object = open('exploit1.txt', 'w')
-    file_object.writelines(str(exploit1))
-    # for i in range(len(exploit1))
-    #     file_object.writelines(str(exploit1[i]))
-    file_object.close()
-    file_object = open('exploit2.txt', 'w')
-    file_object.writelines(str(exploit2))
-    # for i in range(len(exploit2))
-    #     file_object.writelines(str(exploit2[i]))
-    file_object.close()
-    file_object = open('exploit3.txt', 'w')
-    file_object.writelines(str(exploit3))
-    # for i in range(len(exploit3))
-    #     file_object.writelines(str(exploit3[i]))
-    file_object.close()
-    file_object = open('exploit4.txt', 'w')
-    file_object.writelines(str(exploit4))
-    # for i in range(len(exploit4))
-    #     file_object.writelines(str(exploit4[i]))
-    file_object.close()
-    file_object = open('exploit5.txt', 'w')
-    file_object.writelines(str(exploit5))
-    # for i in range(len(exploit5))
-    #     file_object.writelines(str(exploit5[i]))
-    file_object.close()
+    s = c3synthetic_isp_rng(**kw)
+    reward, regret, similarity = contextual_cascading_sherry(contextual(s, cascade=True, rgamma=True), T=T)
+    reward, regret, similarity = contextual_cascading_sherry(contextual(s, cascade=True, rgamma=False), T=T)
+    reward, regret, similarity = contextual_full_lijing(contextual(s, cascade=False, rgamma=False), T=T)
+    reward, regret, similarity = absolute_cascading_ucb(contextual(s, cascade=True, rgamma=True), T=T)
+    reward, regret, similarity = absolute_cascading_ucb(contextual(s, cascade=True, rgamma=False), T=T)
 
-#kw = {'L':20, 'd':10, 'h':0.35, 'K':4, 'gamma':0.9, 'eps':0.1, 'v':0.35, 'disj':True}
-#kw = {'L':100, 'd':10, 'h':0.75, 'K':10, 'gamma':0.95, 'eps':0.1, 'v':0.35, 'disj':False}
-#flowtest_monkey(T=3000, kw=kw)
+def flowtest_gisp(T, **kw):
+    logger.info('Gamma ISP flowtest')
+    logger.info('Require rng initialization')
+    logger.info('\n    '.join(str(k) + ' ' + str(v) for k, v in kw.items()))
+    s = c3synthetic_Zisp_rng(**kw)
+    reward, regret, similarity = contextual_cascading_gsherry(contextual(s, cascade=True, rgamma=True), T=T, gamma=1.00)
+    reward, regret, similarity = contextual_cascading_gsherry(contextual(s, cascade=True, rgamma=True), T=T, gamma=0.98)
+    reward, regret, similarity = contextual_cascading_gsherry(contextual(s, cascade=True, rgamma=True), T=T, gamma=0.96)
+    reward, regret, similarity = contextual_cascading_gsherry(contextual(s, cascade=True, rgamma=True), T=T, gamma=0.94)
+    reward, regret, similarity = contextual_cascading_gsherry(contextual(s, cascade=True, rgamma=True), T=T, gamma=0.92)
+    reward, regret, similarity = contextual_cascading_gsherry(contextual(s, cascade=True, rgamma=True), T=T, gamma=0.9)
+    reward, regret, similarity = contextual_cascading_gsherry(contextual(s, cascade=True, rgamma=True), T=T, gamma=0.88)
+    reward, regret, similarity = contextual_cascading_gsherry(contextual(s, cascade=True, rgamma=True), T=T, gamma=0.86)
+    reward, regret, similarity = contextual_cascading_gsherry(contextual(s, cascade=True, rgamma=True), T=T, gamma=0.84)
+    reward, regret, similarity = contextual_cascading_gsherry(contextual(s, cascade=True, rgamma=True), T=T, gamma=0.82)
+    reward, regret, similarity = contextual_cascading_gsherry(contextual(s, cascade=True, rgamma=True), T=T, gamma=0.80)
 
+#kw = {'L':20, 'd':5, 'b':0, 'K':4, 'gamma':0.9, 'eps':0.1, 'v':0.35, 'disj':True}
+#kw = {'L':100, 'd':10, 'b':0, 'K':10, 'gamma':0.95, 'eps':0.1, 'v':0.35, 'disj':False}
+#flowtest_monkey(500, **kw)
 
-#kw = {'L':100, 'portion':0.2, 'd':5, 'K':4, 'h':60, 'gamma':0.95, 'disj':True}
-#flowtest_movielens(T=1000, kw=kw)
+kw = {'n_movies':20, 'train_portion':0.7, 'd':3, 'K':4, 'n_users':1500, 'gamma':1.00, 'disj':True}
+flowtest_movielens(1500, **kw)
 
-kw = {'isp':6461, 'd':5, 'h':0.35, 'tlc':0.8, 'gamma':0.90, 'disj':False}
-flowtest_isp(T=1500, kw=kw)
-plt.show()
+#kw = {'isp':6461, 'd':5, 'v':0.35, 'k':10, 'gamma':0.90}
+#flowtest_isp(1000, **kw)
+
+#kw = {'isp':6461, 'd':5, 'v':0.35, 'k':10, 'gamma':0.90}
+#flowtest_gisp(1000, **kw)
+
+#plt.show()
 logfile.close()

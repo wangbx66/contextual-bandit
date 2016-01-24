@@ -1,6 +1,6 @@
-import csv
 from itertools import chain
-
+import csv
+import random
 import logging
 logger = logging.getLogger('Movielens')
 
@@ -8,7 +8,9 @@ import numpy as np
 from scipy import sparse
 from scipy.sparse.linalg import svds
 
-from utils import ucb_settings
+from utils import uni
+from utils import argmax_oracle
+from utils import serialize
 
 def overlap(l1, l2):
     return len(set(l1) & l2)
@@ -22,41 +24,88 @@ def movielens_data():
     gt.__next__()
     return chain(gr, gt)
 
-def contextual_movielens_rng(L=None, portion=0.5, d=15, K=6, h=None, gamma=0.95, disj=False):
-    cox = []
-    coy = []
-    history = {}
-    movies = {}
-    for idx, (user, movie, rate, timestamp) in enumerate(movielens_data()):
-        user = int(user) - 1
-        movie = int(movie) - 1
-        if movie in movies:
-            movies[movie] += 1
-        else:
-            movies[movie] = 1
-        if np.random.uniform(0,1) > portion:
-            cox.append(user)
-            coy.append(movie)
-        else:
-            if user in history:
-                history[user].append(movie)
-            else:
-                history[user] = [movie]
-    A = sparse.coo_matrix((np.ones(len(cox)), (cox, coy)), shape=(max(list(history) + cox) + 1, max(list(movies) + coy) + 1), dtype=np.float32)
-    U, S, VT = svds(A, d)
-    for i in range(U.shape[0]):
-        U[i] = U[i] / np.linalg.norm(U[i])
-    V = VT.T
-    for i in range(V.shape[0]):
-        V[i] = V[i] / np.linalg.norm(V[i])
+class c3_movielens_rng:
 
-    if L is None:
-        L = len(movies)
-    if h is None:
-        h = len(history)
-    selected_movies = set([x[1] for x in sorted([(movies[movie], movie) for movie in movies])[-L:]])
-    eligable_users = [x[1] for x in sorted([(overlap(history[user], selected_movies), user) for user in history])[-h:]]
-    logger.info('Initializing random settings "Contextual Movielens" complete')
-    s = ucb_settings(L=L, d=d, K=K, gamma=gamma, disj=disj, users=eligable_users, arms=selected_movies, ctrh=history, U=U, V=V, A=A.astype(np.int32))
-    logger.info(s)
-    return s
+    # c3synthetic_movielens_rng(n_movies=None, train_portion=0.5, d=15, K=6, n_users=None, gamma=0.95, disj=False)
+
+    def __init__(self, **kwarg):
+        logger.info('Initializing random settings "Contextual Movielens"')
+        self.__dict__.update(kwarg)
+        self.name = 'c3-movielens'
+        self.oracle = argmax_oracle
+        self.theta = None
+        self.regret_avl = False
+        self.load()
+        logger.info(self)
+
+    def __str__(self):
+        return serialize(self, 'arms', 'x', 'ctrh', 'A', 'U', 'S',  'V', 'VT', 'users')
+
+    def slot(self):
+        self.user = random.sample(self.users, 1)[0]
+        exc = self.A.getrow(self.user)
+        return {arm: np.outer(self.U[self.user], self.V[arm]).flatten() for arm in self.arms if exc[0, arm] == 0} if len([arm for arm in self.arms if exc[0, arm] == 0]) < self.K + 2 else self.slot()
+
+    def realize(self, action):
+        return [arm in self.ctrh[self.user] for arm in action]
+    
+    def regret(self, action):
+        return 0
+    
+    def params(self, descend):
+        return (self.K, descend)
+    
+    def load(self):
+        cox = []
+        coy = []
+        self.ctrh = {}
+        movies = {}
+        for user, movie, rate, timestamp in movielens_data():
+            user = int(user) - 1
+            movie = int(movie) - 1
+            if movie in movies:
+                movies[movie] += 1
+            else:
+                movies[movie] = 1
+            if np.random.uniform(0,1) < self.train_portion:
+                cox.append(user)
+                coy.append(movie)
+            else:
+                if user in self.ctrh:
+                    self.ctrh[user].append(movie)
+                else:
+                    self.ctrh[user] = [movie]
+        self.A = sparse.coo_matrix((np.ones(len(cox)), (cox, coy)), shape=(max(list(self.ctrh) + cox) + 1, max(list(movies) + coy) + 1), dtype=np.float32)
+        self.U, self.S, self.VT = svds(self.A, self.d)
+        self.A = self.A.astype(np.int32)
+        for i in range(self.U.shape[0]):
+            self.U[i] = uni(self.U[i])
+        self.V = self.VT.T
+        for i in range(self.V.shape[0]):
+            self.V[i] = uni(self.V[i])
+        if self.n_movies is None:
+            self.L = len(movies)
+        else:
+            self.L = self.n_movies
+        if self.n_users is None:
+            self.n_users = len(self.ctrh)
+        self.arms = set([x[1] for x in sorted([(movies[movie], movie) for movie in movies])[-self.L:]])
+        self.users = [x[1] for x in sorted([(overlap(self.ctrh[user], self.arms), user) for user in self.ctrh])[-self.n_users:]]
+        self.d = self.d ** 2
+
+class c3_Lmvielens_rng(c3_movielens_rng):
+    def __init__(self, **kwarg):
+        logger.info('Initializing random settings "Contextual L-Movielens"')
+        self.__dict__.update(kwarg)
+        self.name = 'c3-L-movielens'
+        self.oracle = argmax_oracle
+        self.theta = None
+        self.regret_avl = False
+        self.load()
+        self.d = kwarg['d']
+        logger.info(self)
+    
+    def slot(self):
+        self.user = random.sample(self.users, 1)[0]
+        exc = self.A.getrow(self.user)
+        return {arm: self.V[arm].flatten() for arm in self.arms if exc[0, arm] == 0} if len([arm for arm in self.arms if exc[0, arm] == 0]) < self.K + 2 else self.slot()

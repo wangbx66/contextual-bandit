@@ -1,4 +1,6 @@
+from functools import reduce
 import random
+import heapq
 
 from scipy.linalg import sqrtm
 import numpy as np
@@ -8,7 +10,7 @@ colorama.init()
 def red(s):
     return colorama.Fore.RED + s.__str__() + colorama.Fore.WHITE
 
-def pendium():
+def pendulum():
     return np.random.uniform(-1, 1)
 
 def uni(x):
@@ -43,6 +45,9 @@ def disturb(x, h):
     y = x + h * np.random.normal(0, 1, x.shape)
     return uni(y)
 
+def argmax_oracle(U, K, descend):
+    return [p[1] for p in heapq.nlargest(K, [(U[arm], arm) for arm in U])][::2*descend-1]
+
 def reward(ctr, gamma, disj):
     conj = not disj
     for c, click in enumerate(ctr):
@@ -50,12 +55,22 @@ def reward(ctr, gamma, disj):
             return int(conj) + gamma ** c * (int(disj) - int(conj)), c
     return int(conj), len(ctr)
 
+def ereward(psarms, gamma, disj):
+    if disj:
+        return sum([gamma**i * reduce(float.__mul__, [1.,] + [1 - p for p in psarms][:i]) * psarms[i] for i in range(len(psarms))])
+    else:
+        return sum([(1 - gamma**i) * reduce(float.__mul__, [1.,] + psarms[:i]) * (1 - psarms[i]) for i in range(len(psarms))]) + reduce(float.__mul__, psarms)
+
+def serialize(s, *blst):
+    blst_local = blst + ('oracle', 'slot', 'realize', 'regret', 'params')
+    return '\n    '.join([' '.join([str(k), str(v)]) for k, v in s.__dict__.items() if not k in blst_local])
+
 class ucb_settings:
     def __init__(self, **s):
         self.__dict__ = s
 
     def __str__(self):
-        return '\n    '.join([str(k) + ' ' + str(v) for k, v in self.__dict__.items() if not k in ['arms', 'ctrh', 'users', 'U', 'V', 'x', 'A', 'G', 'oracle', 'theta']])
+        return '\n    '.join([str(k) + ' ' + str(v) for k, v in self.__dict__.items() if len(str(v)) < 15])
 
 if __name__ == '__main__':
     theta, Q, lamb, V = squni(5)
