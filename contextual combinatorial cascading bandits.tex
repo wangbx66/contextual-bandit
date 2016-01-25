@@ -170,35 +170,58 @@
 ]
 	
 \begin{abstract} 
-We propose the {\it contextual combinatorial cascading bandits}, an online partial monitoring game where at each time a learning agent is given a set of context information, then recommends a list of items, and next observes weights from the first item and stops at problem-specific criterion. In recommendation, the stopping criterion might be the first item a user selects. In network, the stopping criterion might be the first edge being blocked in a path. We also considers position discounts in the list order, which means in recommendation the agent will receive discounted reward if the user does not select the first item. We propose a UCB-like algorithm to solve our problem, C$^3$-UCB, and prove a $n$-step regret bound in both the general setting and two special cases. Our work generalizes existing works and also addresses several challenges in our setting, a non-linear reward function with position discount, context information and partial observability. We experiment on both synthetic data and real data and show that our algorithm performs well.
+We propose the {\it contextual combinatorial cascading bandits}, an online partial monitoring game where at each time a learning agent is given a set of context information, then recommends a list of items, and next observes weights from the first item and stops at problem-specific criterion. In recommendation, the stopping criterion might be the first item a user selects. In network, the stopping criterion might be the first edge being blocked in a path. We also consider position discounts in the list order, which means in recommendation the agent will receive discounted reward if the user does not select the first item. We propose a UCB-like algorithm to solve our problem, C$^3$-UCB, and prove a $n$-step regret bound in both the general setting and two special cases. Our work generalizes existing works and also addresses several challenges in our setting, a non-linear reward function with position discount, contextual information and partial observability. We experiment on both synthetic data and real data and show that our algorithm performs well.
 \end{abstract} 
 	
 \section{Introduction}
 
-A stochastic combinatorial bandit \cite{gai2012combinatorial,chen2013combinatorial} is an online learning problem, where on each round a learning agent chooses a subset of ground items under combinatorial constraints and receives the according reward. When each item is represented by a feature vector that can be observed by the learning agent, the problem is known as contextual combinatorial bandit, which is developed in recommender systems and studied in \cite{qin2014contextual}.
+A stochastic combinatorial bandit \cite{gai2012combinatorial,chen2013combinatorial} is an online learning problem, where on each round a learning agent chooses a subset of ground items under combinatorial constraints and receives the corresponding reward. When each item is represented by a feature vector that can be observed by the learning agent, the problem is known as contextual combinatorial bandit, which is developed in recommender systems and studied in \cite{qin2014contextual}.
 
-Now personalized recommendation is a basic feature of websites to improve user satisfaction by providing attractive content to meet specific user's need. Personalization includes storing user features and historical information, managing content set, analysis of user behaviors and providing suitable content to the user. Usually, both users and content are represented by feature vectors. User features may contain basic attributes, like age, gender and nationality, and historical behaviors. Content features may contain categories and descriptive information. Because the views of different users on the same content can vary significantly, exploration and exploitation have to be exercised at an individual level and be able to cross different contents.
+Now personalized recommendation is a basic feature of websites to improve user satisfaction by providing attractive contents to meet specific user's need. Personalization includes storing user features and historical information, managing content set, analysis of user behaviors and providing suitable content to the user. Usually, both users and contents are represented by feature vectors. User features may contain basic attributes, like age, gender and nationality, and historical behaviors. Content features may contain categories and descriptive information. Because the views of different users on the same content can vary significantly, exploration and exploitation have to be exercised at an individual level and be able to cross different contents.
 
-In real applications, the cascade model is popular to describe user behaviors in recommender systems. When recommended with a list of items, such as web pages or advertisements, the user checks from the first item to the last and selects the first attractive item. The items before the selected one are not attractive and the items after the selected one are unobserved. Also in networking routing problem, to determine whether a path is blocked, we check from the source to the end and can stop when meeting a blocked edge without need of knowing states of every edge in the path. In both of the two applications, we the feedback of items before some threshold, which is that user selects one item in recommender system and meeting a blocked edge in network routing. We call this kind of feedback as {\it cascading feedback}. 
+In real applications, the cascade model is popular to describe user behaviors in recommender systems. When recommended with a list of items, such as web pages or advertisements, the user checks from the first item until she finds an attractive item and selects it. The items before the selected one are not attractive and the items after the selected one are unobserved. Also in networking routing problem, to determine whether a path is blocked, we check from the source node until we meet a blocked edge, where we don't have to know the states of all edges in the path. In both of the two applications, we observe the feedback of items before some threshold, which is user selecting one item in recommender system and meeting a blocked edge in network routing. We call this kind of feedback as {\it cascading feedback}. 
 
-Usually in recommendations, different positions have different values. It is natural to introduce position discounts.
+Besides, in recommendations, different positions always have different values. In advertisement display, there are different positions in a website, the front middle, the left/right column, and the bottom and the positions in the front middle might charge highest price. Also in search, the first position in the first page for results might be the most important. So it is natural to introduce position discounts.
 
 Motivated by the above challenges, we develop an approach called {\it contextual combinatorial cascading bandits}. This is a general framework which can describe many applications besides the above two applications.
 
 The main contributions of this paper can be listed as follows: (1) We propose a general framework called contextual combinatorial cascading bandit that can address recommendation problem and network routing problem; (2) We propose $C^3$-UCB, an efficient algorithm for contextual combinatorial cascading bandit, with regret bound as $\tilde{O}(\sqrt{n})$ for $n$ rounds; (3) We evaluate this algorithm on synthetic data, recommendation data and network routing data and the results show that our algorithm is effective.
 
+\begin{table}
+	\renewcommand{\arraystretch}{1.1}
+	\centering
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		 &context &triggering &position discounts \\
+		\hline
+		CMAB &no &yes &no \\
+		\hline
+		CombCascade	&no &yes &no  \\
+		\hline
+		C$^2$UCB &yes &no &no  \\
+		\hline
+		C$^3$-UCB(our) &yes &yes &yes \\
+		\hline
+	\end{tabular}
+	\caption{Comparisons of our setting with previous ones }
+	\label{table:outline}
+\end{table} 
+
 %Stochastic online learning with combinatorial actions has been studied with semi-bandit feedback \cite{chen2013combinatorial}.
 
 \section{Related Work}
 
-Our work generalizes combinatorial cascading bandits of \cite{kveton2015combinatorial} to involve contextual information and position discount. Our generalization expands the applicability of this model and we evaluate it on two real-world problems. \cite{kveton2015cascading} introduced the cascading model to the multi-armed bandit framework and the feasible set is a uniform matroid. They found that recommending items in increasing order of their UCBs has a better performance than in decreasing order of their UCBs; the reason might be that the items with lower preference come first, so the learning agent will collect more data. However, this might have problem in real applications; to improve the quality of user experience, it is natural to list items with higher preference first and then lower preference items. Our work extends this part by introducing position discounted parameters. Under our setting, the items with higher UCB will come first. \cite{combes2015learning} considers a similar recommendation model to cascading bandits with position discount but they assume that a user is interested in a single topic only. In our setting, users and items are represented by feature vectors which is more general.
+A simplified comparison is listed in Table \ref{table:outline}. We will explain in details.
 
-Our work considers contextual combinatorial bandits with cascading feedback and nonlinear reward. \cite{li2010contextual} studied multi-armed bandit with context information. \cite{qin2014contextual} introduced contextual combinatorial bandit with semi-bandit feedback and nonlinear reward. Their setting is more informative than ours and we have generalized their model with a theoretical regret bound.
+\cite{kveton2015cascading} introduced the cascading model to the multi-armed bandit framework with disjunctive objective where the set of feasible actions form a uniform matroid and the reward of an action is $1$ if and only if there is at least an item with weight $1$. The combinatorial cascading bandits of \cite{kveton2015combinatorial} generalized the framework with a {\it CombCascade} algorithm, where each feasible action is a subset of ground items under combinatorial constraints; it studied a problem of combinatorial bandits with conjunctive objective where each feasible action is a chain of items and reward is $1$ if and only if all items have weight $1$. Our work generalizes this model to involve both contextual information and position discounts. The generalization expands the applicability of the model and we evaluate our algorithm on two real-world problems. 
+
+The experiments of \cite{kveton2015cascading} found that recommending items in increasing order of their UCBs (meaning the items with lower preference will come first) has a better performance than in decreasing order of their UCBs; the reason might be that the user first examines the items with lower preference and is likely to examine more items to find one attractive, so the learning agent will collect more data. However, this result might have problem in real applications; to improve the quality of user experience, it is natural to list items with higher preference first and then lower preference items. Our work extends this part by introducing position discounted parameters which can make the items with higher UCBs come first. They also experimented on an imperfect model, DBN, which does not fit their model. Our generalized setting can contain such models. \cite{combes2015learning} considers a similar recommendation model to cascading bandits with position discount but they assume that a user is interested in a single topic only. In our setting, users and items are represented by general feature vectors.
+
+Our work considers contextual combinatorial bandits with cascading feedback and nonlinear reward. \cite{li2010contextual} studied multi-armed bandit with context information. They introduced contextual combinatorial bandit with semi-bandit feedback and nonlinear reward. Their setting is more informative than ours and we have generalized their model with a theoretical regret bound.
 
 Our problem is a combinatorial partial monitoring problem where the learning agent may observe part of chosen items. \cite{agrawal1989asymptotically,bartok2012adaptive} studied partial monitoring problems but their algorithm is inefficient in our setting. \cite{lin2014combinatorial} studied combinatorial partial monitoring problem and their feedback is a fixed (with respect to chosen action) combination of weights. If chosen action is fixed, the combination of the weights to constitute feedback is not fixed in our setting.
 
-A newer version of \cite{chen2013combinatorial} considers probabilistic triggering base arms in stochastic combinatorial semi-bandit. When a super arm $S$ is pulled, base arm $i$ might also be triggered with a probability $p_i^{S}$. Our setting is more specific than theirs. The base arms in a super arm are triggered in list order; only the previous ones are triggered, the base arm can have the chance to be triggered.
-Also, they don't consider the contextual information and position discounts.
+A newer version of \cite{chen2013combinatorial} considers probabilistic triggering base arms in stochastic combinatorial semi-bandit. When a super arm $S$ is pulled, base arm $i$ might also be triggered with a probability $p_i^{S}$. Our method can generalize their setting with contextual information. It is hard to introduce position discounts for general combinatorial bandits except when feasible actions are lists, where items are triggered in list order. To introduce position discounts, we focus on the setting where feasible actions are lists.
 
 % and / or case	
 % \section{Problem Formulation}
@@ -307,25 +330,26 @@ Also, they don't consider the contextual information and position discounts.
 
 \section{Problem Formulation}
 
-We formulate the problem of {\em contextual combinatorial cascading bandit} as follows. Suppose we have a finite set  $E=\{1,...,L\}$ of $L$ \textit{ground items}, also referred to as {\em base arms}. Let $\Pi^k=\{(a_1,...,a_k): a_1,...,a_k \in E, a_i \neq a_j \text{ for any } i \neq j\}$ be the set of all $k$-tuples of distinct items from $E$; we call each of such tuples an {\em action} of length $k$. We will use $|A|$ to denote the length of an action $A$. Let $\Pi^{\leq K}= \cup_{k=1}^K \Pi^{k}$ denote the set of all actions with length at most $K$, and let $\cS \subseteq \Pi^{\leq K}$ be the set of \textit{feasible actions} with length at most $K$. 
+We formulate the problem of {\em contextual combinatorial cascading bandits} as follows. Suppose we have a finite set $E=\{1,...,L\}$ of $L$ \textit{ground items}, also referred to as {\em base arms}. Let $\Pi^k=\{(a_1,...,a_k): a_1,...,a_k \in E, a_i \neq a_j \text{ for any } i \neq j\}$ be the set of all $k$-tuples of distinct items from $E$; we call each of such tuples an {\em action} of length $k$. We will use $|A|$ to denote the length of an action $A$. Let $\Pi^{\leq K}= \cup_{k=1}^K \Pi^{k}$ denote the set of all actions with length at most $K$, and let $\cS \subseteq \Pi^{\leq K}$ be the set of \textit{feasible actions} with length at most $K$.
 
 As a convention, we always use boldface symbols to represent random variables.
 
-At time $t$, feature vectors $x_{t,a} \in \RR^{d \times 1}$ with $\norm{x_{t,a}}_2 \leq 1$ for every base arm $a \in E$ are revealed to the learning agent; the feature vectors combine both the information of the user and the corresponding base arm. For example, suppose the user at time $t$ is represented by the feature vector $u_t$ and the feature vector of the base arm $a$ is $v_a$, then we can let $x_{t,a}$ be the combined feature vector of base arm $a$ at time $t$. Then the learning agent recommends a feasible action $\bA_t=\{ \ba_{1}^t,...,\ba_{\abs{\bA_t}}^t \} \in \cS$ to the user. Next according to the user behavior and the stopping criterion, we observe the weights of fist $\bO_t$ base arms in $\bA_t$, which are $\bw_t(\ba_k^t), k \leq \bO_t$. For example in recommender systems, the stopping criterion might be the user finds the first interesting item or has checked all items.
+At time $t$, feature vectors $x_{t,a} \in \RR^{d \times 1}$ with $\norm{x_{t,a}}_2 \leq 1$ for every base arm $a \in E$ are revealed to the learning agent; the feature vectors combine both the information of the user and the corresponding base arm. For example, suppose the user at time $t$ is represented by the feature vector $u_t$ and the feature vector of the base arm $a$ is $v_a$, then we can let $x_{t,a} = (u_t, v_a)$ be the combined feature vector of base arm $a$ at time $t$. Then the learning agent recommends a feasible action $\bA_t=\{ \ba_{1}^t,...,\ba_{\abs{\bA_t}}^t \} \in \cS$ to the user. Next according to the user behaviors under the stopping criterion, we observe the weights of fist $\bO_t$ base arms in $\bA_t$, which are $\bw_t(\ba_k^t), k \leq \bO_t$. For example in recommender systems, the stopping criterion might be that the user has found an attractive item or has checked all items.
 
-Let $\cH_t$ denote the history before the learning agent chooses action at time $t$. Thus $\cH_t$ contains all information as well as observations at time $s < t$ and context information at time $t$. Given history $\cH_t$, we assume $\bw_{t,a}$'s are mutually independent and satisfy
+Let $\cH_t$ denote the history before the learning agent chooses action at time $t$. Thus $\cH_t$ contains all information including observations at time $s < t$ and context information at time $t$. Given history $\cH_t$, we assume $\bw_{t,a}$'s are mutually independent random variables with sub-Gaussian tails and satisfy
 \begin{equation} % eq:expectation
   \label{eq:expectation}
   \EE[\bw_{t,a} | \cH_t] = \theta_{\ast}^{\top} x_{t,a},
 \end{equation}
-where $\theta_{\ast}$ is an unknown $d$-dimensional vector with the assumption that $\norm{\theta_{\ast}}_2 \leq 1$ and $0 \leq \theta_{\ast}^{\top} x_{t,a} \leq 1$ for all $t, a$. Define $w_{t,a} = \theta_{\ast}^{\top} x_{t,a}$ as the expected weight of base arm $a$ at time $t$. Following standard assumptions of stochastic MABs, we assume that all reward distributions have R-sub-Gaussian tails for some known constant $R > 0$; formally, for all $\lambda \in \RR$, one has 
+where $\theta_{\ast}$ is an unknown $d$-dimensional vector with the assumption that $\norm{\theta_{\ast}}_2 \leq 1$ and $0 \leq \theta_{\ast}^{\top} x_{t,a} \leq 1$ for all $t, a$. Following standard assumptions of stochastic MABs, a reward distribution has R-sub-Gaussian tail if for some known constant $R > 0$ and all $\lambda \in \RR$, one has 
 $$
-\EE[\exp(\lambda(\bw_{t,a} - \theta_{\ast}^{\top} x_{t,a})) | \cH_t] \leq \exp(\lambda^2 R^2)/2.
+\EE[\exp(\lambda(\bw_{t,a} - \theta_{\ast}^{\top} x_{t,a})) | \cH_t] \leq \exp(\lambda^2 R^2 / 2).
 $$
+Define $w_{t,a} = \theta_{\ast}^{\top} x_{t,a}$ as the expected weight of base arm $a$ at time $t$. 
 
 We define random variable $\bO_t$ as the number of observed base arms in $\bA_t$. At the end of every time $t$, the agent observes the first $\bO_t$ items of $\bA_t$. We say that item $a$ is {\it observed} if $a = \ba_k^t$ for some $k \leq \bO_t$. Thus, $\cH_t$ consists of $\{x_s, \bA_s = (\ba_{1}^s,...,\ba_{\abs{\bA_s}}^s), \bO_s, \bw_s(\ba_k^s) \}_{k\leq \bO_s, s\leq t}$ and $\{x_t\}$, where $x_s = (x_{s,a})_{a \in E}$ denotes all context information at time $s$.
 
-We also consider the position discount $\gamma_k, k\leq K$. For example in recommender systems, the positions to display advertisements might have difference prices, hence of different values when user clicks on.
+We introduce position discounts $\gamma_k \in [0,1], k\leq K$. For example in website recommendations, if the user selects the first website, the learning agent will receive reward $1$; and if the user selects the $k$-th website, the learning agent will receive reward $\gamma_k$.
 
 The reward function on round $t$ is an application dependent function. We assume the expected reward function of action $A$ is a function of expected weights $w$, denoted by $f(A,w)$, and satisfies the following two assumptions.
 
@@ -339,17 +363,47 @@ $$
 $$
 where $A = (a_1, \ldots, a_{|A|})$.
 
+The assumption of Lipschitz continuity gives an estimate of changes in reward function. To obtain a good estimation of reward function, the position $k$ with large discount number $\gamma_k$ need a good estimation of $w(a_k)$. This means the positions with large discount numbers are more important to the reward function, or the reward function is more sensitive to these positions. For example in website recommendations, the learning agent will receive highest reward if the user selects the first item, so the first position is most important. 
+
 Notice that we don't require the knowledge how $f(A, w)$ is defined. We only assume the agent has access to an oracle $\cO_{\cS}(w)$. More precisely, an oracle $\cO_{\cS}(w)$ is  called an $\alpha$-approximation oracle for some $\alpha \leq 1$, if given input $w$, the oracle always returns an action $A = \cO_{\cS}(w) \in \cS$ satisfying $f(A,w) \geq \alpha f(A^*,w)$ where $A^* = \argmax_{A\in\cS} f(A, w)$.
 
-The $\alpha$-regret on time $t$ can be written as
+The $\alpha$-regret of action $A$ on time $t$ can be written as
 $$
-R_t = \alpha f(A_t^*, w_t) - f(A_t, w_t),
+R(t, A) = \alpha f_t^{\ast} - f(A, w_t),
 $$
-where $A_t^* = \argmax_{A\in\cS} f(A, w_t)$. Our goal is to minimize the cumulative regret $R(n) = \sum_{t=1}^n R_t$.
+where $f_t^{\ast} = f(A_t^*, w_t)$ and $A_t^* = \argmax_{A\in\cS} f(A, w_t)$. Our goal is to minimize the cumulative regret $R(n) = \sum_{t=1}^n R(t, \bA_t)$.
 
 \section{Algorithms and Results}
 
 \subsection{Algorithm}
+
+\begin{algorithm} %C^3-UCB algorithm
+	\caption{C$^3$-UCB}
+	\label{alg:ConComCascade}
+	\begin{algorithmic}[1]
+		\STATE {Parameters:}
+		\STATE {\qquad $\gamma_k\in[0,1], k \leq K; \delta > 0; \lambda \geq C_\gamma = \sum_{k=1}^{K} \gamma_k^2$}
+		\STATE {Initialization:}
+		\STATE {\qquad $\hat{\theta}_0 = 0, \bbeta_0(\delta) = 1, \bV_0 = \lambda I, \bX_0=\emptyset, \bY_0=\emptyset$}
+		
+		\FORALL {$t=1,2,\ldots$}
+		\STATE {Obtain context $x_{t,a}$ for all $a\in E$}
+		\STATE {$\forall a\in E$, compute}
+		\STATE {~~ $\bU_t(a) = \min\{\hat{\theta}_{t-1}^{\top}x_{t,a} + \bbeta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}, 1\}$} 
+		
+		\STATE {//Choose action $\bA_t$ using UCBs $\bU_t$}
+		\STATE { $\bA_t=(\ba_1^t,...,\ba_{\abs{\bA_t}}^t) \leftarrow \cO_{\cS}(\bU_t)$ } 
+		\STATE {Play $\bA_t$ and observe $\bO_t, \bw_t(\ba_k^t), k\in[\bO_t]$}
+		
+		\STATE {//Update statistics}
+		\STATE {$\bV_{t} \leftarrow \bV_{t-1} + \sum_{k=1}^{\bO_t} \gamma_k^2 x_{t, \ba_k^t}x_{t, \ba_k^t}^{\top}$}
+		\STATE {$\bX_t \leftarrow [\bX_{t-1}; ~\gamma_1 x_{t, \ba_1^t}^{\top};  ~\ldots; ~\gamma_{\bO_t} x_{t, \ba_{\bO_t}^t}^{\top}]$}
+		\STATE {$\bY_t \leftarrow [\bY_{t-1}; ~\gamma_1 \bw(\ba_1^t); ~\ldots; ~\gamma_{\bO_t} \bw_t(\ba_{\bO_t}^t)]$}
+		\STATE {$\hat{\theta}_t \leftarrow (\bX_t^\top \bX_t + \lambda I)^{-1} \bX_{t}^\top \bY_t$}
+		\STATE {$\bbeta_{t}(\delta) \leftarrow R \sqrt{\ln(\det(\bV_{t})/(\lambda^d \delta^2))} + \sqrt{\lambda}$ }
+		\ENDFOR {~~$t$}
+	\end{algorithmic}
+\end{algorithm}
 
 At time $t$, we denote $\EE_t[\cdot] = \EE[\cdot | \cH_t]$, where $\cH_t$ is the history a time $t$ before the learning agent chooses her action. By Equation \eqref{eq:expectation}, we have 
 $$
@@ -413,35 +467,6 @@ The fact that $\bU_t(a)$ is an upper confidence bound of expected weight $w_{t, 
 
 Our proposed algorithm, C$^3$-UCB, is described in Algorithm \ref{alg:ConComCascade}. First, the learning agent computes the upper confidence bounds (UCBs) $\bU_t \in [0,1]^{E}$ for the expected weights of all base arms in $E$. Second, the agent uses the computed UCBs, $\bU_t$, to select an action $\bA_t = \{\ba_{1}^t,..., \ba_{\abs{\bA_t}}^t \}$. Third, the user checks from the first base arm in $\bA_t$ and stops after checking the $\bO_t$-th base arm and the agents observes $\bw_t(\ba_k^t), k\leq \bO_t$. Then, the learning agent updates $\bV_t, \bX_t, \bY_t$ in order to get a newer estimate $\hat{\theta}_t$ of $\theta_*$ and new confidence radius $\bbeta_t(\delta)$. In this part, we use the notation $[A; B]$ to denote the matrix obtained by stacking A and B vertically like $\begin{pmatrix} A\\ B\end{pmatrix}$.
 
-\begin{algorithm} %C^3-UCB algorithm
-  \caption{C$^3$-UCB}
-  \label{alg:ConComCascade}
-  \begin{algorithmic}[1]
-  	\STATE {Parameters:}
-  	\STATE {\qquad $\gamma_k\in[0,1], k \leq K; \delta > 0; \lambda \geq C_\gamma = \sum_{k=1}^{K} \gamma_k^2$}
-  	\STATE {Initialization:}
-    \STATE {\qquad $\hat{\theta}_0 = 0, \bbeta_0(\delta) = 1, \bV_0 = \lambda I, \bX_0=\emptyset, \bY_0=\emptyset$}
-
-    \FORALL {$t=1,2,\ldots$}
-      \STATE {Obtain context $x_{t,a}$ for all $a\in E$}
-      \STATE {$\forall a\in E$, compute}
-      \STATE {~~ $\bU_t(a) = \min\{\hat{\theta}_{t-1}^{\top}x_{t,a} + \bbeta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}, 1\}$} 
-      
-      \STATE {//Choose action $\bA_t$ using UCBs $\bU_t$}
-      \STATE { $\bA_t=(\ba_1^t,...,\ba_{\abs{\bA_t}}^t) \leftarrow \cO_{\cS}(\bU_t)$ } 
-      \STATE {Play $\bA_t$ and observe $\bO_t； \bw_t(\ba_k^t), k\in[\bO_t]$}
-      
-      \STATE {//Update statistics}
-      \STATE {$\bV_{t} \leftarrow \bV_{t-1} + \sum_{k=1}^{\bO_t} \gamma_k^2 x_{t, \ba_k^t}x_{t, \ba_k^t}^{\top}$}
-      \STATE {$\bX_t \leftarrow [\bX_{t-1}; ~\gamma_1 x_{t, \ba_1^t}^{\top};  ~\ldots; ~\gamma_{\bO_t} x_{t, \ba_{\bO_t}^t}^{\top}]$}
-      \STATE {$\bY_t \leftarrow [\bY_{t-1}; ~\gamma_1 \bw(\ba_1^t); ~\ldots; ~\gamma_{\bO_t} \bw_t(\ba_{\bO_t}^t)]$}
-      \STATE {$\hat{\theta}_t \leftarrow (\bX_t^\top \bX_t + \lambda I)^{-1} \bX_{t}^\top \bY_t$}
-      \STATE {$\bbeta_{t}(\delta) \leftarrow \sqrt{\ln(\det(\bV_{t})/(\lambda^d \delta^2))} + \sqrt{\lambda}$ }
-    \ENDFOR {~~$t$}
-  \end{algorithmic}
-\end{algorithm}
-	
-
 \subsection{Results}
 
 \subsubsection{General Results}
@@ -452,19 +477,19 @@ To state our main theorem, we need some definitions. Let $p_{t, A}$ be the {\em 
 	\label{thm:main}
 	Suppose the expected reward function $f(A, w)$ is a function of expected weights and satisfies the requirements of monotonicity and Lipschitz continuity. Assume there is an $\alpha$-approximation oracle $\cO_{\cS}$. Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regret of our algorithm, C$^3$-UCB, satisfies
 	\begin{align}
-		R(n) &\le \frac{\sqrt{2}}{p^*} \sqrt{TKd\ln(1 + C_\gamma n/(\lambda d))}  \nonumber \\
+		R(n) &\le \frac{\sqrt{2}}{p^*} \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))}  \nonumber \\
 		&\qquad \cdot \left(R\sqrt{d\ln \left( \frac{1 + C_\gamma n/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda}\right) \nonumber \\
 		&=O\left(\frac{d}{p^*} \sqrt{nK} \ln \left(\frac{C_\gamma n}{\delta^{2/d}}\right) \right).
 	\end{align}
 \end{theorem}
 \begin{proof} [of Theorem \ref{thm:main}] %proof outline of main theorem
-	The complete proof is in the Appendix. The main idea is to reduce the regret at time $t$, $R(t, \bA_t)$, to the case that all items in $\bA_t$ have been observed. This reduction is challenging for two reasons. First, our setting has contextual information. Second, we consider position-discounted weight $\gamma$. 
+	The complete proof is in the Appendix. The main idea is to reduce the regret at time $t$, $R(t, \bA_t)$, to the case that all items in $\bA_t$ have been observed. This reduction is challenging for two reasons. First, our setting has contextual information. Second, we consider position discounts $\gamma_k, k \leq K$. 
 	
-	In particular, by monotonicity and Lipschitz continuity, we have
+	Assume $\bA_t = (\ba_1^t, \ldots, \ba_{|\bA_t|}^t)$. Then by monotonicity and Lipschitz continuity, we have
 	$$
-		R(t, \bA_t) \leq B \sum_{k=1}^{\bO_t} \bbeta_{t-1}(\delta) \gamma_k \| x_{t, \ba_k^t} \|_{\bV_{t-1}}.
+		R(t, \bA_t) \leq B \sum_{k=1}^{|\bA_t|} \bbeta_{t-1}(\delta) \gamma_k \| x_{t, \ba_k^t} \|_{\bV_{t-1}}.
 	$$
-	However, it is hard to estimate an upper bound for $\sum_{t=1}^T \sum_{k=1}^{\abs{\bA_t}} \norm{ x_{t, \ba_k^t} }_{ \bV_{t-1}^{-1} }$ because $\bV_t$ only contains observed base arms. Thus we need the following deduction.
+	However, it is hard to estimate an upper bound for $\sum_{t=1}^T \sum_{k=1}^{\abs{\bA_t}} \norm{ x_{t, \ba_k^t} }_{ \bV_{t-1}^{-1} }$ because $\bV_t$ only contains information of observed base arms. Thus we need the following deduction.
 	\begin{align*}
     	&\EE[R(t, \bA_t)|\cH_t] \\
     	&\qquad = \EE \left[ \left. R(t, \bA_t) \EE \left[ \left. \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t = \abs{\bA_t}\} \right| \bA_t \right]  \right| \cH_t \right]\\
@@ -485,7 +510,7 @@ To state our main theorem, we need some definitions. Let $p_{t, A}$ be the {\em 
 
 \subsubsection{Disjunctive Objective}
 
-In the problem of cascading recommendation, when recommended with a list of items $\bA_t = (\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t)$, the user checks from the first item $\ba_{1}^t$ and then one by one in order. The checking process stops if the user selects one item or has checked all items without selecting anyone. In this case, the weight of base arm $a$ at time $t$, $\bw_{t,a}$, is binary to indicate whether the user has clicked on $a$ or not. Then the random variable $\bO_t$ satisfies
+In the problem of cascading recommendation, when recommended with a list of items $\bA_t = (\ba_{1}^t,...,\ba_{\abs{\bA_t}}^t)$, the user checks from the first item $\ba_{1}^t$ and then one by one in order. The checking process stops if the user selects one item or has checked all items without selecting anyone. In this case, the weight of base arm $a$ at time $t$, $\bw_{t,a} \in \{ 0, 1 \}$, is binary to indicate whether the user has clicked on $a$ or not. Then the random variable $\bO_t$ satisfies
 $$
 \bO_t = k, \text{ if } \bw_t(\ba_j^t)=0, \forall\, j < k \text{ and } \bw_t(\ba_k^t) = 1,
 $$
@@ -512,7 +537,7 @@ Now let us introduce a function $f$ on $A = (a_1,...,a_{\abs{A}}) \in \cS, w = (
 Then we have $\br_t = f(\bA_t, \bw_t)$ and $\EE[\br_t] = f(\bA_t, \theta_{\ast}^{\top}x_t) = f(\bA_t, w_t)$. So $f$ is the expected reward function and also a function of expected weights. It can be proved that $f$ satisfies the properties of monotonicity and Lipschitz continuity. (We leave all verifications in the appendix.) Then we have the following corollary.
 \begin{corollary}
 	\label{cor:or}
-	In the problem of cascading recommendation, the expected reward function is $f(A, w) = f(A,w) = \sum_{k = 1}^{\abs{A}} \gamma_{k} \prod_{i=1}^{k-1} (1 - w(a_i)) w(a_k)$ where $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_K \geq 0$. Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regret of our algorithm, C$^3$-UCB, satisfies
+	In the problem of cascading recommendation, the expected reward function is defined in Eq.~\eqref{eq:OrRewardFunc}, where $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_K \geq 0$. Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regret of our algorithm, C$^3$-UCB, satisfies
 	\begin{align}
 		R(n) &\le \frac{\sqrt{2}}{p^*} \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))}  \nonumber \\
 		&\qquad \cdot \left(\sqrt{d\ln \left( \frac{1 + C_\gamma n/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda}\right) \nonumber \\
@@ -521,12 +546,13 @@ Then we have $\br_t = f(\bA_t, \bw_t)$ and $\EE[\br_t] = f(\bA_t, \theta_{\ast}^
 \end{corollary}
 
 \subsubsection{Conjunctive Objective}
+\label{sec:conj}
 
-The above formulation is on the disjunctive objective, that is, at a time step the user stops as soon as she reveals a base arm at a position $k$ in the sequence with weight $1$ and she receives reward $\gamma_k$ as the result. Similarly, we could also consider the case of conjunctive objective. In this case, we can derive a slightly better result.
+The above formulation is on the disjunctive objective, that is, at a time step the user stops as soon as she reveals a base arm at a position $k$ in the sequence with weight $1$ and the learning agent receives reward $\gamma_k$ as the result. Similarly, we could also consider the case of conjunctive objective. In this case, we can derive a slightly better result.
 
-We also use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ to indicate the weight of item $a$ at time $t$ satisfying Equation \eqref{eq:expectation}. The learning agent observes all items until the first one with weight $0$. Suppose we also consider partial reward: if the $k$-th item is the first item with weight $0$, then the learning agent receives reward $1-\gamma_k$; if all items have weight $1$, the learning agent receives reward $1$. 
+We also use Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ to indicate the weight of item $a$ at time $t$ satisfying Equation \eqref{eq:expectation}. The learning agent observes all items until the first one with weight $0$. Suppose we also consider partial rewards: if the $k$-th item is the first item with weight $0$, then the learning agent receives reward $1-\gamma_k$; if all items have weight $1$, the learning agent receives reward $1$. 
 
-The more items the learning agent reveals, the more reward the agent should receive. It is reasonable to assume that
+The more items reveals, the more reward the agent should receive. It is reasonable to assume that
 $$
 1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_K \geq 0.
 $$
@@ -557,11 +583,12 @@ In the problem of network transportations or sequential task processing, $p^*$ d
 	\begin{align}
 		R(n) \le& \frac{\sqrt{128}}{f^{\ast}} \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))} \nonumber \\
 		&\qquad \cdot \left(\sqrt{d\ln \left( \frac{1 + C_\gamma n/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda}\right) \nonumber \\
-		=&O\left(\frac{d}{f^{\ast}}\sqrt{nK} \ln \left(\frac{C_\gamma n}{\delta^{2/d}}\right) \right).
+		=&O\left(\frac{d}{f^{\ast}}\sqrt{nK} \ln \left(\frac{C_\gamma n}{\delta^{2/d}}\right) \right)
 	\end{align}
+	where $f^* = \min_{t} f_t^{\ast}$.
 \end{theorem}
 \begin{proof}
-	We will prove it in the appendix. The main idea is that we prove the expected reward function satisfies the properties of monotonicity and Lipschitz continuity first. And then use the following lemma to replace $\bA_t$ with a prefix.
+	We will prove it in the appendix. The main idea is that we prove the expected reward function satisfies the properties of monotonicity and Lipschitz continuity first. And then use the following lemma to replace $\bA_t$ with a prefix of $\bA_t$.
 	\begin{lemma}
 		\CLemmaPrefixExi
 	\end{lemma}
@@ -573,15 +600,17 @@ In the problem of network transportations or sequential task processing, $p^*$ d
 \end{proof}
 
 
-\subsection{Dissutions}
+\subsection{Discussions}
 
 In the above, we formulate the general setting of contextual combinatorial cascading bandit with position discount. This setting generalizes several existing results. 
 
-If our setting restricts to the setting of combinatorial cascading bandit \cite{kveton2015combinatorial}, our regret bound is of order $O\left(\frac{L}{f^*}\sqrt{nK}\ln(n)\right)$ which has an additional term $\sqrt{\frac{L\ln(n)}{f^*}}$ than their result; the reason is that the best regret bound for stochastic MAB is $O(\frac{\ln(n)}{\Delta})$, which has been achieved by a lot of methods, while the best regret bound for linear bandit is $O\left(\frac{\ln^2(n)}{\Delta}\right)$ by \cite{abbasi2011improved}.
+If our setting restricts to the setting of combinatorial cascading bandit \cite{kveton2015combinatorial} which coincides with our section \ref{sec:conj} without contextual information and with position discounts $\gamma_k = 1$, our regret bound is of order $O\left(\frac{L}{f^*}\sqrt{nK}\ln(n)\right)$ which has an additional term $\sqrt{\frac{L\ln(n)}{f^*}}$ than their result. The reason is that the best regret bound for stochastic MAB is $O(\frac{\ln(n)}{\Delta})$, which has been achieved by a lot of methods, while the best regret bound for linear bandits is $O\left(\frac{\ln^2(n)}{\Delta}\right)$ by \cite{abbasi2011improved} and we use the technique of linear bandits to derive a confidence ellipsoid of $\theta_{\ast}$.  
 
-If our setting restricts to contextual combinatorial bandit \cite{qin2014contextual}, the random variable $\bO_t$ of observed base arms is $|\bA_t|$, which the number of base arms in chosen action $\bA_t$, and the minimal probability $p^*$ of observing all base arms in chosen actions should always be $1$. So our regret bound is of the same order with theirs. Notice that when applying their setting, the bound $C$ for Lipschitz continuity in our problem should be $\sqrt{K}$.
+If our setting restricts to contextual combinatorial bandits \cite{qin2014contextual}, where there are no triggering and no position discounts, so every base arm in action $\bA_t$ will be observed. The random variable $\bO_t$ of observed base arms should be $|\bA_t|$. The probability of full observation of $A$, $p_{t, A}$, should be $1$, so $p^{\ast} = 1$. And the position discounts $\gamma_k$ are all $1$. Then our regret bound is of the same order with theirs. Notice that if a reward function satisfies our assumptions of monotonicity and Lipschitz continuity, then the reward function satisfies their assumptions with the bound $C$ for Lipschitz continuity be $\sqrt{K}$.
 
-Our setting generalizes several existing works but not limited to them. For example, in medical treatment, a patient will be recommended with a series of treatments. The patient has to take the treatments one by one, so the series of treatment actually is a list. Suppose the effect, after taking a treatment, is represented by a Beta random variable $\bw$ with a mean $w = \theta_*^{\top}x$, where $\theta_*$ is unknown linear coefficients and $x$ denotes the context, which might include the conditions of the patient and the properties of the treatment. We say that the treatment is successful if the effect $\bw$ is larger than a threshold $\tau$. So a treatment $a$ is successful with probability
+Our algorithm can also apply to the setting of \cite{chen2013combinatorial} with context information. However, the probability $p^{\ast}$ in our results should be the probability that all base arms in $\tilde{S}$ (in their notations) will be triggered.
+
+Our setting generalizes several existing works but not limited to them. For example, in medical treatment, a patient will be recommended with a series of treatments. The patient has to take the treatments one by one, so the series of treatment actually is a list. Suppose the effect, after taking a treatment, is represented by a Beta random variable $\bw$ with a mean $w = \theta_*^{\top}x$. $\theta_*$ is unknown linear coefficients and $x$ denotes the context, which might include the conditions of the patient and the properties of the treatment. We say that the treatment is successful if the effect $\bw$ is larger than a threshold $\tau$. So a treatment $a$ is successful with probability
 \begin{equation}
 \label{eq:betaTau}
 1 - \frac{B(\tau; \alpha, \beta_0)}{B(\alpha, \beta_0)},
@@ -592,9 +621,9 @@ f(A, w) = \prod_{k=1}^{|A|} (1 - \frac{B(\tau; \alpha_{a_k}, \beta_0)}{B(\alpha_
 $$
 where $\alpha_{a_k} = \frac{\beta_0 w_{a_k}}{1- w_{a_k}}$ and $w_a = \theta_*^{\top}x_{a}$.
 
-By the expression of $f$, it is a function of the expected reward $w$. Next, because $B(\tau; \alpha, \beta_0), B(\alpha, \beta_0)$ are decreasing with respect to $\alpha$ and $\alpha$ is in increasing with respect to $w$, then Eq.~\eqref{eq:betaTau} is increasing with respect to $w$. Therefore, the expected reward has the property of monotonicity. For the Lipschitz continuity, by the Lipschitz continuity of expected reward function, defined in Eq.~\eqref{eq:AndRewardFunc}, and the continuity of Beta function, we can get $f$ also satisfies the Lipschitz continuity.
+By the expression of $f$, it is a function of the expected reward $w$. Next, because $B(\tau; \alpha, \beta_0), B(\alpha, \beta_0)$ are decreasing with respect to $\alpha$ and $\alpha$ is in increasing with respect to $w$, then Eq.~\eqref{eq:betaTau} is increasing with respect to $w$. Therefore, the expected reward has the property of monotonicity. For the Lipschitz continuity, by the Lipschitz continuity of expected reward function with conjunctive objective, defined in Eq.~\eqref{eq:AndRewardFunc}, and the continuity of Beta function, we can get $f$ also satisfies the Lipschitz continuity.
 
-Thus this expected reward function satisfies our setting but can not be fit into previous works. Similarly, a lot of such kind of reward functions, where the real reward is obtained by a second process of observed weight.
+Thus this expected reward function satisfies our setting but can not be fit into previous works, that is, can not be represented by the reward functions with disjunctive/conjunctive objectives. Similarly, there exists a lot of such kind of reward functions, where the real reward is obtained by a second process of observed weight.
 
 % network latency
 
@@ -675,13 +704,6 @@ Thus this expected reward function satisfies our setting but can not be fit into
 %   R(T) \leq \EE[\Delta N_{A_2}] \leq \frac{c \log(T)}{p_{A_2} \Delta}.
 % $$
 
-\section{Experiments}
-
-We evaluate $C^3$-UCB in three experiments.
-
-\subsection{Synthetic}
-\label{sec:ExpSyn}
-
 % experiment - synthetic - results
 \begin{figure*}
 	\centering
@@ -697,13 +719,6 @@ We evaluate $C^3$-UCB in three experiments.
 	\label{fig:synthetic} % 用于交叉引用
 \end{figure*}
 
-In the first experiment, we compare $C^3$-UCB to CombCascade on synthetic problems. This problem is a contextual cascading bandit with $L=100$ items and $K=4$, where at each time $t$ the agent recommends $K$ items to the user. At first, we randomly choose $\theta_* \in \RR^{d-1}$ with $\|\theta_{\ast}\|_2 = 1$ and let $\theta_* = (\frac{\theta}{2}, \frac{1}{2})$. Then at each time $t$, we randomly assign $x'_{t,a} \in \RR^{d-1}$ with $\|x_{t,a}\| = 1$ to arm $a$ and use $x_{t,a} = (x'_{t,a}, 1)$ to be the context information for arm $a$. This processing will guarantee the inner product $\theta_*^{\top}x_{t,a} \in [0,1]$. Next the weight for arm $a$ at time $t$ is a random sample from Bernoulli distribution with mean $\theta_*^{\top}x_{t,a}$.
-
-We experiment on four settings and demonstrate the results in Figure \ref{fig:synthetic}. The first two are of disjunctive objective with different position discount and the last two are of conjunctive objectives. Our algorithm outperforms than {\it CombCascade} algorithm because it does not use the context information.
-
-
-\subsection{MovieLens}
-
 \begin{figure}
 	\centering
 	\subfigure[$\gamma = 1$]{
@@ -713,16 +728,6 @@ We experiment on four settings and demonstrate the results in Figure \ref{fig:sy
 	\caption{MovieLens}
 	\label{fig:movielens} % 用于交叉引用
 \end{figure}
-
-In this experiment, we evaluate $C^3$-UCB on a problem of contextual recommendations. We experiment on {\it MovieLens} dataset\cite{lam2013movie} of 2015.
-
-The Learning problem is formulated as follows. There is a big sparse matrix $A \in \{0,1\}^{N_1 \times N_2}$ where $A(i,j) = 1$ denotes user $i$ has watched movie $j$. We split $A$ to be $H + F$ by putting entry-$1$ in $A$ to $H$ and $F$ with probability $\sim \mathrm{Ber}(p)$ for some fixed $p$. We can regard $H$ as known information about history 'what users have watched' and regard $F$ as future criterion. We use $H$ to derive feature vectors of both users and movies by SVD decomposition, $H = USM^{\top}$ where $U = (u_1; ...;u_{N_1})$ and $M = (m_1;...;m_{N_2})$. At every time $t$, use $x_{t,i} = u_{i}m_j^{\top}$ as the context information of base arm $i$ and randomly choose a user $I_t$. And use $w_t(m) = F(I_t,m)$ as the weight of movie $m$ at time $t$.
-
-This problem is required to recommend fixed number of movies. Notice that it might have problem if we use $(u_{I_t}, m_j)$ as context information. Denote $\theta$ by $(\theta_u, \theta_m)$. So the expected mean of a base arm is of the form $\theta_u^{\top} u_{I_t} + \theta_m^{\top} m_j$ but the first term $\theta_u^{\top} u_{I_t}$ is fixed at time $t$ no matter what $\theta_u$ is. Therefore, to find the best super arm, it is equivalent to rank the scores $\theta_m^{\top} m_j$ for each movie $j$. So to make use of the user's context information, we need some quadratic terms of user's information $u_i$ and movie's information $m_j$. That's why we use the convolution $u_{i}m_j^{\top}$ to denote the context of movie $j$ at time $t$.
-
-We experiment with different position discount and compare our algorithm with {\it CombCascade}. We show the results in Fig.~\ref{fig:movielens}. Our algorithms outperforms theirs, which demonstrate the advantage of introducing context information in real applications.
-
-\subsection{Network Routing}
 
 \begin{figure*}
 	\centering
@@ -735,6 +740,30 @@ We experiment with different position discount and compare our algorithm with {\
 	\caption{Network with latency}
 	\label{fig:network} % 用于交叉引用
 \end{figure*}
+
+\section{Experiments}
+
+We evaluate $C^3$-UCB in three experiments.
+
+\subsection{Synthetic}
+\label{sec:ExpSyn}
+
+In the first experiment, we compare $C^3$-UCB to CombCascade on synthetic problems. This problem is a contextual cascading bandit with $L=100$ items and $K=4$, where at each time $t$ the agent recommends $K$ items to the user. At first, we randomly choose $\theta_* \in \RR^{d-1}$ with $\|\theta_{\ast}\|_2 = 1$ and let $\theta_* = (\frac{\theta}{2}, \frac{1}{2})$. Then at each time $t$, we randomly assign $x'_{t,a} \in \RR^{d-1}$ with $\|x_{t,a}\| = 1$ to arm $a$ and use $x_{t,a} = (x'_{t,a}, 1)$ to be the context information for arm $a$. This processing will guarantee the inner product $\theta_*^{\top}x_{t,a} \in [0,1]$. Next the weight for arm $a$ at time $t$ is a random sample from Bernoulli distribution with mean $\theta_*^{\top}x_{t,a}$.
+
+We experiment on four settings and demonstrate the results in Figure \ref{fig:synthetic}. The first two are of disjunctive objective with different position discount and the last two are of conjunctive objectives. Our algorithm outperforms than {\it CombCascade} algorithm because it does not use the context information.
+
+
+\subsection{MovieLens}
+
+In this experiment, we evaluate $C^3$-UCB on a problem of contextual recommendations. We experiment on {\it MovieLens} dataset\cite{lam2013movie} of 2015.
+
+The Learning problem is formulated as follows. There is a big sparse matrix $A \in \{0,1\}^{N_1 \times N_2}$ where $A(i,j) = 1$ denotes user $i$ has watched movie $j$. We split $A$ to be $H + F$ by putting entry-$1$ in $A$ to $H$ and $F$ with probability $\sim \mathrm{Ber}(p)$ for some fixed $p$. We can regard $H$ as known information about history 'what users have watched' and regard $F$ as future criterion. We use $H$ to derive feature vectors of both users and movies by SVD decomposition, $H = USM^{\top}$ where $U = (u_1; ...;u_{N_1})$ and $M = (m_1;...;m_{N_2})$. At every time $t$, use $x_{t,i} = u_{i}m_j^{\top}$ as the context information of base arm $i$ and randomly choose a user $I_t$. And use $w_t(m) = F(I_t,m)$ as the weight of movie $m$ at time $t$.
+
+This problem is required to recommend fixed number of movies. Notice that it might have problem if we use $(u_{I_t}, m_j)$ as context information. Denote $\theta$ by $(\theta_u, \theta_m)$. So the expected mean of a base arm is of the form $\theta_u^{\top} u_{I_t} + \theta_m^{\top} m_j$ but the first term $\theta_u^{\top} u_{I_t}$ is fixed at time $t$ no matter what $\theta_u$ is. Therefore, to find the best super arm, it is equivalent to rank the scores $\theta_m^{\top} m_j$ for each movie $j$. So to make use of the user's context information, we need some quadratic terms of user's information $u_i$ and movie's information $m_j$. That's why we use the convolution $u_{i}m_j^{\top}$ to denote the context of movie $j$ at time $t$.
+
+We experiment with different position discount and compare our algorithm with {\it CombCascade}. We show the results in Fig.~\ref{fig:movielens}. Our algorithms outperforms theirs, which demonstrate the advantage of introducing context information in real applications.
+
+\subsection{Network Routing}
 
 In the last experiment, we evaluate $C^3$-UCB on a problem of network routing. We experiment on six networks from the {\it RocketFuel} dataset\cite{spring2004measuring}.
 
@@ -774,31 +803,35 @@ The following lemma provides the important result on the regret at each time $t$
 
 \begin{lemma} %lem:DeltaEstimate
 	\label{lem:DeltaEstimate}
-	For any time $t$ and $A = (a_1, \ldots, a_{\abs{A}})$, if $f$ satisfies the two assumptions, the properties of monotonicity and Lipschitz continuity, and $f(A_t^*, \bU_t) \leq f(A, \bU_t)$, then we have
+	For any time $t$ and $A = (a_1, \ldots, a_{\abs{A}})$, if $f$ satisfies the two assumptions, the properties of monotonicity and Lipschitz continuity, 
+	%and $f(A_t^*, \bU_t) \leq f(A, \bU_t)$, 
+	then we have
 	$$
-		R(t,A) \leq \sum_{k=1}^{\abs{A}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}}.
+		R(t, \bA_t) \leq \sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, \ba_k}}_{\bV_{t-1}^{-1}}.
 	$$
 \end{lemma}
 \begin{proof}
-	By Lemma \ref{lem:estimateU}, $w_t \leq \bU_t$. Then by monotonicity property of $f$,
-	$$
-	f_t^{\ast} = f(A_t^{\ast}, w_t) \leq f(A_t^{\ast}, \bU_t).
-	$$
+	By Lemma \ref{lem:estimateU}, $w_t \leq \bU_t$. Then
+	\begin{align*}
+		f(\bA_t, \bU_t) \geq \alpha f(\bA_t^{\bU_t}, \bU_t) \geq \alpha f(A_t^*, \bU_t) \geq \alpha f(A_t^*, w_t),
+	\end{align*}
+	where $f(\bA_t^{\bU_t}, \bU_t) = \max_{A \in \cS} f(A, \bU_t)$. The first inequality is because we choose $\bA_t$ by the $\alpha$-approximation oracle with input $\bU_t$; the second inequality is because the maximum of $f(\bA_t^{\bU_t}, \bU_t)$ given $\bU_t$; the third inequality is by the monotonicity of $f$ and the property $\bU_t \geq w_t$. Then
+	\begin{align*}
+		R(t, \bA_t) = &\alpha f(A_t^*, w_t) - f(\bA_t, w_t) \\
+		\leq &f(\bA_t, \bU_t) - f(\bA_t, w_t).
+	\end{align*}
 	By Lipschitz continuity of $f$ and the definition of $\bU_t$ in Eq.\eqref{eq:defU},
 	$$
-	f(A, \bU_t) \leq f(A, \theta_{\ast}^{\top}x_t) + \sum_{k=1}^{\abs{A}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, a_k^t}}_{\bV_{t-1}^{-1}}.
+	f(\bA_t, \bU_t) \leq f(\bA_t, \theta_{\ast}^{\top}x_t) + \sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, \ba_k^t}}_{\bV_{t-1}^{-1}}.
 	$$
-	Then by the condition that $f(A_t^{\ast}, \bU_t) \leq f(A, \bU_t)$, we have 
-	$$
-	f_t^{\ast} \leq f(A, \theta_{\ast}^{\top}x_t) + \sum_{k=1}^{\abs{A}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, a_k^t}}_{\bV_{t-1}^{-1}}.
-	$$
-	Therefore,
-	$$
-	R(t, A) = f_t^{\ast} - f(A, \theta_{\ast}^{\top}x_t) \leq \sum_{k=1}^{\abs{A}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, a_k^t}}_{\bV_{t-1}^{-1}}.
-	$$
+	Then we have
+	\begin{align*}
+		R(t, A) \leq &f(\bA_t, \bU_t) - f(\bA_t, w_t) \\
+		\leq &\sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, \ba_k^t}}_{\bV_{t-1}^{-1}}.
+	\end{align*}
 \end{proof}
 
-Notice that if we substitute $A$ by $\bA_t$ in Lemma \ref{lem:DeltaEstimate}, then the upper bound of $R(t, \bA_t)$ is in terms of all base arms of $\bA_t$. However, it is hard to estimate an upper bound for $\sum_{t=1}^T \sum_{k=1}^{\abs{\bA_t}} \norm{ x_{t, \ba_k^t} }_{ \bV_{t-1}^{-1} }$ because $\bV_t$ only contains observed base arms. Thus we need the following lemma.
+Notice that the upper bound of $R(t, \bA_t)$ is in terms of all base arms of $\bA_t$. However, it is hard to estimate an upper bound for $\sum_{t=1}^T \sum_{k=1}^{\abs{\bA_t}} \norm{ x_{t, \ba_k^t} }_{ \bV_{t-1}^{-1} }$ because $\bV_t$ only contains information of observed base arms. Thus we need the following lemma.
 
 \begin{lemma} %lem:DeltaEsimateWithP*
 	\label{lem:DeltaEsimateWithP*}
