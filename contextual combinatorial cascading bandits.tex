@@ -150,7 +150,7 @@
 \begin{document} 
 	
 \twocolumn[
-\icmltitle{Contextual Combinatorial Cascading Bandits}
+\icmltitle{Combinatorial Cascading Bandits with contextual information and position discounts}
 	
 % It is OKAY to include author information, even for blind
 % submissions: the style file will automatically remove it for you
@@ -341,7 +341,7 @@ Let $\cH_t$ denote the history before the learning agent chooses action at time 
   \label{eq:expectation}
   \EE[\bw_{t,a} | \cH_t] = \theta_{\ast}^{\top} x_{t,a},
 \end{equation}
-where $\theta_{\ast}$ is an unknown $d$-dimensional vector with the assumption that $\norm{\theta_{\ast}}_2 \leq 1$ and $0 \leq \theta_{\ast}^{\top} x_{t,a} \leq 1$ for all $t, a$. Following standard assumptions of stochastic MABs, a reward distribution has R-sub-Gaussian tail if for some known constant $R > 0$ and all $\lambda \in \RR$, one has 
+where $\theta_{\ast}$ is an unknown $d$-dimensional vector with the assumption that $\norm{\theta_{\ast}}_2 \leq 1$ and $0 \leq \theta_{\ast}^{\top} x_{t,a} \leq 1$ for all $t, a$. Following standard assumptions of stochastic MABs, a reward distribution has R-sub-Gaussian tail if for some known constant $R > 0$ and all $\lambda \in \RR$, 
 $$
 \EE[\exp(\lambda(\bw_{t,a} - \theta_{\ast}^{\top} x_{t,a})) | \cH_t] \leq \exp(\lambda^2 R^2 / 2).
 $$
@@ -477,9 +477,9 @@ To state our main theorem, we need some definitions. Let $p_{t, A}$ be the {\em 
 	\label{thm:main}
 	Suppose the expected reward function $f(A, w)$ is a function of expected weights and satisfies the requirements of monotonicity and Lipschitz continuity. Assume there is an $\alpha$-approximation oracle $\cO_{\cS}$. Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regret of our algorithm, C$^3$-UCB, satisfies
 	\begin{align}
-		R(n) &\le \frac{\sqrt{2}}{p^*} \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))}  \nonumber \\
+		R(n) &\le \frac{\sqrt{2}B}{p^*} \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))}  \nonumber \\
 		&\qquad \cdot \left(R\sqrt{d\ln \left( \frac{1 + C_\gamma n/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda}\right) \nonumber \\
-		&=O\left(\frac{d}{p^*} \sqrt{nK} \ln \left(\frac{C_\gamma n}{\delta^{2/d}}\right) \right).
+		&=O\left(\frac{dBR}{p^*} \sqrt{nK} \ln \left(\frac{C_\gamma n}{\delta^{2/d}}\right) \right).
 	\end{align}
 \end{theorem}
 \begin{proof} [of Theorem \ref{thm:main}] %proof outline of main theorem
@@ -708,9 +708,9 @@ Thus this expected reward function satisfies our setting but can not be fit into
 \begin{figure*}
 	\centering
 	\subfigure[Disjunctive, $\gamma=1$]{
-		\includegraphics[height = 3 cm, width = 4 cm]{synD-T10000-L100-K4-1.eps}}
-	\subfigure[Disjunctive, $\gamma=0.95$]{
-		\includegraphics[height = 3 cm, width = 4 cm]{synD-T10000-L100-K4-95.eps}}
+		\includegraphics[height = 3 cm, width = 4 cm]{synD-T5-L100-K4-1.eps}}
+	\subfigure[Disjunctive, $\gamma=0.9$]{
+		\includegraphics[height = 3 cm, width = 4 cm]{synD-T5-L100-K4-9.eps}}
 	\subfigure[Conjunctive, $\gamma=1$ ]{
 		\includegraphics[height = 3 cm, width = 4 cm]{synC-T10000-L100-K4-1.eps}}
 	\subfigure[Conjunctive, $\gamma=0.95$ ]{
@@ -743,14 +743,14 @@ Thus this expected reward function satisfies our setting but can not be fit into
 
 \section{Experiments}
 
-We evaluate $C^3$-UCB in three experiments.
+We evaluate $C^3$-UCB in three experiments. In the following experiments, we let the position discounts $\gamma_k, k\leq K$ have the form of $\gamma^{k-1}$ for some $\gamma$. 
 
 \subsection{Synthetic}
 \label{sec:ExpSyn}
 
-In the first experiment, we compare $C^3$-UCB to CombCascade on synthetic problems. This problem is a contextual cascading bandit with $L=100$ items and $K=4$, where at each time $t$ the agent recommends $K$ items to the user. At first, we randomly choose $\theta_* \in \RR^{d-1}$ with $\|\theta_{\ast}\|_2 = 1$ and let $\theta_* = (\frac{\theta}{2}, \frac{1}{2})$. Then at each time $t$, we randomly assign $x'_{t,a} \in \RR^{d-1}$ with $\|x_{t,a}\| = 1$ to arm $a$ and use $x_{t,a} = (x'_{t,a}, 1)$ to be the context information for arm $a$. This processing will guarantee the inner product $\theta_*^{\top}x_{t,a} \in [0,1]$. Next the weight for arm $a$ at time $t$ is a random sample from Bernoulli distribution with mean $\theta_*^{\top}x_{t,a}$.
+In the first experiment, we compare $C^3$-UCB to CombCascade on synthetic problems. This problem is a contextual cascading bandit with $L=100$ items and $K=4$, where at each time $t$ the agent recommends $K$ items to the user. At first, we randomly choose $\theta \in \RR^{d-1}$ with $\|\theta \|_2 = 1$ and let $\theta_* = (\frac{\theta}{2}, \frac{1}{2})$. Then at each time $t$, we randomly assign $x'_{t,a} \in \RR^{d-1}$ with $\|x_{t,a}\| = 1$ to arm $a$ and use $x_{t,a} = (x'_{t,a}, 1)$ to be the context information for arm $a$. This processing will guarantee the inner product $\theta_*^{\top}x_{t,a} = \frac{\theta^{\top}x + 1}{2} \in [0,1]$. Next we generate the weight for arm $a$ at time $t$ by a random sample from Bernoulli distribution with mean $\theta_*^{\top}x_{t,a}$.
 
-We experiment on four settings and demonstrate the results in Figure \ref{fig:synthetic}. The first two are of disjunctive objective with different position discount and the last two are of conjunctive objectives. Our algorithm outperforms than {\it CombCascade} algorithm because it does not use the context information.
+We experiment on four settings. Under each setting, the learning agent chooses a set of $K$ items out of $L$ ground items. The first two are of the disjunctive objective where the learning agent observes from the first one of the chosen $K$ items until first one with weight $1$; the last two are of conjunctive objective where the learning agent observes from the first item until the first one with weight $0$. Notice that with $\gamma \leq 1$, the oracle to select a feasible action is to select the set of $K$ items with highest UCBs; $\gamma < 1$ will force the items in the optimal action list in the decreasing order of their UCBs and we also use this order when $\gamma = 1$. The results are shown in Fig.~\ref{fig:synthetic} and our algorithm outperforms {\it CombCascade} algorithm because they do not use the context information.
 
 
 \subsection{MovieLens}
@@ -807,7 +807,7 @@ The following lemma provides the important result on the regret at each time $t$
 	%and $f(A_t^*, \bU_t) \leq f(A, \bU_t)$, 
 	then we have
 	$$
-		R(t, \bA_t) \leq \sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, \ba_k}}_{\bV_{t-1}^{-1}}.
+		R(t, \bA_t) \leq B \sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, \ba_k}}_{\bV_{t-1}^{-1}}.
 	$$
 \end{lemma}
 \begin{proof}
@@ -822,12 +822,12 @@ The following lemma provides the important result on the regret at each time $t$
 	\end{align*}
 	By Lipschitz continuity of $f$ and the definition of $\bU_t$ in Eq.\eqref{eq:defU},
 	$$
-	f(\bA_t, \bU_t) \leq f(\bA_t, \theta_{\ast}^{\top}x_t) + \sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, \ba_k^t}}_{\bV_{t-1}^{-1}}.
+	f(\bA_t, \bU_t) \leq f(\bA_t, \theta_{\ast}^{\top}x_t) + B \sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, \ba_k^t}}_{\bV_{t-1}^{-1}}.
 	$$
 	Then we have
 	\begin{align*}
 		R(t, A) \leq &f(\bA_t, \bU_t) - f(\bA_t, w_t) \\
-		\leq &\sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, \ba_k^t}}_{\bV_{t-1}^{-1}}.
+		\leq &B \sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, \ba_k^t}}_{\bV_{t-1}^{-1}}.
 	\end{align*}
 \end{proof}
 
@@ -837,7 +837,7 @@ Notice that the upper bound of $R(t, \bA_t)$ is in terms of all base arms of $\b
 	\label{lem:DeltaEsimateWithP*}
 	Suppose the equation (\ref{eq:estimateTheta}) holds for time $t-1$. Then
 	$$
-	\EE_t[R(t, \bA_t)] \leq \frac{1}{p^*} \EE_t \left[ \bbeta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right].
+	\EE_t[R(t, \bA_t)] \leq \frac{B}{p^*} \EE_t \left[ \bbeta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right].
 	$$
 \end{lemma}
 \begin{proof}
@@ -846,8 +846,8 @@ Notice that the upper bound of $R(t, \bA_t)$ is in terms of all base arms of $\b
 		=& \EE \left[ \left. R(t, \bA_t) \EE \left[ \left. \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t = \abs{\bA_t}\} \right| \bA_t \right]  \right| \cH_t \right] \label{eq:addOt}\\
 		=& \EE \left[ \left. R(t, \bA_t) \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t = \abs{\bA_t}\}  \right| \cH_t \right] \label{eq:removeE}\\
 		\leq &\frac{1}{p^{\ast}} \EE \left[ \left. R(t, \bA_t) \bOne\{\bO_t = \abs{\bA_t}\}  \right| \cH_t \right] \label{eq:relaxpstar}\\
-		\leq &\frac{1}{p^{\ast}} \EE \left[ \left. \sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}} \bOne\{\bO_t = \abs{\bA_t}\}  \right| \cH_t \right] \label{eq:useradiusbound}\\
-		\leq &\frac{1}{p^{\ast}} \EE \left[ \left. \sum_{k=1}^{\bO_t} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}} \right| \cH_t \right]. \label{eq:relaxindicator}
+		\leq &\frac{B}{p^{\ast}} \EE \left[ \left. \sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}} \bOne\{\bO_t = \abs{\bA_t}\}  \right| \cH_t \right] \label{eq:useradiusbound}\\
+		\leq &\frac{B}{p^{\ast}} \EE \left[ \left. \sum_{k=1}^{\bO_t} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}} \right| \cH_t \right]. \label{eq:relaxindicator}
 	\end{align}
 	Equality \eqref{eq:addOt} is because when $\bA_t$ is fixed, $p_{t, \bA_t}$ is the probability of $\bO_t = \abs{\bA_t}$, and thus the inner expectation is $1$. Equality \eqref{eq:removeE} is because when the history $\cH_t$ is fixed, $\bA_t$ is fixed by the deterministic algorithm C$^3$-UCB, and thus there is no need to write the conditional expectation. Inequality~\eqref{eq:relaxpstar} is because $p_{t,\bA_t} \geq p^*$ by definition. Inequality~\eqref{eq:useradiusbound} is by Lemma \ref{lem:DeltaEstimate} and the fact $f(A_t^*, \bU_t) \leq f(\bA_t, \bU_t)$, which is true because algorithm C$^3$-UCB selects action $\bA_t$ as the best action with respect to $\bU_t$. Inequality~\eqref{eq:relaxindicator} is by simply arguing on the two cases for the indicator function $\bOne\{\bO_t = \abs{\bA_t}\}$.
 \end{proof}
@@ -1045,12 +1045,12 @@ Now we are ready to prove the main theorem.
 	Suppose inequality (\ref{eq:estimateTheta}) holds for all time $t$, which is true with probability $1-\delta$. Then we have
 	\begin{align}
 	&R(T) = \EE \left[\sum_{t=1}^{n} \EE_{t}[R(t, \bA_t)] \right] \notag\\
-	&\leq \EE\left[\sum_{t=1}^{n} \frac{1}{p^*} \EE_t \left[\bbeta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}\right] \right] \label{eq:pfMdeltaEst}\\
-	&\leq \EE\left[\sum_{t=1}^{n} \frac{1}{p^*} \bbeta_{T}(\delta) \EE_t \left[ \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}\right] \right] \label{eq:pfMbeta}\\
-	&\leq \EE \left[\frac{1}{p^*} \bbeta_T(\delta) \sqrt{\left(\sum_{t=1}^{n} \bO_t\right) \left( \sum_{t=1}^{n} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right)} \right ]  \label{eq:pfMmeanEq}\\
-	&\leq \EE\left[\frac{1}{p^*} \left( R \sqrt{ \ln \left( \frac{\det(\bV_n)}{\lambda^d \delta^2} \right)} + \sqrt{\lambda} \right) \right. \notag\\
+	&\leq \EE\left[\sum_{t=1}^{n} \frac{B}{p^*} \EE_t \left[\bbeta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}\right] \right] \label{eq:pfMdeltaEst}\\
+	&\leq \EE\left[\sum_{t=1}^{n} \frac{B}{p^*} \bbeta_{T}(\delta) \EE_t \left[ \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}\right] \right] \label{eq:pfMbeta}\\
+	&\leq \EE \left[\frac{B}{p^*} \bbeta_T(\delta) \sqrt{\left(\sum_{t=1}^{n} \bO_t\right) \left( \sum_{t=1}^{n} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right)} \right ]  \label{eq:pfMmeanEq}\\
+	&\leq \EE\left[\frac{B}{p^*} \left( R \sqrt{ \ln \left( \frac{\det(\bV_n)}{\lambda^d \delta^2} \right)} + \sqrt{\lambda} \right) \right. \notag\\
 	& \left. \qquad \qquad \cdot \sqrt{nK \cdot 2\ln \left(\frac{\det(\bV_n)}{\lambda^d} \right)} \right] \label{eq:pfMsumXi}\\
-	&\leq \frac{\sqrt{2}}{p^*} \left(R\sqrt{ d \ln \left( \frac{1 + C_\gamma n/(\lambda d)}{\delta^{2/d}} \right) } + \sqrt{\lambda} \right) \notag\\
+	&\leq \frac{\sqrt{2}B}{p^*} \left(R\sqrt{ d \ln \left( \frac{1 + C_\gamma n/(\lambda d)}{\delta^{2/d}} \right) } + \sqrt{\lambda} \right) \notag\\
 	&\qquad \qquad \cdot \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))}. \label{eq:pfMdetEst}
 	\end{align}
 	Inequality \eqref{eq:pfMdeltaEst} is by Lemma \ref{lem:DeltaEsimateWithP*}. 
