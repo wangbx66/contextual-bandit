@@ -712,9 +712,9 @@ Thus this expected reward function satisfies our setting but can not be fit into
 	\subfigure[Disjunctive, $\gamma=0.9$]{
 		\includegraphics[height = 3 cm, width = 4 cm]{synD-T5-L100-K4-9.eps}}
 	\subfigure[Conjunctive, $\gamma=1$ ]{
-		\includegraphics[height = 3 cm, width = 4 cm]{synC-T10000-L100-K4-1.eps}}
-	\subfigure[Conjunctive, $\gamma=0.95$ ]{
-		\includegraphics[height = 3 cm, width = 4 cm]{synC-T10000-L100-K4-95.eps}}
+		\includegraphics[height = 3 cm, width = 4 cm]{synC-T5-L100-K4-1.eps}}
+	\subfigure[Conjunctive, $\gamma=0.9$ ]{
+		\includegraphics[height = 3 cm, width = 4 cm]{synC-T5-L100-K4-9.eps}}
 	\caption{Synthetic Data Set, L=100, K=4, d=10}
 	\label{fig:synthetic} % 用于交叉引用
 \end{figure*}
@@ -750,7 +750,7 @@ We evaluate $C^3$-UCB in three experiments. In the following experiments, we let
 
 In the first experiment, we compare $C^3$-UCB to CombCascade on synthetic problems. This problem is a contextual cascading bandit with $L=100$ items and $K=4$, where at each time $t$ the agent recommends $K$ items to the user. At first, we randomly choose $\theta \in \RR^{d-1}$ with $\|\theta \|_2 = 1$ and let $\theta_* = (\frac{\theta}{2}, \frac{1}{2})$. Then at each time $t$, we randomly assign $x'_{t,a} \in \RR^{d-1}$ with $\|x_{t,a}\| = 1$ to arm $a$ and use $x_{t,a} = (x'_{t,a}, 1)$ to be the context information for arm $a$. This processing will guarantee the inner product $\theta_*^{\top}x_{t,a} = \frac{\theta^{\top}x + 1}{2} \in [0,1]$. Next we generate the weight for arm $a$ at time $t$ by a random sample from Bernoulli distribution with mean $\theta_*^{\top}x_{t,a}$.
 
-We experiment on four settings. Under each setting, the learning agent chooses a set of $K$ items out of $L$ ground items. The first two are of the disjunctive objective where the learning agent observes from the first one of the chosen $K$ items until first one with weight $1$; the last two are of conjunctive objective where the learning agent observes from the first item until the first one with weight $0$. Notice that with $\gamma \leq 1$, the oracle to select a feasible action is to select the set of $K$ items with highest UCBs; $\gamma < 1$ will force the items in the optimal action list in the decreasing order of their UCBs and we also use this order when $\gamma = 1$. The results are shown in Fig.~\ref{fig:synthetic} and our algorithm outperforms {\it CombCascade} algorithm because they do not use the context information.
+We experiment on four settings. Under each setting, the learning agent chooses a set of $K$ items out of $L$ ground items. The first two are of the disjunctive objective where the learning agent observes from the first one of the chosen $K$ items until first one with weight $1$; the last two are of conjunctive objective where the learning agent observes from the first item until the first one with weight $0$. Notice that with $\gamma \leq 1$, the oracle to select a feasible action is to select the set of $K$ items with highest UCBs; $\gamma < 1$ will force the items in the optimal action list in the decreasing order of their UCBs and we also use this order when $\gamma = 1$. The results are shown in Fig.~\ref{fig:synthetic} and our algorithm outperforms {\it CombCascade} algorithm because they do not make use of the context information.
 
 
 \subsection{MovieLens}
