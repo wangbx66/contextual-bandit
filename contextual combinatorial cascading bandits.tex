@@ -264,17 +264,18 @@ position discounts, and general reward function to cover many real-world applica
 \begin{table}
 	\renewcommand{\arraystretch}{1.1}
 	\centering
-	\begin{tabular}{|c|c|c|c|}
+	\begin{tabular}{|c|c|c|c|c|}
 		\hline
-		 &context &triggering &position discounts \\
+		 &context &cascading &position  & general \\
+		 &         &          &discount & reward \\
 		\hline
-		CMAB &no &yes &no \\
+		CUCB &no &yes &no & yes \\
 		\hline
-		C$^2$UCB &yes &no &no  \\
+		C$^2$UCB &yes &no &no & yes  \\
 		\hline
-		CombCascade	&no &yes &no  \\
+		CombCascade	&no &yes &no  & no \\
 		\hline
-		C$^3$-UCB(our) &yes &yes &yes \\
+		C$^3$-UCB(ours) &yes &yes &yes & yes \\
 		\hline
 	\end{tabular}
 	\caption{Comparisons of our setting with previous ones }
@@ -285,17 +286,44 @@ position discounts, and general reward function to cover many real-world applica
 
 \section{Related Work}
 
-A summarized comparison of settings is listed in Table \ref{table:outline}, which we will explain in details next. And a comparison of regret bounds by different methods will be discussed in section \ref{sec:diss}.
+We first discuss several studies most relevant to our work.
+Table \ref{table:outline} summarizes the different settings of these work, 
+	which we will explain in details next.
+A comparison of regret bounds by different methods is deferred to Section \ref{sec:diss},
+	after we provide the full result of our regret bound.
+	
+\wei{I revised the table, including adding a column about general reward, to match the introduction.}
 
-The work of \cite{kveton2015cascading} introduced the cascading model to the multi-armed bandit framework with disjunctive objective, where the set of feasible actions form a uniform matroid, and the reward of an action is $1$ if there is at least a "good" item (with weight $1$). The combinatorial cascading bandits of \cite{kveton2015combinatorial} (refered to as 'CombCascade' in Table \ref{table:outline}) generalized the framework, where each feasible action is a subset of ground items under combinatorial constraints; it studied a problem of combinatorial bandits with conjunctive objective, where each feasible action is a chain of items, and reward is $1$ if all items are "good" (have weight $1$). Our work generalizes these model and involves both contextual information and position discounts.
+The work of \cite{kveton2015cascading} introduced the cascading model to the multi-armed bandit framework with disjunctive objective, where the set of feasible actions form a uniform matroid, and the reward of an action is $1$ if there is at least one ``good'' item in the list. 
+The combinatorial cascading bandits of \cite{kveton2015combinatorial} (refered to as 'CombCascade' in Table \ref{table:outline}) generalized the framework, where each feasible action is a subset of ground items under combinatorial constraints; it studied a problem of combinatorial bandits with conjunctive objective, where each feasible action is a chain of items, and reward is $1$ if all items are "good". 
+Our work generalizes these model and involves both contextual information and position discounts.
 
-The experiments of \cite{kveton2015cascading} found that recommending items in increasing order of their UCBs (meaning the items with lower preference will come first) has a better performance than in decreasing order of their UCBs; the reason might be that better items come first, thus the user has a higher chance to pick a later item, thereby observing more feedbacks (of low weights in the front). The position discounts introduced in this paper forces the recommended set in the decreasing order of UCBs. The work of \cite{combes2015learning} considered a similar recommendation model of cascading bandits with position discounts, where all users are characterized into different classes and each item has a class-specific "reward". In our setting, users and items are represented by general feature vectors.
+\wei{I removed all references to "weight" so far. I think it is a bit unclear and could be confusing.}
 
+The experiments of \cite{kveton2015cascading} found that recommending items in increasing order of their UCBs (meaning the items with lower preference comes first) has a better performance than in decreasing order of their UCBs.
+This unnatural result is perhaps because the order of items does not affect the reward and thus
+	putting low preference items first and high preference items last may result in more feedbacks
+	in the cascade.
+The position discounts introduced in this paper forces the recommended set in the decreasing order 
+	of UCBs, which is more realistic.
+The work of \cite{combes2015learning} considered a similar recommendation model of cascading bandits with position discounts, where all users are characterized into different classes and each item has a class-specific "reward". 
+\wei{So, does that mean \cite{combes2015learning}, comparing to ours, only lacks of contextual
+	information? or it our reward function is also more general? It is not very clear to me.}
+In our setting, users and items are represented by general feature vectors.
 Our work considers contextual combinatorial bandits with cascading feedback and nonlinear reward. The paper \cite{li2010contextual} studied multi-armed bandit with context information, which recommends one item a time. A recent work \cite{qin2014contextual} (refered to as 'C$^2$UCB' in Table \ref{table:outline}) introduced contextual combinatorial bandit with semi-bandit feedback and nonlinear reward. Their feedback is more informative than ours. We relax the feedback from semi-bandit to cascading, yet our algorithm achieves the same order of regret bound.
 
 There have been several pieces of work on partial monitoring MAB, but the results are not applicable to our setting. The papers of \cite{agrawal1989asymptotically,bartok2012adaptive} studied partial monitoring problems but their algorithms are inefficient in our setting. The work \cite{lin2014combinatorial} studied combinatorial partial monitoring problem and their feedback is a fixed (with respect to chosen action) combination of weights. In our setting, if chosen action is fixed, the number of observed items varies with the user's behavior, thus the combination constituting feedback is not fixed.
 
-The most updated version of \cite{chen2013combinatorial} (refered to as 'CMAB' in Table \ref{table:outline}) considered probabilistic triggering of base arms in stochastic combinatorial semi-bandit. When a super arm $S$ is pulled, base arm $i$ might also be triggered with a probability $p_i^{S}$. Our method generalizes their setting with contextual information. For general combinatorial multi-armed bandits, it is hard to introduce position discounts unless, like in our setting, feasible actions are lists and items are triggered in list order.
+\wei{please cite the arxiv version below}
+\citet{chen2013combinatorial} consider general reward functions and probabilistic triggering of base arms
+	in the  stochastic combinatorial semi-bandit model (refered to as 'CUCB' in Table \ref{table:outline}).
+Cascading bandits can be viewed as a particular type of probabilistic triggering, where
+	only the head of the list is deterministically triggered and all the remaining items are
+	probabilistically triggered.
+However, their work does not consider contextual information, and it is also difficult to
+	incorporate position discounts in a general triggering model.
+
+
 
 % and / or case	
 % \section{Problem Formulation}
@@ -408,7 +436,7 @@ We formulate the problem of {\em contextual combinatorial cascading bandits} as 
 
 As a convention, we always use boldface symbols to represent random variables.
 
-At time $t$, feature vectors $x_{t,a} \in \RR^{d \times 1}$ with $\norm{x_{t,a}}_2 \leq 1$ for every base arm $a \in E$ are revealed to the learning agent. Each feature vector combines the information of the user and the corresponding base arm. For example, suppose the user at time $t$ is characterized by a feature vector $u_t$ and the base arm $a$ has a feature vector $v_a$, then we can use $x_{t,a} = (u_t, v_a)$ , the concatenation of $u_t$ and $v_a$, as the combined feature vector of base arm $a$ at time $t$. Denote $x_t = (x_{t,a})_{a \in E}$ as all context information at time $t$. Then the learning agent recommends a feasible action $\bA_t=\{ \ba_{1}^t,...,\ba_{\abs{\bA_t}}^t \} \in \cS$ to the user. In the cascading feedback models, the user checks from the first item of recommended action and stops at the $\bO_t$-th item under some stopping criterion. For example in recommender systems, the stopping criterion might be that the user finds an attractive item. Then the learning agent observes the weights of first $\bO_t$ many base arms in $\bA_t$, denoted by $\bw_t(\ba_k^t), k \leq \bO_t$. 
+At time $t$, feature vectors $x_{t,a} \in \RR^{d \times 1}$ with $\norm{x_{t,a}}_2 \leq 1$ for every base arm $a \in E$ are revealed to the learning agent. Each feature vector combines the information of the user and the corresponding base arm. For example, suppose the user at time $t$ is characterized by a feature vector $u_t$ and the base arm $a$ has a feature vector $v_a$, then we can use $x_{t,a} = (u_t, v_a)$ , the concatenation of $u_t$ and $v_a$, as the combined feature vector of base arm $a$ at time $t$. Denote $x_t = (x_{t,a})_{a \in E}$ as all context information at time $t$. Then the learning agent recommends a feasible action $\bA_t=\{ \ba_{1}^t,...,\ba_{\abs{\bA_t}}^t \} \in \cS$ to the user. In the cascading feedback models, the user checks from the first item of recommended action and stops at the $\bO_t$-th item under some stopping criterion. For example in recommender systems, the stopping criterion might be that the user finds an attractive item. Then the learning agent observes the weights of first $\bO_t$ base arms in $\bA_t$, denoted by $\bw_t(\ba_k^t), k \leq \bO_t$. 
 
 Let $\cH_t$ denote the history before the learning agent chooses action at time $t$. Thus $\cH_t$ contains feedback information at all time $s < t$, as well as context information at time $t$. Each arm $a$ has a weight $\bw_t(a)$, representing the "quality" to the user at time $t$. Given history $\cH_t$, we assume that $\bw_{t,a}$'s are mutually independent random variables with expectation
 \begin{equation} % eq:expectation
@@ -430,13 +458,19 @@ The reward function on round $t$ is an application dependent function. We assume
 The expected reward function $f(A, w)$ is a non-decreasing with respect to $w$: for any $w,w'\in [0,1]^E$, if $w(a) \leq w'(a)$, we have $f(A, w) \leq f(A, w')$.
 
 \paragraph{Lipschitz continuity}
-The expected reward function $f(A, w)$ is a Lipschitz continuous with respect to $w$ together with position discount parameters $\gamma_k, k\leq K$. In particular, there is a constant $B>0$ such that, for any $w,w' \in [0,1]^E$, we have
+The expected reward function $f(A, w)$ is Lipschitz continuous with respect to $w$ together with position discount parameters $\gamma_k, k\leq K$. In particular, there is a constant $B>0$ such that, for any $w,w' \in [0,1]^E$, we have
 $$
 	|f(A, w) - f(A, w')| \leq B \sum_{k=1}^{|A|} \gamma_k |w(a_k) - w'(a_k)|,
 $$
 where $A = (a_1, \ldots, a_{|A|})$.
 
-The assumption of Lipschitz continuity gives an estimate of changes in reward function. To obtain a good estimation of reward function, the position $k$ with large discount number $\gamma_k$ needs a good estimation of $w(a_k)$. This means the positions with large discount numbers $\gamma_k$ are more important to the reward function. For example in website recommendations, the learning agent will receive highest reward if the user selects the first item, so the first position is most important. 
+The assumption of Lipschitz continuity gives an estimate of changes in reward function. To obtain a good estimation of reward function, the position $k$ with large discount value $\gamma_k$ needs a good estimation of $w(a_k)$. This means the positions with large discount $\gamma_k$ are more important to the reward function. For example in website recommendations, the learning agent will receive highest reward if the user selects the first item, so the first position is most important. 
+
+\wei{"large discount is more important" sounds weird. Usually large discount means cheaper and less
+	important products. 
+Perhaps we should seriously consider not using "position discount". It is a position weight, but
+since weight is already used, we should call it something else. Perhaps "position factor"? 	
+}
 
 Notice that we do not require the knowledge how $f(A, w)$ is defined. We only assume that the agent has access to an oracle $\cO_{\cS}(w)$ that outputs recommended action $A$. More precisely, an oracle $\cO_{\cS}(w)$ is called an $\alpha$-approximation oracle for some $\alpha \leq 1$, if on given input $w$, the oracle returns an action $A = \cO_{\cS}(w) \in \cS$ satisfying $f(A,w) \geq \alpha f(A^*,w)$ where $A^* = \argmax_{A\in\cS} f(A, w)$.
 
@@ -449,6 +483,20 @@ $$
 R(n) = \sum_{t=1}^n R(t, \bA_t).
 $$
 
+\wei{I think just writing $f(A,w_t)$ misses the context part. 
+	$f$ as such defined is only a function of action $A$ and expected reward $w$, the subscript $t$
+	is part of $w_t$, so is not an effective parameter. 
+	We may need to explicitly write context into $f$, such as
+	$f(A, w_t, x_t)$. 
+	}
+
+\wei{About approximation ratio $\alpha$: Do we have an example with an approximation oracle? 
+	If not, we could remove it.
+	It is also ok to keep it, but then in Theorems, like Theorem 4.3, we should say 
+	$\alpha$-regret.
+}
+	
+	
 \section{Algorithms and Results}
 
 \subsection{Algorithm}
