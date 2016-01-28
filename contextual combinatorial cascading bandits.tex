@@ -248,10 +248,18 @@ We formally define this model, provide a complete algorithm and its regret analy
 	and conduct experiments on both synthetic and real-world recommendation
 	and network routing datasets to validate our approach.
 
-The main contributions of this paper can be summarized as follows: (1) we propose a general framework called contextual combinatorial cascading bandit that can many real-world application scenarios; 
+The main contributions of this paper can be summarized as follows: (1) we propose a general framework  that incorporates contextual information,
+position discounts, and general reward function to cover many real-world application scenarios; 
 (2) we propose $C^3$-UCB, an efficient algorithm for contextual combinatorial cascading bandit, with regret bound as $\tilde{O}(\sqrt{n})$ for $n$ rounds; (3) we evaluate this algorithm on synthetic 
 	and real-world datasets and the results show that our algorithm effectively
 	incorporates contextual information and position discounts with significant performance gains.
+
+\wei{The last two paragraphs have some repetition. 
+	Is there any technical part in the algorithm and analysis that we would like to 
+	mention in the introduction? So far the intro is only about conceptual additions to the model,
+	and nothing about technical challenges and our solution. 
+	It is ok if conceptual contribution is what we want to emphasize, but if there is any
+	technical contribution we can say, we can also say it here.}
 
 \begin{table}
 	\renewcommand{\arraystretch}{1.1}
