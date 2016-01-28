@@ -171,26 +171,87 @@
 	
 \begin{abstract} 
 	
-We propose the {\it contextual combinatorial cascading bandits}, an online partial monitoring game where at each time step a learning agent is given a set of context information, then recommends a list of items, and observes weights from the first item until some problem-specific stopping criterion happens. In recommendation, the stopping criterion might be the first item a user selects; in network, the stopping criterion might be the first edge being blocked in a path. We also consider position discounts in the list order, which means in recommendation the agent will receive discounted reward if the user does not select the first item. We propose a UCB-type algorithm to solve our problem, C$^3$-UCB, and prove an $n$-step regret bound $\tilde{O}(\sqrt{n})$ in both the general setting and two special cases. Our work generalizes existing works and also addresses several challenges in our setting, a non-linear reward function with position discounts, contextual information and partial observability. The experiments on synthetic and real data demonstrate the advantage to involve contextual information and position discounts.
+We propose the {\it contextual combinatorial cascading bandits}, an online partial monitoring game where at each time step a learning agent is given a set of context information, then selects a list of items, and observes stochastic outcomes of the selected items
+	sequentially following the list order
+	until some problem-specific stopping criterion happens.
+In online recommendation, the stopping criterion might be the first item a user clicks; in networking, the stopping criterion might be the first edge blocked in a path. 
+We further consider position discounts in the list order, which means the agent's reward may
+	be discounted depending on the position where the stopping criterion is met.
+We formulate this problem in a general contextual combinatorial cascading bandit setting.
+We then propose a UCB-type algorithm to solve our problem, C$^3$-UCB, and prove an $n$-step regret bound $\tilde{O}(\sqrt{n})$ in both the general setting and two special cases. 
+Our work generalizes existing studies in several directions, including contextual information,
+	position discounts, and a more general cascading bandit model.
+Our experiments on synthetic and real datasets demonstrate the advantage of involving contextual information and position discounts.
 
 \end{abstract} 
 	
 \section{Introduction}
 
-Multi-armed bandit (MAB) has been extensively studied in statistics and machine learning. The problem can be formulated as a system of $K$ base arms whose rewards are random samples from unknown distributions with unknown means. The learning agent pulls one arm every time and tries to make the cumulative regret, the expected reward difference from the best arm with highest mean, as small as possible. The problem of MAB has to deal with the trade-off between exploitation (pull the best empirical arm) and exploration (try other arms which are not sufficiently estimated).
+Multi-armed bandit (MAB) has been extensively studied in statistics and machine learning. 
+The problem can be formulated as a system of $K$ base arms whose rewards are random samples from unknown distributions with unknown means.
+ The learning agent pulls one arm every time and tries to minimize the cumulative regret, 
+ the difference in cumulative rewards between always pulling the best arm in expectation and
+ playing according to the agent's strategy.
+The problem of MAB has to deal with the trade-off between exploitation (pulling the best empirical arm) and exploration (trying other arms which are not sufficiently pulled).
 
-Recently, stochastic combinatorial bandit started to draw attention \cite{gai2012combinatorial,chen2013combinatorial}. At every time step, a learning agent chooses a subset of ground items (super arm) under certain combinatorial constraints. There are several different kinds of feedback: (1) bandit feedback, where the learning agent can only obtain the reward of chosen super arm; (2) semi-bandit feedback, where the learning agent can not only obtain the reward of the chosen super arm but also the weights (or rewards) of all base arms constituting the chosen super arm; (3) cascading feedback, where the learning agent can obtain the reward of the chosen super arm and the weights of some base arms in the chosen super arm, according to some problem-specific stopping criterion for observation.
+Recently, stochastic combinatorial bandit started to draw many attention \cite{gai2012combinatorial,chen2013combinatorial,lin2014combinatorial,GMM14,chen2014pure,KWAEE14,kveton2014tight,kveton2015cascading,kveton2015combinatorial,lin2015online,Combes2015}. 
+At every time step, a learning agent chooses a subset of ground items (super arm) under certain combinatorial constraints. There are several different kinds of feedback: (1) bandit feedback, where the learning agent can only obtain the reward of chosen super arm; (2) semi-bandit feedback, where the learning agent can also obtain the stochastic outcomes of the all base arms constituting the chosen super arm; 
+(3) cascading feedback, where the learning agent can obtain the reward of the chosen super arm and the weights of some base arms in the chosen super arm, according to some problem-specific stopping criterion for observation.
 
-For recommendations, the cascade model is usually adopted to describe certain user behaviors. When recommended with a ordered list of items, such as web pages or advertisements, the user checks from the first item until she finds an attractive item and selects it. The items before the selected one are not attractive and the items after the selected one are unobserved. Also in networking routing problem, to determine whether a path is blocked, we check from the source node until we meet a blocked edge. The edges before the blocked one are unblocked and the edges after the blocked one are unobserved. In both of the two applications, we observe the feedbacks of a prefix of items in the chosen ordered list. The bandit problem with cascading feedback has been studied in \cite{kveton2015cascading,kveton2015combinatorial}. We extend their settings to generalized reward functions and an example, which can not be covered in their setting, will be given in the discussion section.
+Cascading feedback model fits into many real application scenarios.
+For example, in online or mobile recommendation, it is a typical practice that an ordered list
+	(instead of a single item) is recommended to a user, who
+	usually goes over the list based on the recommended order and selects one of her interest to
+	click through.
+Thus it is reasonable to assume that items before the clicked item is of no interest to the user
+	while user's interest to items after the clicked item is unclear.
+Another example is in networking routing, where the agent needs to select a routing path that is least
+	likely of being blocked.
+To determine whether a path is blocked, the agent checks from the source node until meeting a blocked edge. 
+The edges before the blocked one are unblocked and the edges after the blocked one are unobserved.
+In both of the above applications, we observe the feedbacks of a prefix of items in the chosen ordered list. The bandit problem with cascading feedback has been studied in \cite{kveton2015cascading,kveton2015combinatorial}. 
+In this paper, we generalize their work in several directions to cover more realistic scenarios.
 
-Personalized recommendation is a key feature of online recommendations to improve user satisfaction by providing attractive contents to meet specific user's need. Personalization includes storing user features and historical information, managing content set, analysis of user behaviors and providing suitable content to the user. Usually, both users and contents are represented by feature vectors. User features may contain basic attributes, like age, gender and nationality, and historical behaviors. Content features may contain categories and descriptive information. Because the views of different users on the same content can vary significantly, exploration and exploitation have to be exercised at an individual level and be able to cross different contents. When each item is represented by a feature vector that can be observed by the learning agent, the problem is known as contextual combinatorial bandit, which is developed in recommender systems and studied in \cite{qin2014contextual}.
+First, we incorporate contextual information into cascading bandits.
+In online recommendation, contextual information includes various user and item information, 
+	and user behaviors in different contexts are different.
+Therefore utilizing contextual information is crucial for personalized recommendation.
+In network routing, temporal and spacial contextual information may also be useful to
+	determine better routing paths.
+Therefore, we incorporate contextual information into the cascading bandit formulation.
+Second, cascading bandits studied in \cite{kveton2015cascading,kveton2015combinatorial}
+	treats all positions in the cascading list equally, but in applications different positions
+	may bring different rewards.
+For example, in online recommendation, we usually prefer users to find their interested item
+	in the list as early as possible to increase user satisfaction.
+In network routing, we may prefer to hit a blocked edge as late as possible.
+To model these preference, we introduce position discounts to the cascading bandit, and
+	we show through experiments that incorporating position discounts may significantly
+	improve the learning result.
+Finally, we generalize the reward functions of \cite{kveton2015cascading,kveton2015combinatorial}
+	that are based on disjunctive and conjunctive binary random variables to more general
+	non-linear reward functions satisfying monotonicity and Lipschitz continuity conditions.
+This generalization allows us to covers new realistic scenarios not covered in
+	\cite{kveton2015cascading,kveton2015combinatorial}, and we give such an example
+	in Section~\ref{sec:diss}.
 
-In this paper, we propose a general framework for contextual cascading bandits encompassing the applications of recommendations and network routing problems as special cases. In addition, we take position discounts into consideration. In recommendations, different positions usually give different values. In advertisement display, there are different positions in a website, the front middle, the left/right column and the bottom, and the positions in the front middle might charge highest price. Users are most satisfied if the first returned result is what they want. We introduce the position discounts to model this variant of rewards.
+
+%Personalized recommendation is a key feature of online recommendations to improve user satisfaction by providing attractive contents to meet specific user's need. Personalization includes storing user features and historical information, managing content set, analysis of user behaviors and providing suitable content to the user. Usually, both users and contents are represented by feature vectors. User features may contain basic attributes, like age, gender and nationality, and historical behaviors. Content features may contain categories and descriptive information. Because the views of different users on the same content can vary significantly, exploration and exploitation have to be exercised at an individual level and be able to cross different contents. When each item is represented by a feature vector that can be observed by the learning agent, the problem is known as contextual combinatorial bandit, which is developed in recommender systems and studied in \cite{qin2014contextual}.
 
 
-Putting context, cascading and position discounts together, we develop an approach called {\it contextual combinatorial cascading bandits}. This is a general framework which can describe many applications besides the above two applications.
+%In this paper, we propose a general framework for contextual cascading bandits encompassing the applications of recommendations and network routing problems as special cases. In addition, we take position discounts into consideration. In recommendations, different positions usually give different values. In advertisement display, there are different positions in a website, the front middle, the left/right column and the bottom, and the positions in the front middle might charge highest price. Users are most satisfied if the first returned result is what they want. We introduce the position discounts to model this variant of rewards.
 
-The main contributions of this paper can be summarized as follows: (1) we propose a general framework called contextual combinatorial cascading bandit that can address recommendation problem and network routing problem; (2) we propose $C^3$-UCB, an efficient algorithm for contextual combinatorial cascading bandit, with regret bound as $\tilde{O}(\sqrt{n})$ for $n$ rounds; (3) we evaluate this algorithm on synthetic data, recommendation data and network routing data and the results show that our algorithm is effective.
+
+Putting context, position discounts, and generalized reward function together, we call
+	our learning model the {\it contextual combinatorial cascading bandits}. 
+We formally define this model, provide a complete algorithm and its regret analysis,
+	and conduct experiments on both synthetic and real-world recommendation
+	and network routing datasets to validate our approach.
+
+The main contributions of this paper can be summarized as follows: (1) we propose a general framework called contextual combinatorial cascading bandit that can many real-world application scenarios; 
+(2) we propose $C^3$-UCB, an efficient algorithm for contextual combinatorial cascading bandit, with regret bound as $\tilde{O}(\sqrt{n})$ for $n$ rounds; (3) we evaluate this algorithm on synthetic 
+	and real-world datasets and the results show that our algorithm effectively
+	incorporates contextual information and position discounts with significant performance gains.
 
 \begin{table}
 	\renewcommand{\arraystretch}{1.1}
@@ -216,7 +277,7 @@ The main contributions of this paper can be summarized as follows: (1) we propos
 
 \section{Related Work}
 
-A summarized comparison of settings is listed in Table \ref{table:outline}, which we will explain in details next. And a comparison of regret bounds by different methods will be discussed in section \ref{set:diss}.
+A summarized comparison of settings is listed in Table \ref{table:outline}, which we will explain in details next. And a comparison of regret bounds by different methods will be discussed in section \ref{sec:diss}.
 
 The work of \cite{kveton2015cascading} introduced the cascading model to the multi-armed bandit framework with disjunctive objective, where the set of feasible actions form a uniform matroid, and the reward of an action is $1$ if there is at least a "good" item (with weight $1$). The combinatorial cascading bandits of \cite{kveton2015combinatorial} (refered to as 'CombCascade' in Table \ref{table:outline}) generalized the framework, where each feasible action is a subset of ground items under combinatorial constraints; it studied a problem of combinatorial bandits with conjunctive objective, where each feasible action is a chain of items, and reward is $1$ if all items are "good" (have weight $1$). Our work generalizes these model and involves both contextual information and position discounts.
 
@@ -608,7 +669,7 @@ In the problem of network transportations or sequential task processing, $p^*$ d
 
 
 \subsection{Discussions}
-\label{set:diss}
+\label{sec:diss}
 
 In the above, we formulate the general setting of contextual combinatorial cascading bandit with position discount. This setting generalizes several existing results. 
 
