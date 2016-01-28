@@ -733,19 +733,21 @@ Thus this expected reward function satisfies our setting but can not be fit into
 		\includegraphics[height = 3cm, width = 3.95 cm]{movieT30000-L200-K4-1.eps}}
 	\subfigure[$\gamma = 0.9$]{
 		\includegraphics[height = 3cm, width = 3.95 cm]{movieT30000-L200-K4-9.eps}}
-	\caption{MovieLens}
+	\caption{MovieLens, L=200, K=4, d=5}
 	\label{fig:movielens} % 用于交叉引用
 \end{figure}
 
 \begin{figure*}
 	\centering
-	\subfigure[Network 1221]{
-		\includegraphics[height = 3 cm, width = 5 cm]{network1-1.eps}}
+	\subfigure[Network 1239, $\gamma=1$]{
+		\includegraphics[height = 3 cm, width = 4 cm]{isp1239-T5-k100-1.eps}}
 	\subfigure[Network 1755]{
-		\includegraphics[height = 3 cm, width = 5 cm]{network3-1.eps}}
+		\includegraphics[height = 3 cm, width = 4 cm]{network3-1.eps}}
 	\subfigure[Network 3257 ]{
-		\includegraphics[height = 3 cm, width = 5 cm]{network4-1.eps}}
-	\caption{Network with latency}
+		\includegraphics[height = 3 cm, width = 4 cm]{network4-1.eps}}
+	\subfigure[Comparison of different $\gamma$ ]{
+		\includegraphics[height = 3 cm, width = 4 cm]{network-gamma-with-point.eps}}
+	\caption{Network, $d=10$}
 	\label{fig:network} % 用于交叉引用
 \end{figure*}
 
@@ -763,23 +765,23 @@ We experiment on four settings. Under each setting, the learning agent chooses a
 
 \subsection{MovieLens}
 
-In this experiment, we evaluate $C^3$-UCB on a problem of contextual recommendations. We experiment on {\it MovieLens} dataset\cite{lam2013movie} of 2015.
+In this experiment, we evaluate $C^3$-UCB on a problem of contextual recommendations. We experiment on {\it MovieLens} dataset \cite{lam2013movie} of 2015.
 
-The Learning problem is formulated as follows. There is a big sparse matrix $A \in \{0,1\}^{N_1 \times N_2}$ where $A(i,j) = 1$ denotes user $i$ has watched movie $j$. We split $A$ to be $H + F$ by putting entry-$1$ in $A$ to $H$ and $F$ with probability $\sim \mathrm{Ber}(p)$ for some fixed $p$. We can regard $H$ as known information about history 'what users have watched' and regard $F$ as future criterion. We use $H$ to derive feature vectors of both users and movies by SVD decomposition, $H = USM^{\top}$ where $U = (u_1; ...;u_{N_1})$ and $M = (m_1;...;m_{N_2})$. At every time $t$, use $x_{t,i} = u_{i}m_j^{\top}$ as the context information of base arm $i$ and randomly choose a user $I_t$. And use $w_t(m) = F(I_t,m)$ as the weight of movie $m$ at time $t$.
+The Learning problem is formulated as follows. There is a big sparse matrix $A \in \{0,1\}^{N_1 \times N_2}$ where $A(i,j) = 1$ denotes user $i$ has watched movie $j$. We split $A$ as $H + F$ by putting entry-$1$ in $A$ to $H$ and $F$ with probability $\sim \mathrm{Ber}(p)$ for some fixed $p$. We can regard $H$ as known information about history 'what users have watched' and regard $F$ as future criterion. We use $H$ to derive feature vectors of both users and movies by SVD decomposition, $H = USM^{\top}$ where $U = (u_1; ...;u_{N_1})$ and $M = (m_1;...;m_{N_2})$. At every time $t$, use $x_{t,i} = u_{i}m_j^{\top}$ as the context information of base arm $i$ and randomly choose a user $I_t$. And use $w_t(m) = F(I_t,m)$ as the weight of movie $m$ at time $t$.
 
-This problem is required to recommend fixed number of movies. Notice that it might have problem if we use $(u_{I_t}, m_j)$ as context information. Denote $\theta$ by $(\theta_u, \theta_m)$. So the expected mean of a base arm is of the form $\theta_u^{\top} u_{I_t} + \theta_m^{\top} m_j$ but the first term $\theta_u^{\top} u_{I_t}$ is fixed at time $t$ no matter what $\theta_u$ is. Therefore, to find the best super arm, it is equivalent to rank the scores $\theta_m^{\top} m_j$ for each movie $j$. So to make use of the user's context information, we need some quadratic terms of user's information $u_i$ and movie's information $m_j$. That's why we use the convolution $u_{i}m_j^{\top}$ to denote the context of movie $j$ at time $t$.
+In this problem, any combination of $K$ movies is a feasible action. Notice that it might have problem if we use $(u_{I_t}, m_j)$, the concatenation of $u_{I_t}$ and $m_j$, as the context information. Denote $\theta$ by $(\theta_u, \theta_m)$. So the expected mean of a base arm is of the form $\theta_u^{\top} u_{I_t} + \theta_m^{\top} m_j$ but the first term $\theta_u^{\top} u_{I_t}$ is fixed at time $t$ no matter what $\theta_u$ is. To recommend a list of movies by our algorithm, it is equivalent to recommend the first $K$ movies with highest UCBs listing in decreasing order. Thus, it is equivalent to rank the scores $\theta_m^{\top} m_j$ for each movie $j$. So to make use of the user's context information, some quadratic terms of user's information $u_i$ and movie's information $m_j$ are needed. We use the convolution $u_{i}m_j^{\top}$ as the context information of movie $j$ at time $t$.
 
-We experiment with different position discount and compare our algorithm with {\it CombCascade}. We show the results in Fig.~\ref{fig:movielens}. Our algorithms outperforms theirs, which demonstrate the advantage of introducing context information in real applications.
+First, we randomly choose $L=200$ movies and recommend $K=4$ movies on each round. We experiment with $\gamma=1$ (no position discount) and $\gamma=0.9$, and compare our algorithm with {\it CombCascade}. The results are shown in Fig.~\ref{fig:movielens} and demonstrate the advantage to involve context information in real applications.
 
 \subsection{Network Routing}
 
-In the last experiment, we evaluate $C^3$-UCB on a problem of network routing. We experiment on six networks from the {\it RocketFuel} dataset\cite{spring2004measuring}.
+In the last experiment, we evaluate $C^3$-UCB on a problem of network routing with the {\it RocketFuel} dataset \cite{spring2004measuring}.
 
-The ground set $E$ is the set of links in the network and the feasible action set $\cS$ is the set of all paths in the network. Before learning, the environment randomly chooses a $d$-dimensional vector $\theta_* \in [0,1]^d$ and at each time $t$, any link $e$ is assigned with a random $d$-dimensional context vector $x_{t,e}$. Notice here both $\theta$ and $x$ have been processed like section \ref{sec:ExpSyn} so that $\theta_*^{\top}x \in [0,1]$. The weight for each edge $e$ is a Bernoulli random variable with mean $\theta_*^{\top}x$.
+The ground set $E$ is the set of links in the network and the feasible action set $\cS$ is the set of all paths in the network. Before learning, the environment randomly chooses a $d$-dimensional vector $\theta_* \in [0,1]^d$ and at each time $t$, any link $e$ is assigned with a random $d$-dimensional context vector $x_{t,e}$. Notice here both $\theta$ and $x$ have been processed like section \ref{sec:ExpSyn} so that $\theta_*^{\top}x \in [0,1]$. The weight for each edge $e$ is a sample from Bernoulli distribution with mean $\theta_*^{\top}x$.
 
-At each time $t$, A pair of source and terminal nodes $(v_s, v_t)$ are chosen randomly. The learning agent recommends a feasible path $A = (a_1,...,a_{|A|})$ between $v_s$ and $v_t$ to maximize the expected reward in the conjunctive objective.
+At each time $t$, a pair of source and terminal nodes are chosen randomly. The learning agent recommends a feasible path $A = (a_1,...,a_{|A|})$ between $v_s$ and $v_t$ to maximize the expected reward in the conjunctive objective. We experiment with different position discounts and different networks. The results are shown in Fig.~\ref{fig:network}. 
 
-We experiment with different position discounts and on different networks. The results are shown in Fig.~\ref{fig:network}. Our algorithm ourperforms {\it CombCascade} algorithm.
+We also experiment on the influence of different $\gamma$'s to the regret. In recommendations, the position discounts represent users' satisfaction and the learning agent may not know its true value. Suppose the true position discount $\gamma = 0.9$ and the learning agent sets $\gamma$ by her experience. We experiment on different setting $\gamma \in \{0.8, 0.82, \ldots, 0.98, 1.0\}$ with the true criterion $\gamma = 0.9$. The regrets with different $\gamma$'s are illustrated in Figure~\ref{fig:network}(d). The setting $\gamma$ is more close to the true $\gamma$, the regret is tending to be smaller. This experiment shows when there are position discounts in real application, it is better to represent this information to the model.
 
 % we randomly generate a pair of starting and ending nodes, and the learning agent chooses a routing path between the two nodes to maximize the expected reward with position discount.
 
@@ -793,7 +795,7 @@ We experiment with different position discounts and on different networks. The r
 
 \section{Conclusions}
 
-In this paper, we propose contextual combinatorial cascading bandits, a class of contextual combinatorial bandits with partial observations. 
+In this paper, we propose contextual combinatorial cascading bandits with position discounts, a class of contextual combinatorial bandits with partial observations. 
 
 
 % In the unusual situation where you want a paper to appear in the
