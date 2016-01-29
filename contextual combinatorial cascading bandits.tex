@@ -261,6 +261,8 @@ position discounts, and general reward function to cover many real-world applica
 	It is ok if conceptual contribution is what we want to emphasize, but if there is any
 	technical contribution we can say, we can also say it here.}
 
+\shuai{Our proofs build on previous work but also generalize their proof in our setting. Two challenges have been dealt with, partial observability on contextual bandits and general reward function with position discounts.  }
+
 \begin{table}
 	\renewcommand{\arraystretch}{1.1}
 	\centering
@@ -309,13 +311,14 @@ The position discounts introduced in this paper forces the recommended set in th
 The work of \cite{combes2015learning} considered a similar recommendation model of cascading bandits with position discounts, where all users are characterized into different classes and each item has a class-specific "reward". 
 \wei{So, does that mean \cite{combes2015learning}, comparing to ours, only lacks of contextual
 	information? or it our reward function is also more general? It is not very clear to me.}
+\shuai{They dealt with discounted 'or' reward. At each time, suppose the user is from class $c$, then recommending her with $K$ items from item-class $h(c)$. We have more general reward function and more general context information.}
 In our setting, users and items are represented by general feature vectors.
 Our work considers contextual combinatorial bandits with cascading feedback and nonlinear reward. The paper \cite{li2010contextual} studied multi-armed bandit with context information, which recommends one item a time. A recent work \cite{qin2014contextual} (refered to as 'C$^2$UCB' in Table \ref{table:outline}) introduced contextual combinatorial bandit with semi-bandit feedback and nonlinear reward. Their feedback is more informative than ours. We relax the feedback from semi-bandit to cascading, yet our algorithm achieves the same order of regret bound.
 
 There have been several pieces of work on partial monitoring MAB, but the results are not applicable to our setting. The papers of \cite{agrawal1989asymptotically,bartok2012adaptive} studied partial monitoring problems but their algorithms are inefficient in our setting. The work \cite{lin2014combinatorial} studied combinatorial partial monitoring problem and their feedback is a fixed (with respect to chosen action) combination of weights. In our setting, if chosen action is fixed, the number of observed items varies with the user's behavior, thus the combination constituting feedback is not fixed.
 
 \wei{please cite the arxiv version below}
-\citet{chen2013combinatorial} consider general reward functions and probabilistic triggering of base arms
+\citet{chen2015combinatorial} consider general reward functions and probabilistic triggering of base arms
 	in the  stochastic combinatorial semi-bandit model (refered to as 'CUCB' in Table \ref{table:outline}).
 Cascading bandits can be viewed as a particular type of probabilistic triggering, where
 	only the head of the list is deterministically triggered and all the remaining items are
@@ -471,6 +474,7 @@ The assumption of Lipschitz continuity gives an estimate of changes in reward fu
 Perhaps we should seriously consider not using "position discount". It is a position weight, but
 since weight is already used, we should call it something else. Perhaps "position factor"? 	
 }
+\shuai{What if I change this part by 'large $\gamma_k$'?}
 
 Notice that we do not require the knowledge how $f(A, w)$ is defined. We only assume that the agent has access to an oracle $\cO_{\cS}(w)$ that outputs recommended action $A$. More precisely, an oracle $\cO_{\cS}(w)$ is called an $\alpha$-approximation oracle for some $\alpha \leq 1$, if on given input $w$, the oracle returns an action $A = \cO_{\cS}(w) \in \cS$ satisfying $f(A,w) \geq \alpha f(A^*,w)$ where $A^* = \argmax_{A\in\cS} f(A, w)$.
 
@@ -490,12 +494,14 @@ $$
 	$f(A, w_t, x_t)$. 
 	}
 
+
 \wei{About approximation ratio $\alpha$: Do we have an example with an approximation oracle? 
 	If not, we could remove it.
 	It is also ok to keep it, but then in Theorems, like Theorem 4.3, we should say 
 	$\alpha$-regret.
 }
-	
+
+\shuai{There is no experiment with an approximation oracle. But if we want to add some experiment beyond our setting, maybe we can keep it.}	
 	
 \section{Algorithms and Results}
 
@@ -735,7 +741,10 @@ If our setting restricts to contextual combinatorial bandits \cite{qin2014contex
 
 Our algorithm can also apply to the setting of \cite{chen2013combinatorial} with context information. However, the probability $p^{\ast}$ in our results should be the probability that all base arms in $\tilde{S}$ (in their notations) will be triggered.
 
-Our setting generalizes several existing works but not limited to them. For example, in medical treatment, a patient will be recommended with a series of treatments. The patient has to take the treatments one by one, so the series of treatment actually is a list. Suppose the effect, after taking a treatment, is represented by a Beta random variable $\bw$ with a mean $w = \theta_*^{\top}x$. $\theta_*$ is unknown linear coefficients and $x$ denotes the context, which might include the conditions of the patient and the properties of the treatment. We say that the treatment is successful if the effect $\bw$ is larger than a threshold $\tau$. So a treatment $a$ is successful with probability
+Our setting generalizes several existing works but not limited to them.
+If the expected reward $g$ of a base arm $a$ has the property of monotonicity and Lipschitz continuity with respect to $\theta_{\ast}^{\top}x_{a}$, then the conjunctive, or disjunctive, objective of those expected rewards can not be covered in 
+
+in medical treatment, a patient will be recommended with a series of treatments. The patient has to take the treatments one by one, so the series of treatment actually is a list. Suppose the effect, after taking a treatment, is represented by a Beta random variable $\bw$ with a mean $w = \theta_*^{\top}x$. $\theta_*$ is unknown linear coefficients and $x$ denotes the context, which might include the conditions of the patient and the properties of the treatment. We say that the treatment is successful if the effect $\bw$ is larger than a threshold $\tau$. So a treatment $a$ is successful with probability
 \begin{equation}
 \label{eq:betaTau}
 1 - \frac{B(\tau; \alpha, \beta_0)}{B(\alpha, \beta_0)},
