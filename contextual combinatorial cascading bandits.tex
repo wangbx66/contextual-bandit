@@ -569,7 +569,7 @@ Our proposed algorithm, C$^3$-UCB, is described in Algorithm \ref{alg:ConComCasc
 
 \subsubsection{General Results}
 
-To state our main theorem, we need some definitions. Let $p_{t, A}$ be the {\em probability of full observation of $A$}, that is the probability of observing all base arms of $A = (a_1, \ldots, a_{\abs{A}})$ at time $t$. Let $p^* = \min_{1 \leq t \leq T} \min_{A \in \cS} ~ p_{t, A}$ to be the minimal probability that an action could have all base arms observed over all time. The following is the main theorem on the regret achieved by our C$^3$-UCB algorithm.
+To state our main theorem, we need some definitions. Let $p_{t, A}$ be the {\em probability of full observation of $A$}, that is the probability of observing all base arms of $A = (a_1, \ldots, a_{\abs{A}})$ at time $t$. In the same spirit of \cite{kveton2015combinatorial}, let $p^* = \min_{1 \leq t \leq T} \min_{A \in \cS} ~ p_{t, A}$ to be the minimal probability that an action could have all base arms observed over all time. The following is the main theorem on the regret achieved by our C$^3$-UCB algorithm.
 
 \begin{theorem} %main theorem
 	\label{thm:main}
@@ -848,12 +848,12 @@ Our setting generalizes several existing works but does not limit to them. Consi
 
 \section{Experiments}
 
-We evaluate $C^3$-UCB in three experiments. In the following experiments, we let the position discounts $\gamma_k, k\leq K$ have the form of $\gamma^{k-1}$ for some $\gamma$. 
+We evaluate $C^3$-UCB in three experiments. In the following experiments, we let the position discounts $\gamma_k$ have the form of $\gamma^{k-1}$ for some $\gamma$. 
 
 \subsection{Synthetic Data}
 \label{sec:ExpSyn}
 
-In the first experiment, we compare $C^3$-UCB to CombCascade on synthetic problems. This problem is a contextual cascading bandit with $L=100$ items and $K=4$, where at each time $t$ the agent recommends $K$ items to the user. At first, we randomly choose $\theta \in \RR^{d-1}$ with $\|\theta \|_2 = 1$ and let $\theta_* = (\frac{\theta}{2}, \frac{1}{2})$. Then at each time $t$, we randomly assign $x'_{t,a} \in \RR^{d-1}$ with $\|x_{t,a}\| = 1$ to arm $a$ and use $x_{t,a} = (x'_{t,a}, 1)$ to be the context information for arm $a$. This processing will guarantee the inner product $\theta_*^{\top}x_{t,a} = \frac{\theta^{\top}x + 1}{2} \in [0,1]$. Next we generate the weight for arm $a$ at time $t$ by a random sample from Bernoulli distribution with mean $\theta_*^{\top}x_{t,a}$.
+In the first experiment, we compare $C^3$-UCB to CombCascade on synthetic problems. This problem is a contextual cascading bandit with $L=100$ items and $K=4$, where at each time $t$ the agent recommends $K$ items to the user. At first, we randomly choose $\theta \in \RR^{d-1}$ with $\|\theta \|_2 = 1$ and let $\theta_* = (\frac{\theta}{2}, \frac{1}{2})$. Then at each time $t$, we randomly assign $x'_{t,a} \in \RR^{d-1}$ with $\|x_{t,a}\|_2 = 1$ to arm $a$ and use $x_{t,a} = (x'_{t,a}, 1)$ to be the context information for arm $a$. This processing will guarantee the inner product $\theta_*^{\top}x_{t,a} = \frac{\theta^{\top}x + 1}{2} \in [0,1]$. Next we generate the weight for arm $a$ at time $t$ by a random sample from Bernoulli distribution with mean $\theta_*^{\top}x_{t,a}$.
 
 We experiment on four settings. Under each setting, the learning agent chooses a set of $K$ items out of $L$ ground items. The first two are of the disjunctive objective where the learning agent observes from the first one of the chosen $K$ items until first one with weight $1$; the last two are of conjunctive objective where the learning agent observes from the first item until the first one with weight $0$. Notice that with $\gamma \leq 1$, the oracle to select a feasible action is to select the set of $K$ items with highest UCBs; $\gamma < 1$ will force the items in the optimal action list in the decreasing order of their UCBs and we also use this order when $\gamma = 1$. The results are shown in Fig.~\ref{fig:synthetic} and our algorithm outperforms {\it CombCascade} algorithm because they do not make use of the context information.
 
@@ -912,7 +912,7 @@ The following lemma provides the important result on the regret at each time $t$
 	%and $f(A_t^*, \bU_t) \leq f(A, \bU_t)$, 
 	then we have
 	$$
-		R(t, \bA_t) \leq B \sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, \ba_k}}_{\bV_{t-1}^{-1}}.
+		R^{\alpha}(t, \bA_t) \leq B \sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, \ba_k}}_{\bV_{t-1}^{-1}}.
 	$$
 \end{lemma}
 \begin{proof}
@@ -922,7 +922,7 @@ The following lemma provides the important result on the regret at each time $t$
 	\end{align*}
 	where $f(\bA_t^{\bU_t}, \bU_t) = \max_{A \in \cS} f(A, \bU_t)$. The first inequality is because we choose $\bA_t$ by the $\alpha$-approximation oracle with input $\bU_t$; the second inequality is because the maximum of $f(\bA_t^{\bU_t}, \bU_t)$ given $\bU_t$; the third inequality is by the monotonicity of $f$ and the property $\bU_t \geq w_t$. Then
 	\begin{align*}
-		R(t, \bA_t) = &\alpha f(A_t^*, w_t) - f(\bA_t, w_t) \\
+		R^{\alpha}(t, \bA_t) = &\alpha f(A_t^*, w_t) - f(\bA_t, w_t) \\
 		\leq &f(\bA_t, \bU_t) - f(\bA_t, w_t).
 	\end{align*}
 	By Lipschitz continuity of $f$ and the definition of $\bU_t$ in Eq.\eqref{eq:defU},
@@ -931,26 +931,26 @@ The following lemma provides the important result on the regret at each time $t$
 	$$
 	Then we have
 	\begin{align*}
-		R(t, A) \leq &f(\bA_t, \bU_t) - f(\bA_t, w_t) \\
+		R^{\alpha}(t, A) \leq &f(\bA_t, \bU_t) - f(\bA_t, w_t) \\
 		\leq &B \sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t, \ba_k^t}}_{\bV_{t-1}^{-1}}.
 	\end{align*}
 \end{proof}
 
-Notice that the upper bound of $R(t, \bA_t)$ is in terms of all base arms of $\bA_t$. However, it is hard to estimate an upper bound for $\sum_{t=1}^T \sum_{k=1}^{\abs{\bA_t}} \norm{ x_{t, \ba_k^t} }_{ \bV_{t-1}^{-1} }$ because $\bV_t$ only contains information of observed base arms. Thus we need the following lemma.
+Notice that the upper bound of $R^{\alpha}(t, \bA_t)$ is in terms of all base arms of $\bA_t$. However, it is hard to estimate an upper bound for $\sum_{t=1}^T \sum_{k=1}^{\abs{\bA_t}} \norm{ x_{t, \ba_k^t} }_{ \bV_{t-1}^{-1} }$ because $\bV_t$ only contains information of observed base arms. Thus we need the following lemma.
 
 \begin{lemma} %lem:DeltaEsimateWithP*
 	\label{lem:DeltaEsimateWithP*}
 	Suppose the equation (\ref{eq:estimateTheta}) holds for time $t-1$. Then
 	$$
-	\EE_t[R(t, \bA_t)] \leq \frac{B}{p^*} \EE_t \left[ \bbeta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right].
+	\EE[R^{\alpha}(t, \bA_t) | \cH_t] \leq \frac{B}{p^*} \EE \left[ \left.\bbeta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right| \cH_t \right].
 	$$
 \end{lemma}
 \begin{proof}
 	\begin{align}
-		&\EE[R(t, \bA_t)|\cH_t]  \nonumber \\
-		=& \EE \left[ \left. R(t, \bA_t) \EE \left[ \left. \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t = \abs{\bA_t}\} \right| \bA_t \right]  \right| \cH_t \right] \label{eq:addOt}\\
-		=& \EE \left[ \left. R(t, \bA_t) \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t = \abs{\bA_t}\}  \right| \cH_t \right] \label{eq:removeE}\\
-		\leq &\frac{1}{p^{\ast}} \EE \left[ \left. R(t, \bA_t) \bOne\{\bO_t = \abs{\bA_t}\}  \right| \cH_t \right] \label{eq:relaxpstar}\\
+		&\EE[R^{\alpha}(t, \bA_t)|\cH_t]  \nonumber \\
+		=& \EE \left[ \left. R^{\alpha}(t, \bA_t) \EE \left[ \left. \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t = \abs{\bA_t}\} \right| \bA_t \right]  \right| \cH_t \right] \label{eq:addOt}\\
+		=& \EE \left[ \left. R^{\alpha}(t, \bA_t) \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t = \abs{\bA_t}\}  \right| \cH_t \right] \label{eq:removeE}\\
+		\leq &\frac{1}{p^{\ast}} \EE \left[ \left. R^{\alpha}(t, \bA_t) \bOne\{\bO_t = \abs{\bA_t}\}  \right| \cH_t \right] \label{eq:relaxpstar}\\
 		\leq &\frac{B}{p^{\ast}} \EE \left[ \left. \sum_{k=1}^{\abs{\bA_t}} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}} \bOne\{\bO_t = \abs{\bA_t}\}  \right| \cH_t \right] \label{eq:useradiusbound}\\
 		\leq &\frac{B}{p^{\ast}} \EE \left[ \left. \sum_{k=1}^{\bO_t} \gamma_k \bbeta_{t-1}(\delta)\norm{x_{t,a_k}}_{\bV_{t-1}^{-1}} \right| \cH_t \right]. \label{eq:relaxindicator}
 	\end{align}
@@ -1149,13 +1149,13 @@ Now we are ready to prove the main theorem.
 \begin{proof}[ of Theorem \ref{thm:main}]
 	Suppose inequality (\ref{eq:estimateTheta}) holds for all time $t$, which is true with probability $1-\delta$. Then we have
 	\begin{align}
-	&R(T) = \EE \left[\sum_{t=1}^{n} \EE_{t}[R(t, \bA_t)] \right] \notag\\
-	&\leq \EE\left[\sum_{t=1}^{n} \frac{B}{p^*} \EE_t \left[\bbeta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}\right] \right] \label{eq:pfMdeltaEst}\\
-	&\leq \EE\left[\sum_{t=1}^{n} \frac{B}{p^*} \bbeta_{T}(\delta) \EE_t \left[ \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}\right] \right] \label{eq:pfMbeta}\\
-	&\leq \EE \left[\frac{B}{p^*} \bbeta_T(\delta) \sqrt{\left(\sum_{t=1}^{n} \bO_t\right) \left( \sum_{t=1}^{n} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right)} \right ]  \label{eq:pfMmeanEq}\\
-	&\leq \EE\left[\frac{B}{p^*} \left( R \sqrt{ \ln \left( \frac{\det(\bV_n)}{\lambda^d \delta^2} \right)} + \sqrt{\lambda} \right) \right. \notag\\
+	&R^{\alpha}(n) = \EE \left[\sum_{t=1}^{n} \EE[R^{\alpha}(t, \bA_t) | \cH_t] \right] \notag\\
+	&\leq \EE\left[\sum_{t=1}^{n} \frac{B}{p^*} \EE \left[ \left. \bbeta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}\right| \cH_t \right] \right] \label{eq:pfMdeltaEst}\\
+	&\leq \EE\left[\sum_{t=1}^{n} \frac{B}{p^*} \bbeta_{n}(\delta) \EE \left[ \left. \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right| \cH_t \right] \right] \label{eq:pfMbeta}\\
+	&\leq \EE \left[\frac{B}{p^*} \bbeta_n(\delta) \sqrt{\left(\sum_{t=1}^{n} \bO_t\right) \left( \sum_{t=1}^{n} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right)} \right ]  \label{eq:pfMmeanEq}\\
+	&\leq \EE\left[\frac{B}{p^*} \left( R \sqrt{ \ln \left( \frac{\det(\bV_n)}{\lambda^d / n} \right)} + \sqrt{\lambda} \right) \right. \notag\\
 	& \left. \qquad \qquad \cdot \sqrt{nK \cdot 2\ln \left(\frac{\det(\bV_n)}{\lambda^d} \right)} \right] \label{eq:pfMsumXi}\\
-	&\leq \frac{\sqrt{2}B}{p^*} \left(R\sqrt{ d \ln \left( \frac{1 + C_\gamma n/(\lambda d)}{\delta^{2/d}} \right) } + \sqrt{\lambda} \right) \notag\\
+	&\leq \frac{\sqrt{2}B}{p^*} \left(R\sqrt{ \ln[ (1 + C_\gamma n/(\lambda d))^d n ]} + \sqrt{\lambda} \right) \notag\\
 	&\qquad \qquad \cdot \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))}. \label{eq:pfMdetEst}
 	\end{align}
 	Inequality \eqref{eq:pfMdeltaEst} is by Lemma \ref{lem:DeltaEsimateWithP*}. 
@@ -1377,7 +1377,7 @@ The key difference from the proof of Theorem \ref{thm:main} is the following lem
 	
 	Then, similar to the derivation from Eq.\eqref{eq:addOt} to Eq.\eqref{eq:relaxpstar}, we have
 	\begin{align}
-		&\EE_t[R(t, \bA_t)] \leq 2 \EE[R(t, \bB_t) \left. \right| \cH_t] \nonumber \\
+		&\EE[R(t, \bA_t) | \cH_t] \leq 2 \EE[R(t, \bB_t) \left. \right| \cH_t] \nonumber \\
 		=& 2 \EE \left[ \left. R(t, \bB_t) \EE \left[ \left. \frac{1}{p_{t, \bB_t}} \bOne\{\bO_t\geq\abs{\bB_t}\} \right| \bB_t \right]  \right| \cH_t \right] \nonumber \\
 		=& 2\EE \left[ \left. R(t, \bB_t) \frac{1}{p_{t, \bB_t}} \bOne\{\bO_t\geq\abs{\bB_t}\}  \right| \cH_t \right] \nonumber \\
 		\leq &\frac{8}{f_{t}^{\ast}} \EE \left[ \left. R(t, \bB_t) \bOne\{\bO_t\geq\abs{\bB_t}\}  \right| \cH_t \right]. \label{eq:btOneotbt}
@@ -1415,9 +1415,9 @@ Then we have the proof of Theorem \ref{thm:and}.
 	\leq& \EE \left[\sum_{t=1}^{n} \frac{8}{f^{\ast}} \EE_t\left[\bbeta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right] \right] \label{eq:pfMCdeltaEst}\\
 	\leq& \EE\left[\frac{8}{f^{\ast}} \bbeta_{n}(\delta) \sum_{t=1}^{n} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right] \label{eq:pfMCbeta}\\
 	\leq& \EE\left[\frac{8}{f^{\ast}} \bbeta_{n}(\delta) \sqrt{ \left(\sum_{t=1}^{n} \bO_t \right) \EE_t \left[\sum_{t=1}^{n} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right]} \right] \label{eq:pfMCmeaneq}\\
-	\leq& \EE \left[\frac{\sqrt{128}}{f^{\ast}} \left(\sqrt{\ln\left(\frac{\det(\bV_n)}{\lambda^d \delta^2}\right) } + \sqrt{\lambda} \right) \right. \notag\\
+	\leq& \EE \left[\frac{\sqrt{128}}{f^{\ast}} \left(\sqrt{\ln\left(\frac{\det(\bV_n)}{\lambda^d /n}\right) } + \sqrt{\lambda} \right) \right. \notag\\
 	&\qquad \qquad \left. \cdot \sqrt{nK \cdot 2\ln \left(\frac{\det(\bV_n)}{\lambda^d} \right)} \right] \label{eq:pfMCsumXi}\\
-	\leq& \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \left(\sqrt{d \ln \left( \frac{1 + C_\gamma n/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda} \right) \notag\\
+	\leq& \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \left(\sqrt{ \ln [ (1 + C_\gamma n/(\lambda d))^d n]} + \sqrt{\lambda} \right) \notag\\
 	&\qquad \qquad \cdot \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))}. \label{eq:pfMCdetEst}
 	\end{align}
 \end{proof}
