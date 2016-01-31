@@ -136,12 +136,12 @@
 % Employ the following version of the ``usepackage'' statement for
 % submitting the draft version of the paper for review.  This will set
 % the note in the first column to ``Under review.  Do not distribute.''
-%\usepackage{icml2016} 
+\usepackage{icml2016} 
 
 % Employ this version of the ``usepackage'' statement after the paper has
 % been accepted, when creating the final version.  This will set the
 % note in the first column to ``Proceedings of the...''
-\usepackage[accepted]{icml2016}
+%\usepackage[accepted]{icml2016}
 
 
 % The \icmltitle you define below is probably too long as a header.
@@ -253,6 +253,8 @@ The organization of this paper is as follows: section 2 compares our work with p
 
 %\shuai{Our proofs build on previous work but also generalize their proof in our setting. Two challenges have been dealt with, partial observability on contextual bandits and general reward function with position discounts.  }
 
+
+
 \begin{table}
 	\renewcommand{\arraystretch}{1.1}
 	\centering
@@ -274,7 +276,7 @@ The organization of this paper is as follows: section 2 compares our work with p
 	\label{table:outline}
 \end{table} 
 
-%Stochastic online learning with combinatorial actions has been studied with semi-bandit feedback \cite{chen2013combinatorial}.
+
 
 \section{Related Work}
 
@@ -707,23 +709,24 @@ If our setting restricts to contextual combinatorial bandits \cite{qin2014contex
 
 Our algorithm can also apply to the setting of \cite{chen2013combinatorial} with context information. However, the probability $p^{\ast}$ in our results should be the probability that all base arms in $\tilde{S}$ (in their notations) will be triggered.
 
-Our setting generalizes several existing works but not limited to them.
-If the expected reward $g$ of a base arm $a$ has the property of monotonicity and Lipschitz continuity with respect to $\theta_{\ast}^{\top}x_{a}$, then the conjunctive, or disjunctive, objective of those expected rewards can not be covered in 
+Our setting generalizes several existing works but does not limit to them. Consider in network routing problem, the observed information would be the latency on specific edges. The latency, or {\it weight}, on an edge is an exponential variable with mean $\theta_{\ast}^{\top}x$. Suppose we treat an edge as blocked if the latency on it is larger than some tolerance $\tau$. And we wait the edge to respond for at most $2\tau$ time. Then the real observed latency is new random variable from a cut-off exponential distribution with mean $\theta_{\ast}^{\top}x$. Then the edge is unblocked, or with reward $1$, if the new random vairable is less than the tolerance $\tau$ and the expectation is a function, say $g$, of $\theta_{\ast}^{\top}x$. It is not difficult to check that $g$ satisfies the properties of monotonicity and Lipschitz continuity. And the expected reward of a path is a composition of the expected reward function of conjunctive objective, defined in Eq.~\eqref{eq:AndRewardFunc}, and the function $g$. (In original formulation, $g$ is the identity function, where $g(w) = w$.) Such an expected reward function satisfies the properties of monotonicity and Lipschitz continuity and can not be represented in conjunctive/disjunctive objectives, like in \cite{kveton2015cascading,kveton2015combinatorial}.
 
-in medical treatment, a patient will be recommended with a series of treatments. The patient has to take the treatments one by one, so the series of treatment actually is a list. Suppose the effect, after taking a treatment, is represented by a Beta random variable $\bw$ with a mean $w = \theta_*^{\top}x$. $\theta_*$ is unknown linear coefficients and $x$ denotes the context, which might include the conditions of the patient and the properties of the treatment. We say that the treatment is successful if the effect $\bw$ is larger than a threshold $\tau$. So a treatment $a$ is successful with probability
-\begin{equation}
-\label{eq:betaTau}
-1 - \frac{B(\tau; \alpha, \beta_0)}{B(\alpha, \beta_0)},
-\end{equation}
-where $B$ is the incomplete Beta function, $\alpha = \frac{\beta_0 w}{1- w} > 1$ and $\beta_0 > 1$ is a fixed number. We say that a series of treatment $A = (a_1, \ldots, a_{|A|})$ is successful (value $1$) if and only if all treatments in $A$ are successful. So the expected reward function is
-$$
-f(A, w) = \prod_{k=1}^{|A|} (1 - \frac{B(\tau; \alpha_{a_k}, \beta_0)}{B(\alpha_{a_k}, \beta_0)}),
-$$
-where $\alpha_{a_k} = \frac{\beta_0 w_{a_k}}{1- w_{a_k}}$ and $w_a = \theta_*^{\top}x_{a}$.
+%Our setting generalizes several existing works but not limited to them. If the expected reward $g$ of a base arm $a$ has the property of monotonicity and Lipschitz continuity with respect to $\theta_{\ast}^{\top}x_{a}$, then the conjunctive, or disjunctive, objective of those expected rewards can not be covered in 
 
-By the expression of $f$, it is a function of the expected reward $w$. Next, because $B(\tau; \alpha, \beta_0), B(\alpha, \beta_0)$ are decreasing with respect to $\alpha$ and $\alpha$ is in increasing with respect to $w$, then Eq.~\eqref{eq:betaTau} is increasing with respect to $w$. Therefore, the expected reward has the property of monotonicity. For the Lipschitz continuity, by the Lipschitz continuity of expected reward function with conjunctive objective, defined in Eq.~\eqref{eq:AndRewardFunc}, and the continuity of Beta function, we can get $f$ also satisfies the Lipschitz continuity.
+%in medical treatment, a patient will be recommended with a series of treatments. The patient has to take the treatments one by one, so the series of treatment actually is a list. Suppose the effect, after taking a treatment, is represented by a Beta random variable $\bw$ with a mean $w = \theta_*^{\top}x$. $\theta_*$ is unknown linear coefficients and $x$ denotes the context, which might include the conditions of the patient and the properties of the treatment. We say that the treatment is successful if the effect $\bw$ is larger than a threshold $\tau$. So a treatment $a$ is successful with probability
+% \begin{equation}
+% \label{eq:betaTau}
+% 1 - \frac{B(\tau; \alpha, \beta_0)}{B(\alpha, \beta_0)},
+% \end{equation}
+% where $B$ is the incomplete Beta function, $\alpha = \frac{\beta_0 w}{1- w} > 1$ and $\beta_0 > 1$ is a fixed number. We say that a series of treatment $A = (a_1, \ldots, a_{|A|})$ is successful (value $1$) if and only if all treatments in $A$ are successful. So the expected reward function is
+% $$
+% f(A, w) = \prod_{k=1}^{|A|} (1 - \frac{B(\tau; \alpha_{a_k}, \beta_0)}{B(\alpha_{a_k}, \beta_0)}),
+% $$
+% where $\alpha_{a_k} = \frac{\beta_0 w_{a_k}}{1- w_{a_k}}$ and $w_a = \theta_*^{\top}x_{a}$.
 
-Thus this expected reward function satisfies our setting but can not be fit into previous works, that is, can not be represented by the reward functions with disjunctive/conjunctive objectives. Similarly, there exists a lot of such kind of reward functions, where the real reward is obtained by a second process of observed weight.
+%By the expression of $f$, it is a function of the expected reward $w$. Next, because $B(\tau; \alpha, \beta_0), B(\alpha, \beta_0)$ are decreasing with respect to $\alpha$ and $\alpha$ is in increasing with respect to $w$, then Eq.~\eqref{eq:betaTau} is increasing with respect to $w$. Therefore, the expected reward has the property of monotonicity. For the Lipschitz continuity, by the Lipschitz continuity of expected reward function with conjunctive objective, defined in Eq.~\eqref{eq:AndRewardFunc}, and the continuity of Beta function, we can get $f$ also satisfies the Lipschitz continuity.
+
+%Thus this expected reward function satisfies our setting but can not be fit into previous works, that is, can not be represented by the reward functions with disjunctive/conjunctive objectives. Similarly, there exists a lot of such kind of reward functions, where the real reward is obtained by a second process of observed weight.
 
 % network latency
 
@@ -847,7 +850,7 @@ Thus this expected reward function satisfies our setting but can not be fit into
 
 We evaluate $C^3$-UCB in three experiments. In the following experiments, we let the position discounts $\gamma_k, k\leq K$ have the form of $\gamma^{k-1}$ for some $\gamma$. 
 
-\subsection{Synthetic}
+\subsection{Synthetic Data}
 \label{sec:ExpSyn}
 
 In the first experiment, we compare $C^3$-UCB to CombCascade on synthetic problems. This problem is a contextual cascading bandit with $L=100$ items and $K=4$, where at each time $t$ the agent recommends $K$ items to the user. At first, we randomly choose $\theta \in \RR^{d-1}$ with $\|\theta \|_2 = 1$ and let $\theta_* = (\frac{\theta}{2}, \frac{1}{2})$. Then at each time $t$, we randomly assign $x'_{t,a} \in \RR^{d-1}$ with $\|x_{t,a}\| = 1$ to arm $a$ and use $x_{t,a} = (x'_{t,a}, 1)$ to be the context information for arm $a$. This processing will guarantee the inner product $\theta_*^{\top}x_{t,a} = \frac{\theta^{\top}x + 1}{2} \in [0,1]$. Next we generate the weight for arm $a$ at time $t$ by a random sample from Bernoulli distribution with mean $\theta_*^{\top}x_{t,a}$.
@@ -855,7 +858,7 @@ In the first experiment, we compare $C^3$-UCB to CombCascade on synthetic proble
 We experiment on four settings. Under each setting, the learning agent chooses a set of $K$ items out of $L$ ground items. The first two are of the disjunctive objective where the learning agent observes from the first one of the chosen $K$ items until first one with weight $1$; the last two are of conjunctive objective where the learning agent observes from the first item until the first one with weight $0$. Notice that with $\gamma \leq 1$, the oracle to select a feasible action is to select the set of $K$ items with highest UCBs; $\gamma < 1$ will force the items in the optimal action list in the decreasing order of their UCBs and we also use this order when $\gamma = 1$. The results are shown in Fig.~\ref{fig:synthetic} and our algorithm outperforms {\it CombCascade} algorithm because they do not make use of the context information.
 
 
-\subsection{MovieLens}
+\subsection{MovieLens Data}
 
 In this experiment, we evaluate $C^3$-UCB on a problem of contextual recommendations. We experiment on {\it MovieLens} dataset \cite{lam2013movie} of 2015.
 
@@ -865,7 +868,7 @@ In this problem, any combination of $K$ movies is a feasible action. Notice that
 
 First, we randomly choose $L=200$ movies and recommend $K=4$ movies on each round. We experiment with $\gamma=1$ (no position discount) and $\gamma=0.9$, and compare our algorithm with {\it CombCascade}. The results are shown in Fig.~\ref{fig:movielens} and demonstrate the advantage to involve context information in real applications.
 
-\subsection{Network Routing}
+\subsection{Network Routing Data}
 
 In the last experiment, we evaluate $C^3$-UCB on a problem of network routing with the {\it RocketFuel} dataset \cite{spring2004measuring}.
 
@@ -887,7 +890,7 @@ We also experiment on the influence of different $\gamma$'s to the regret. In re
 
 \section{Conclusions}
 
-In this paper, we propose contextual combinatorial cascading bandits with position discounts, a class of contextual combinatorial bandits with partial observations. 
+In this paper, we propose contextual combinatorial cascading bandits with position discounts, where each action is an ordered list and only a prefix of the action can be observed each time. We propose a C$^3$-UCB algorithm and prove a cumulative regret bound for general reward functions and two special reward functions. The experiments conducted demonstrate the advantage to involve context information and position discounts. In the next, we want to derive a lower bound for this problem.
 
 
 % In the unusual situation where you want a paper to appear in the
