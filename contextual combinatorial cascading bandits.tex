@@ -38,7 +38,8 @@
 \newcommand{\theHalgorithm}{\arabic{algorithm}}
 
 % my settings
-\usepackage{amssymb,amsfonts,amsmath,bbm}
+\usepackage{amsmath}\allowdisplaybreaks
+\usepackage{amssymb,amsfonts,bbm}
 \usepackage{mathrsfs}
 \usepackage[all]{xy}
 \usepackage{empheq}
@@ -99,7 +100,7 @@
 }
 \newcommand{\CEqDeltaEstAnd}{
 	$$
-	\EE_t [R(t, \bA_t) ] \leq \frac{8}{f^{\ast}} \EE_t \left[ \bbeta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right].
+	\EE [R(t, \bA_t) |\cH_t ] \leq \frac{8}{f^{\ast}} \EE \left[ \bbeta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} | \cH_t\right].
 	$$
 }
 \newcommand{\CLemmaSumXiEstimateInDet}{
@@ -242,26 +243,15 @@ This generalization allows us to covers new realistic scenarios not covered in
 %In this paper, we propose a general framework for contextual cascading bandits encompassing the applications of recommendations and network routing problems as special cases. In addition, we take position discounts into consideration. In recommendations, different positions usually give different values. In advertisement display, there are different positions in a website, the front middle, the left/right column and the bottom, and the positions in the front middle might charge highest price. Users are most satisfied if the first returned result is what they want. We introduce the position discounts to model this variant of rewards.
 
 
-Putting context, position discounts, and generalized reward function together, we call
-	our learning model the {\it contextual combinatorial cascading bandits}. 
-We formally define this model, provide a complete algorithm and its regret analysis,
-	and conduct experiments on both synthetic and real-world recommendation
-	and network routing datasets to validate our approach.
+%Putting context, position discounts, and generalized reward function together, we call our learning model the {\it contextual combinatorial cascading bandits}. We formally define this model, provide a complete algorithm and its regret analysis, and conduct experiments on both synthetic and real-world recommendation and network routing datasets to validate our approach.
 
-The main contributions of this paper can be summarized as follows: (1) we propose a general framework  that incorporates contextual information,
-position discounts, and general reward function to cover many real-world application scenarios; 
-(2) we propose $C^3$-UCB, an efficient algorithm for contextual combinatorial cascading bandit, with regret bound as $\tilde{O}(\sqrt{n})$ for $n$ rounds; (3) we evaluate this algorithm on synthetic 
-	and real-world datasets and the results show that our algorithm effectively
-	incorporates contextual information and position discounts with significant performance gains.
+%The main contributions of this paper can be summarized as follows: (1) we propose a general framework  that incorporates contextual information, position discounts, and general reward function to cover many real-world application scenarios; (2) we propose $C^3$-UCB, an efficient algorithm for contextual combinatorial cascading bandit, with regret bound as $\tilde{O}(\sqrt{n})$ for $n$ rounds; (3) we evaluate this algorithm on synthetic and real-world datasets and the results show that our algorithm effectively incorporates contextual information and position discounts with significant performance gains.
 
-\wei{The last two paragraphs have some repetition. 
-	Is there any technical part in the algorithm and analysis that we would like to 
-	mention in the introduction? So far the intro is only about conceptual additions to the model,
-	and nothing about technical challenges and our solution. 
-	It is ok if conceptual contribution is what we want to emphasize, but if there is any
-	technical contribution we can say, we can also say it here.}
+The organization of this paper is as follows: section 2 compares our work with previous works; section 3 presents the formulation of {\it contextual combinatorial cascading bandits} problem with general reward function and position discounts; section 4 gives our algorithm and main results both on general reward fucntions and two special reward functions; section 5 demonstrates the experimental results; and section 6 gives a final conclusion.
 
-\shuai{Our proofs build on previous work but also generalize their proof in our setting. Two challenges have been dealt with, partial observability on contextual bandits and general reward function with position discounts.  }
+%\wei{The last two paragraphs have some repetition. Is there any technical part in the algorithm and analysis that we would like to mention in the introduction? So far the intro is only about conceptual additions to the model, and nothing about technical challenges and our solution. It is ok if conceptual contribution is what we want to emphasize, but if there is any technical contribution we can say, we can also say it here.}
+
+%\shuai{Our proofs build on previous work but also generalize their proof in our setting. Two challenges have been dealt with, partial observability on contextual bandits and general reward function with position discounts.  }
 
 \begin{table}
 	\renewcommand{\arraystretch}{1.1}
@@ -293,14 +283,10 @@ Table \ref{table:outline} summarizes the different settings of these work,
 	which we will explain in details next.
 A comparison of regret bounds by different methods is deferred to Section \ref{sec:diss},
 	after we provide the full result of our regret bound.
-	
-\wei{I revised the table, including adding a column about general reward, to match the introduction.}
 
 The work of \cite{kveton2015cascading} introduced the cascading model to the multi-armed bandit framework with disjunctive objective, where the set of feasible actions form a uniform matroid, and the reward of an action is $1$ if there is at least one ``good'' item in the list. 
 The combinatorial cascading bandits of \cite{kveton2015combinatorial} (refered to as 'CombCascade' in Table \ref{table:outline}) generalized the framework, where each feasible action is a subset of ground items under combinatorial constraints; it studied a problem of combinatorial bandits with conjunctive objective, where each feasible action is a chain of items, and reward is $1$ if all items are "good". 
 Our work generalizes these model and involves both contextual information and position discounts.
-
-\wei{I removed all references to "weight" so far. I think it is a bit unclear and could be confusing.}
 
 The experiments of \cite{kveton2015cascading} found that recommending items in increasing order of their UCBs (meaning the items with lower preference comes first) has a better performance than in decreasing order of their UCBs.
 This unnatural result is perhaps because the order of items does not affect the reward and thus
@@ -308,16 +294,13 @@ This unnatural result is perhaps because the order of items does not affect the 
 	in the cascade.
 The position discounts introduced in this paper forces the recommended set in the decreasing order 
 	of UCBs, which is more realistic.
-The work of \cite{combes2015learning} considered a similar recommendation model of cascading bandits with position discounts, where all users are characterized into different classes and each item has a class-specific "reward". 
-\wei{So, does that mean \cite{combes2015learning}, comparing to ours, only lacks of contextual
-	information? or it our reward function is also more general? It is not very clear to me.}
-\shuai{They dealt with discounted 'or' reward. At each time, suppose the user is from class $c$, then recommending her with $K$ items from item-class $h(c)$. We have more general reward function and more general context information.}
+The work of \cite{combes2015learning} considered a similar cascading model to that of \cite{kveton2015cascading} with a particular case of contextual information, where at each time step, the category, which the user belongs to, is known and the user is recommended with $K$ items from a user-related group of items. Under this setting, they considered position discounts.
 In our setting, users and items are represented by general feature vectors.
+
 Our work considers contextual combinatorial bandits with cascading feedback and nonlinear reward. The paper \cite{li2010contextual} studied multi-armed bandit with context information, which recommends one item a time. A recent work \cite{qin2014contextual} (refered to as 'C$^2$UCB' in Table \ref{table:outline}) introduced contextual combinatorial bandit with semi-bandit feedback and nonlinear reward. Their feedback is more informative than ours. We relax the feedback from semi-bandit to cascading, yet our algorithm achieves the same order of regret bound.
 
 There have been several pieces of work on partial monitoring MAB, but the results are not applicable to our setting. The papers of \cite{agrawal1989asymptotically,bartok2012adaptive} studied partial monitoring problems but their algorithms are inefficient in our setting. The work \cite{lin2014combinatorial} studied combinatorial partial monitoring problem and their feedback is a fixed (with respect to chosen action) combination of weights. In our setting, if chosen action is fixed, the number of observed items varies with the user's behavior, thus the combination constituting feedback is not fixed.
 
-\wei{please cite the arxiv version below}
 \citet{chen2015combinatorial} consider general reward functions and probabilistic triggering of base arms
 	in the  stochastic combinatorial semi-bandit model (refered to as 'CUCB' in Table \ref{table:outline}).
 Cascading bandits can be viewed as a particular type of probabilistic triggering, where
@@ -446,7 +429,11 @@ Let $\cH_t$ denote the history before the learning agent chooses action at time 
 \label{eq:expectation}
 \EE[\bw_{t}(a) | \cH_t] = \theta_{\ast}^{\top} x_{t,a},
 \end{equation}
-where $\theta_{\ast}$ is an unknown $d$-dimensional vector with the assumption that $\norm{\theta_{\ast}}_2 \leq 1$ and $0 \leq \theta_{\ast}^{\top} x_{t,a} \leq 1$ for all $t, a$. Define by $w_{t,a} = \theta_{\ast}^{\top} x_{t,a}$ the expected weight of base arm $a$ at time $t$. We assume that each $\bw_{t}(a)$ is a random variable with $R$-sub-Gaussian tail, which means that for all $\lambda \in \RR$, 
+where $\theta_{\ast}$ is an unknown $d$-dimensional vector with the assumption that $\norm{\theta_{\ast}}_2 \leq 1$ and $0 \leq \theta_{\ast}^{\top} x_{t,a} \leq 1$ for all $t, a$. Denote by 
+$$
+w_{t,a} = \theta_{\ast}^{\top} x_{t,a}
+$$
+the expected weight of base arm $a$ at time $t$. We assume that each $\bw_{t}(a)$ is a random variable with $R$-sub-Gaussian tail, which means that for all $\lambda \in \RR$, 
 $$
 \EE[\exp(\lambda(\bw_{t}(a) - \theta_{\ast}^{\top} x_{t,a})) | \cH_t] \leq \exp(\lambda^2 R^2 / 2).
 $$
@@ -455,7 +442,7 @@ Recall that the random variable $\bO_t$ is the number of observed base arms in $
 
 We introduce position discounts $\gamma_k \in [0,1], k\leq K$. For example in website recommendations by a search engine, if the user selects the first website, the learning agent will receive reward $1$; and if the user selects the $k$-th website, the learning agent will receive reward $\gamma_k$.
 
-The reward function on round $t$ is an application dependent function. We assume the expected reward of action $A$ is a function $f(A,w)$ of {\it expected weights} $w = (w(a))_{a \in E} \in [0,1]^{E}$ (at time $t$, $w = (w_t(a))_{a \in E}$) and satisfies the following two assumptions.
+The reward function on round $t$ is an application dependent function. We assume the expected reward of action $A$ is a function $f(A,w)$ of {\it expected weights} $w = (w(a))_{a \in E} \in [0,1]^{E}$ (at time $t$, $w = (w_t(a))_{a \in E} = (\theta_{\ast}x_{t,a})_{a \in E}) $ and satisfies the following two assumptions.
 
 \paragraph{Monotonicity}
 The expected reward function $f(A, w)$ is a non-decreasing with respect to $w$: for any $w,w'\in [0,1]^E$, if $w(a) \leq w'(a)$, we have $f(A, w) \leq f(A, w')$.
@@ -467,41 +454,18 @@ $$
 $$
 where $A = (a_1, \ldots, a_{|A|})$.
 
-The assumption of Lipschitz continuity gives an estimate of changes in reward function. To obtain a good estimation of reward function, the position $k$ with large discount value $\gamma_k$ needs a good estimation of $w(a_k)$. This means the positions with large discount $\gamma_k$ are more important to the reward function. For example in website recommendations, the learning agent will receive highest reward if the user selects the first item, so the first position is most important. 
-
-\wei{"large discount is more important" sounds weird. Usually large discount means cheaper and less
-	important products. 
-Perhaps we should seriously consider not using "position discount". It is a position weight, but
-since weight is already used, we should call it something else. Perhaps "position factor"? 	
-}
-\shuai{What if I change this part by 'large $\gamma_k$'?}
+The assumption of Lipschitz continuity gives an estimate of changes in reward function. To obtain a good estimation of reward function, the position $k$ with large $\gamma_k$ needs a good estimation of $w(a_k)$. This means the positions with large $\gamma_k$ are more important to the reward function. For example in website recommendations, the learning agent will receive highest reward if the user selects the first item, so the first position is most important. 
 
 Notice that we do not require the knowledge how $f(A, w)$ is defined. We only assume that the agent has access to an oracle $\cO_{\cS}(w)$ that outputs recommended action $A$. More precisely, an oracle $\cO_{\cS}(w)$ is called an $\alpha$-approximation oracle for some $\alpha \leq 1$, if on given input $w$, the oracle returns an action $A = \cO_{\cS}(w) \in \cS$ satisfying $f(A,w) \geq \alpha f(A^*,w)$ where $A^* = \argmax_{A\in\cS} f(A, w)$.
 
 The $\alpha$-regret of action $A$ on time $t$ is
 $$
-R(t, A) = \alpha f_t^{\ast} - f(A, w_t),
+R^{\alpha}(t, A) = \alpha f_t^{\ast} - f(A, w_t),
 $$
-where $f_t^{\ast} = f(A_t^*, w_t)$ and $A_t^* = \argmax_{A\in\cS} f(A, w_t)$. Our goal is to minimize the cumulative (pseudo-)regret
+where $f_t^{\ast} = f(A_t^*, w_t)$, $A_t^* = \argmax_{A\in\cS} f(A, w_t)$ and $w_t = (\theta_{\ast}^{\top}x_{t,a})_{a \in E}$. Our goal is to minimize the $\alpha$-regret
 $$
-R(n) = \sum_{t=1}^n R(t, \bA_t).
+R^{\alpha}(n) = \EE[ \sum_{t=1}^n R^{\alpha}(t, \bA_t)].
 $$
-
-\wei{I think just writing $f(A,w_t)$ misses the context part. 
-	$f$ as such defined is only a function of action $A$ and expected reward $w$, the subscript $t$
-	is part of $w_t$, so is not an effective parameter. 
-	We may need to explicitly write context into $f$, such as
-	$f(A, w_t, x_t)$. 
-	}
-
-
-\wei{About approximation ratio $\alpha$: Do we have an example with an approximation oracle? 
-	If not, we could remove it.
-	It is also ok to keep it, but then in Theorems, like Theorem 4.3, we should say 
-	$\alpha$-regret.
-}
-
-\shuai{There is no experiment with an approximation oracle. But if we want to add some experiment beyond our setting, maybe we can keep it.}	
 	
 \section{Algorithms and Results}
 
@@ -512,7 +476,7 @@ $$
 	\label{alg:ConComCascade}
 	\begin{algorithmic}[1]
 		\STATE {Parameters:}
-		\STATE {\qquad $\gamma_k\in[0,1], k \leq K; \delta > 0; \lambda \geq C_\gamma = \sum_{k=1}^{K} \gamma_k^2$}
+		\STATE {\qquad $\{\gamma_k \in [0,1]\}_{k\leq K}; \delta = \frac{1}{\sqrt{n}}; \lambda \geq C_\gamma = \sum_{k=1}^{K} \gamma_k^2$}
 		\STATE {Initialization:}
 		\STATE {\qquad $\hat{\theta}_0 = 0, \bbeta_0(\delta) = 1, \bV_0 = \lambda I, \bX_0=\emptyset, \bY_0=\emptyset$}
 		
@@ -535,7 +499,9 @@ $$
 	\end{algorithmic}
 \end{algorithm}
 
-At time $t$, we denote $\EE_t[\cdot] = \EE[\cdot | \cH_t]$, where $\cH_t$ is the history a time $t$ before the learning agent chooses her action. By Equation \eqref{eq:expectation}, we have 
+%At time $t$, we denote $\EE_t[\cdot] = \EE[\cdot | \cH_t]$, where $\cH_t$ is the history a time $t$ before the learning agent chooses her action. 
+
+By Equation \eqref{eq:expectation}, we have 
 $$
   \EE[(\gamma_k \bw_{s,\ba_k^s}) | \cH_{s}] = \theta_*^{\top} (\gamma_k x_{s,\ba_k^s}).
 $$
@@ -605,25 +571,26 @@ To state our main theorem, we need some definitions. Let $p_{t, A}$ be the {\em 
 
 \begin{theorem} %main theorem
 	\label{thm:main}
-	Suppose the expected reward function $f(A, w)$ is a function of expected weights and satisfies the requirements of monotonicity and Lipschitz continuity. Assume there is an $\alpha$-approximation oracle $\cO_{\cS}$. Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regret of our algorithm, C$^3$-UCB, satisfies
+	Suppose the expected reward function $f(A, w)$ is a function of expected weights and satisfies the requirements of monotonicity and Lipschitz continuity with bound $B$. Assume there is an $\alpha$-approximation oracle $\cO_{\cS}$. Then the $\alpha$-regret of our algorithm, C$^3$-UCB, satisfies
 	\begin{align}
-		R(n) &\le \frac{\sqrt{2}B}{p^*} \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))}  \nonumber \\
-		&\qquad \cdot \left(R\sqrt{d\ln \left( \frac{1 + C_\gamma n/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda}\right) \nonumber \\
-		&=O\left(\frac{dBR}{p^*} \sqrt{nK} \ln \left(\frac{C_\gamma n}{\delta^{2/d}}\right) \right).
+		R^{\alpha}(n) &\le \frac{\sqrt{2}B}{p^*} \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))}  \nonumber \\
+		&\qquad \cdot \left(R\sqrt{\ln \left[(1 + C_\gamma n/(\lambda d))^d n \right] } + \sqrt{\lambda}\right) \nonumber \\
+		&=O\left(\frac{dBR}{p^*} \sqrt{nK} \ln(C_\gamma n) \right),
 	\end{align}
+	where $R$ is the sub-Gaussian constant and $C_{\gamma} = \sum_{k=1}^K \gamma_k^2 \leq K$.
 \end{theorem}
 \begin{proof} [of Theorem \ref{thm:main}] %proof outline of main theorem
-	The complete proof is in the Appendix. The main idea is to reduce the regret at time $t$, $R(t, \bA_t)$, to the case that all items in $\bA_t$ have been observed. This reduction is challenging for two reasons. First, our setting has contextual information. Second, we consider position discounts $\gamma_k, k \leq K$. 
+	The complete proof is in the Appendix. The main idea is to reduce the regret at time $t$, $R^{\alpha}(t, \bA_t)$, to the case that all items in $\bA_t$ have been observed. This reduction is challenging for two reasons. First, our setting has contextual information. Second, we consider position discounts $\gamma_k, k \leq K$. 
 	
 	Assume $\bA_t = (\ba_1^t, \ldots, \ba_{|\bA_t|}^t)$. Then by monotonicity and Lipschitz continuity, we have
 	$$
-		R(t, \bA_t) \leq B \sum_{k=1}^{|\bA_t|} \bbeta_{t-1}(\delta) \gamma_k \| x_{t, \ba_k^t} \|_{\bV_{t-1}}.
+		R^{\alpha}(t, \bA_t) \leq B \sum_{k=1}^{|\bA_t|} \bbeta_{t-1}(\delta) \gamma_k \| x_{t, \ba_k^t} \|_{\bV_{t-1}}.
 	$$
 	However, it is hard to estimate an upper bound for $\sum_{t=1}^T \sum_{k=1}^{\abs{\bA_t}} \norm{ x_{t, \ba_k^t} }_{ \bV_{t-1}^{-1} }$ because $\bV_t$ only contains information of observed base arms. Thus we need the following deduction.
 	\begin{align*}
-    	&\EE[R(t, \bA_t)|\cH_t] \\
-    	&\qquad = \EE \left[ \left. R(t, \bA_t) \EE \left[ \left. \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t = \abs{\bA_t}\} \right| \bA_t \right]  \right| \cH_t \right]\\
-    	&\qquad \leq \frac{1}{p^*} \EE \left[ \left. R(t, \bA_t) \bOne\{\bO_t = \abs{\bA_t}\} \right| \cH_t \right].
+    	&\EE[R^{\alpha}(t, \bA_t)|\cH_t] \\
+    	&\qquad = \EE \left[ \left. R^{\alpha}(t, \bA_t) \EE \left[ \left. \frac{1}{p_{t, \bA_t}} \bOne\{\bO_t = \abs{\bA_t}\} \right| \bA_t \right]  \right| \cH_t \right]\\
+    	&\qquad \leq \frac{1}{p^*} \EE \left[ \left. R^{\alpha}(t, \bA_t) \bOne\{\bO_t = \abs{\bA_t}\} \right| \cH_t \right].
     % &\EE_t[R_{\wedge}(t, \bA_t)] \\
     % &\qquad \EE \left[ \left. R_{\wedge}(t, \bA_t) \EE \left[ \left. \frac{1}{p_{\wedge, t, \bA_t}} \bOne\{\bO_t\geq\abs{\bA_t}\} \right| \bA_t \right]  \right| \cH_t \right] \\
     \end{align*}
@@ -664,14 +631,14 @@ Now let us introduce a function $f$ on $A = (a_1,...,a_{\abs{A}}) \in \cS, w = (
 &f : \cS \times [0,1]^E \to [0,1] \nonumber \\
 &f(A,w) = \sum_{k = 1}^{\abs{A}} \gamma_{k} \prod_{i=1}^{k-1} (1 - w(a_i)) w(a_k). \label{eq:OrRewardFunc}
 \end{align}
-Then we have $\br_t = f(\bA_t, \bw_t)$ and $\EE[\br_t] = f(\bA_t, \theta_{\ast}^{\top}x_t) = f(\bA_t, w_t)$. So $f$ is the expected reward function and also a function of expected weights. It can be proved that $f$ satisfies the properties of monotonicity and Lipschitz continuity. (We leave all verifications in the appendix.) Then we have the following corollary.
+Then we have $\br_t = f(\bA_t, \bw_t)$ and $\EE[\br_t] = f(\bA_t, \theta_{\ast}^{\top}x_t) = f(\bA_t, w_t)$. So $f$ is the expected reward function and also a function of expected weights. It can be proved that $f$ satisfies the properties of monotonicity and Lipschitz continuity with bound $B=1$. (We leave all verifications in the appendix.) Notice that in this setting, given weights $w$, there is an oracle $\cO_{\cS}(w)$ that outputs the best action, which is the $K$ items with largest $w_i$ listed in decreasing order. So $\alpha = 1$ and we write $R(n)$ instead of $R^{\alpha}(n)$. Then we have the following corollary.
 \begin{corollary}
 	\label{cor:or}
-	In the problem of cascading recommendation, the expected reward function is defined in Eq.~\eqref{eq:OrRewardFunc}, where $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_K \geq 0$. Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regret of our algorithm, C$^3$-UCB, satisfies
+	In the problem of cascading recommendation, the expected reward function is defined in Eq.~\eqref{eq:OrRewardFunc}, where $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_K \geq 0$. Then the $\alpha$-regret of our algorithm, C$^3$-UCB, satisfies
 	\begin{align}
 		R(n) &\le \frac{\sqrt{2}}{p^*} \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))}  \nonumber \\
-		&\qquad \cdot \left(\sqrt{d\ln \left( \frac{1 + C_\gamma n/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda}\right) \nonumber \\
-		&=O\left(\frac{d}{p^*} \sqrt{nK} \ln \left(\frac{C_\gamma n}{\delta^{2/d}}\right) \right).
+		&\qquad \cdot \left(\sqrt{d\ln[(1 + C_\gamma n/(\lambda d))^d n]} + \sqrt{\lambda}\right) \nonumber \\
+		&=O\left(\frac{d}{p^*} \sqrt{nK} \ln (C_\gamma n) \right).
 	\end{align}
 \end{corollary}
 
@@ -709,13 +676,12 @@ then we have $\br_{t} = f(\bA_t, \bw_t)$ and $\EE[\br_{t}] = f(\bA_t, \theta_{\a
 In the problem of network transportations or sequential task processing, $p^*$ defined above might be very small. So we have the following improvements. Suppose we also consider position discount here.  
 \begin{theorem} %main theorem
 	\label{thm:and}
-	Suppose $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_{K} \geq 0$ and $\gamma_K \geq 1 - \frac{1}{4} f^{\ast}$. Let regularization parameter $\lambda$ satisfy $\lambda \geq C_\gamma$, where $C_\gamma = \sum_{k=1}^{K} \gamma_k^2$. Then for any $\delta > 0$, with probability at least $1 - \delta$, the cumulative expected regret of our algorithm, C$^3$-UCB for the conjunctive objective, satisfies
+	Suppose $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_{K} \geq 0$ and $\gamma_K \geq 1 - \frac{1}{4} f^{\ast}$, where $f^* = \min_{t} f_t^{\ast}$. Let regularization parameter $\lambda$ satisfy $\lambda \geq C_\gamma$, where $C_\gamma = \sum_{k=1}^{K} \gamma_k^2$. Then the $\alpha$-regret of our algorithm, C$^3$-UCB for the conjunctive objective, satisfies
 	\begin{align}
 		R(n) \le& \frac{\sqrt{128}}{f^{\ast}} \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))} \nonumber \\
-		&\qquad \cdot \left(\sqrt{d\ln \left( \frac{1 + C_\gamma n/(\lambda d)}{\delta^{2/d}}\right) } + \sqrt{\lambda}\right) \nonumber \\
-		=&O\left(\frac{d}{f^{\ast}}\sqrt{nK} \ln \left(\frac{C_\gamma n}{\delta^{2/d}}\right) \right)
+		&\qquad \cdot \left(\sqrt{d\ln[(1 + C_\gamma n/(\lambda d)^d n] } + \sqrt{\lambda}\right) \nonumber \\
+		=&O\left(\frac{d}{f^{\ast}}\sqrt{nK} \ln(C_\gamma n) \right).
 	\end{align}
-	where $f^* = \min_{t} f_t^{\ast}$.
 \end{theorem}
 \begin{proof}
 	We will prove it in the appendix. The main idea is that we prove the expected reward function satisfies the properties of monotonicity and Lipschitz continuity first. And then use the following lemma to replace $\bA_t$ with a prefix of $\bA_t$.
