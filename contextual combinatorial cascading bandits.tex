@@ -871,7 +871,7 @@ First, we randomly chose $L=200$ movies and recommended $K=4$ movies on each rou
 
 \subsection{Network Routing Data}
 
-In the last experiment, we evaluated $C^3$-UCB on a problem of network routing with the {\it RocketFuel} dataset \cite{spring2004measuring}.
+In the last experiment, we evaluated $C^3$-UCB on network routing problem with {\it RocketFuel} dataset \cite{spring2004measuring}.
 
 The ground set $E$ is the set of links in the network. Before learning, the environment randomly chooses a $d$-dimensional vector $\theta_* \in [0,1]^d$. At each time $t$, a pair of source and destination nodes are randomly chosen and the feasible action set $\cS_t$ at time $t$ is all simple paths between the source and destination nodes. Any edge $a$ in the set $\cS$ is assigned with a random $d$-dimensional context vector $x_{t,a}$. Notice here both $\theta$ and $x$ have been processed like section \ref{sec:ExpSyn} so that $\theta_*^{\top}x \in [0,1]$. The weight for each edge $a$ is a sample from Bernoulli distribution with mean $\theta_*^{\top}x_{t,a}$. Then the learning agent recommends a feasible path $A = (a_1,...,a_{|A|})$ between source and destination nodes to maximize the expected reward in the conjunctive objective. We experimented with different position discounts and different networks. The results are shown in Fig.~\ref{fig:network} (a) (b). 
 
