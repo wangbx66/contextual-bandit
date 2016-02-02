@@ -423,7 +423,7 @@ We formulate the problem of {\em contextual combinatorial cascading bandits} as 
 
 As a convention, we always use boldface symbols to represent random variables.
 
-At time $t$, feature vectors $x_{t,a} \in \RR^{d \times 1}$ with $\norm{x_{t,a}}_2 \leq 1$ for every base arm $a \in E$ are revealed to the learning agent. Each feature vector combines the information of the user and the corresponding base arm. For example, suppose the user at time $t$ is characterized by a feature vector $u_t$ and the base arm $a$ has a feature vector $v_a$, then we can use $x_{t,a} = (u_t, v_a)$ , the concatenation of $u_t$ and $v_a$, as the combined feature vector of base arm $a$ at time $t$. Denote $x_t = (x_{t,a})_{a \in E}$ as all context information at time $t$. Then the learning agent recommends a feasible action $\bA_t=\{ \ba_{1}^t,...,\ba_{\abs{\bA_t}}^t \} \in \cS$ to the user. In the cascading feedback models, the user checks from the first item of recommended action and stops at the $\bO_t$-th item under some stopping criterion. For example in recommender systems, the stopping criterion might be that the user finds an attractive item. Then the learning agent observes the weights of first $\bO_t$ base arms in $\bA_t$, denoted by $\bw_t(\ba_k^t), k \leq \bO_t$. 
+At time $t$, feature vectors $x_{t,a} \in \RR^{d \times 1}$ with $\norm{x_{t,a}}_2 \leq 1$ for every base arm $a \in E$ are revealed to the learning agent. Each feature vector combines the information of the user and the corresponding base arm. For example, suppose the user at time $t$ is characterized by a feature vector $u_t$ and the base arm $a$ has a feature vector $v_a$, then we can use $x_{t,a} = u_t v_a^{\top}$ , the outer-product of $u_t$ and $v_a$, as the combined feature vector of base arm $a$ at time $t$. Denote $x_t = (x_{t,a})_{a \in E}$ as all context information at time $t$. Then the learning agent recommends a feasible action $\bA_t=\{ \ba_{1}^t,...,\ba_{\abs{\bA_t}}^t \} \in \cS$ to the user. In the cascading feedback models, the user checks from the first item of recommended action and stops at the $\bO_t$-th item under some stopping criterion. For example in recommender systems, the stopping criterion might be that the user finds an attractive item. Then the learning agent observes the weights of first $\bO_t$ base arms in $\bA_t$, denoted by $\bw_t(\ba_k^t), k \leq \bO_t$. 
 
 Let $\cH_t$ denote the history before the learning agent chooses action at time $t$. Thus $\cH_t$ contains feedback information at all time $s < t$, as well as context information at time $t$. Each arm $a$ has a weight $\bw_t(a)$, representing the "quality" to the user at time $t$. Given history $\cH_t$, we assume that $\bw_{t,a}$'s are mutually independent random variables with expectation
 \begin{equation} % eq:expectation
@@ -449,7 +449,7 @@ The reward function on round $t$ is an application dependent function. We assume
 The expected reward function $f(A, w)$ is a non-decreasing with respect to $w$: for any $w,w'\in [0,1]^E$, if $w(a) \leq w'(a)$, we have $f(A, w) \leq f(A, w')$.
 
 \paragraph{Lipschitz continuity}
-The expected reward function $f(A, w)$ is Lipschitz continuous with respect to $w$ together with position discount parameters $\gamma_k, k\leq K$. In particular, there is a constant $B>0$ such that, for any $w,w' \in [0,1]^E$, we have
+The expected reward function $f(A, w)$ is $B$-Lipschitz continuous with respect to $w$ together with position discount parameters $\gamma_k, k\leq K$. More specifically, for any $w,w' \in [0,1]^E$, we have
 $$
 	|f(A, w) - f(A, w')| \leq B \sum_{k=1}^{|A|} \gamma_k |w(a_k) - w'(a_k)|,
 $$
@@ -472,35 +472,7 @@ $$
 
 \subsection{Algorithm}
 
-\begin{algorithm} %C^3-UCB algorithm
-	\caption{C$^3$-UCB}
-	\label{alg:ConComCascade}
-	\begin{algorithmic}[1]
-		\STATE {Parameters:}
-		\STATE {\qquad $\{\gamma_k \in [0,1]\}_{k\leq K}; \delta = \frac{1}{\sqrt{n}}; \lambda \geq C_\gamma = \sum_{k=1}^{K} \gamma_k^2$}
-		\STATE {Initialization:}
-		\STATE {\qquad $\hat{\theta}_0 = 0, \bbeta_0(\delta) = 1, \bV_0 = \lambda I, \bX_0=\emptyset, \bY_0=\emptyset$}
-		
-		\FORALL {$t=1,2,\ldots, n$}
-		\STATE {Obtain context $x_{t,a}$ for all $a\in E$}
-		\STATE {$\forall a\in E$, compute}
-		\STATE {~~ $\bU_t(a) = \min\{\hat{\theta}_{t-1}^{\top}x_{t,a} + \bbeta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}, 1\}$} 
-		
-		\STATE {//Choose action $\bA_t$ using UCBs $\bU_t$}
-		\STATE { $\bA_t=(\ba_1^t,...,\ba_{\abs{\bA_t}}^t) \leftarrow \cO_{\cS}(\bU_t)$ } 
-		\STATE {Play $\bA_t$ and observe $\bO_t, \bw_t(\ba_k^t), k\in[\bO_t]$}
-		
-		\STATE {//Update statistics}
-		\STATE {$\bV_{t} \leftarrow \bV_{t-1} + \sum_{k=1}^{\bO_t} \gamma_k^2 x_{t, \ba_k^t}x_{t, \ba_k^t}^{\top}$}
-		\STATE {$\bX_t \leftarrow [\bX_{t-1}; ~\gamma_1 x_{t, \ba_1^t}^{\top};  ~\ldots; ~\gamma_{\bO_t} x_{t, \ba_{\bO_t}^t}^{\top}]$}
-		\STATE {$\bY_t \leftarrow [\bY_{t-1}; ~\gamma_1 \bw(\ba_1^t); ~\ldots; ~\gamma_{\bO_t} \bw_t(\ba_{\bO_t}^t)]$}
-		\STATE {$\hat{\theta}_t \leftarrow (\bX_t^\top \bX_t + \lambda I)^{-1} \bX_{t}^\top \bY_t$}
-		\STATE {$\bbeta_{t}(\delta) \leftarrow R \sqrt{\ln(\det(\bV_{t})/(\lambda^d \delta^2))} + \sqrt{\lambda}$ }
-		\ENDFOR {~~$t$}
-	\end{algorithmic}
-\end{algorithm}
-
-%At time $t$, we denote $\EE_t[\cdot] = \EE[\cdot | \cH_t]$, where $\cH_t$ is the history a time $t$ before the learning agent chooses her action. 
+Before presenting the algorithm, we explain the main ideas in the design.
 
 By Equation \eqref{eq:expectation}, we have 
 $$
@@ -561,6 +533,34 @@ The fact that $\bU_t(a)$ is an upper confidence bound of expected weight $w_{t, 
 	\end{align*}
 	and the definition of $\bU_t$ in \ref{lem:estimateU}, we can obtain the result.
 \end{proof}
+
+\begin{algorithm} %C^3-UCB algorithm
+	\caption{C$^3$-UCB}
+	\label{alg:ConComCascade}
+	\begin{algorithmic}[1]
+		\STATE {Parameters:}
+		\STATE {\qquad $\{\gamma_k \in [0,1]\}_{k\leq K}; \delta = \frac{1}{\sqrt{n}}; \lambda \geq C_\gamma = \sum_{k=1}^{K} \gamma_k^2$}
+		\STATE {Initialization:}
+		\STATE {\qquad $\hat{\theta}_0 = 0, \bbeta_0(\delta) = 1, \bV_0 = \lambda I, \bX_0=\emptyset, \bY_0=\emptyset$}
+		
+		\FORALL {$t=1,2,\ldots, n$}
+		\STATE {Obtain context $x_{t,a}$ for all $a\in E$}
+		\STATE {$\forall a\in E$, compute}
+		\STATE {~~ $\bU_t(a) = \min\{\hat{\theta}_{t-1}^{\top}x_{t,a} + \bbeta_{t-1}(\delta)\norm{x_{t,a}}_{\bV_{t-1}^{-1}}, 1\}$} 
+		
+		\STATE {//Choose action $\bA_t$ using UCBs $\bU_t$}
+		\STATE { $\bA_t=(\ba_1^t,...,\ba_{\abs{\bA_t}}^t) \leftarrow \cO_{\cS}(\bU_t)$ } 
+		\STATE {Play $\bA_t$ and observe $\bO_t, \bw_t(\ba_k^t), k\in[\bO_t]$}
+		
+		\STATE {//Update statistics}
+		\STATE {$\bV_{t} \leftarrow \bV_{t-1} + \sum_{k=1}^{\bO_t} \gamma_k^2 x_{t, \ba_k^t}x_{t, \ba_k^t}^{\top}$}
+		\STATE {$\bX_t \leftarrow [\bX_{t-1}; ~\gamma_1 x_{t, \ba_1^t}^{\top};  ~\ldots; ~\gamma_{\bO_t} x_{t, \ba_{\bO_t}^t}^{\top}]$}
+		\STATE {$\bY_t \leftarrow [\bY_{t-1}; ~\gamma_1 \bw_t(\ba_1^t); ~\ldots; ~\gamma_{\bO_t} \bw_t(\ba_{\bO_t}^t)]$}
+		\STATE {$\hat{\theta}_t \leftarrow (\bX_t^\top \bX_t + \lambda I)^{-1} \bX_{t}^\top \bY_t$}
+		\STATE {$\bbeta_{t}(\delta) \leftarrow R \sqrt{\ln(\det(\bV_{t})/(\lambda^d \delta^2))} + \sqrt{\lambda}$ }
+		\ENDFOR {~~$t$}
+	\end{algorithmic}
+\end{algorithm}
 
 Our proposed algorithm, C$^3$-UCB, is described in Algorithm \ref{alg:ConComCascade}. First, the learning agent computes the upper confidence bounds (UCBs) $\bU_t \in [0,1]^{E}$ for the expected weights of all base arms in $E$. Second, the agent uses the computed UCBs, $\bU_t$, to select an action $\bA_t = \{\ba_{1}^t,..., \ba_{\abs{\bA_t}}^t \}$. Third, the user checks from the first base arm in $\bA_t$ and stops after checking the $\bO_t$-th base arm and the agents observes $\bw_t(\ba_k^t), k\leq \bO_t$. Then, the learning agent updates $\bV_t, \bX_t, \bY_t$ in order to get a newer estimate $\hat{\theta}_t$ of $\theta_*$ and new confidence radius $\bbeta_t(\delta)$. In this part, we use the notation $[A; B]$ to denote the matrix obtained by stacking A and B vertically like $\begin{pmatrix} A\\ B\end{pmatrix}$.
 
