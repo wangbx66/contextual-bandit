@@ -95,12 +95,12 @@
 \newcommand{\CLemmaPrefixExi}{
 	Suppose $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_K \geq 0$. Let $A = (a_1, ..., a_{\abs{A}})$. For the time $t$ and the conjunctive objective, there exists a prefix $B$ of $A$ such that 
 	$$
-	p_{t, B} \geq \frac{1}{2}f_{t}^{\ast} - 1 + \gamma_{\abs{B}}, \qquad R(t, B) \geq \frac{1}{2} R(t, A).
+	p_{t, B} \geq \frac{\alpha}{2}f_{t}^{\ast} - 1 + \gamma_{\abs{B}}, \qquad R^{\alpha}(t, B) \geq \frac{1}{2} R^{\alpha}(t, A).
 	$$ 
 }
 \newcommand{\CEqDeltaEstAnd}{
 	$$
-	\EE [R(t, \bA_t) |\cH_t ] \leq \frac{8}{f^{\ast}} \EE \left[ \bbeta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} | \cH_t\right].
+	\EE [R^{\alpha}(t, \bA_t) |\cH_t ] \leq \frac{8}{\alpha f^{\ast}} \EE \left[ \left. \bbeta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right| \cH_t\right].
 	$$
 }
 \newcommand{\CLemmaSumXiEstimateInDet}{
@@ -573,8 +573,8 @@ To state our main theorem, we need some definitions. Let $p_{t, A}$ be the {\em 
 	\label{thm:main}
 	Suppose the expected reward function $f(A, w)$ is a function of expected weights and satisfies the requirements of monotonicity and $B$-Lipschitz continuity. Assume there is an $\alpha$-approximation oracle $\cO_{\cS}$. Then the $\alpha$-regret of our algorithm, C$^3$-UCB, satisfies
 	\begin{align}
-		R^{\alpha}(n) &\le \frac{\sqrt{2}B}{p^*} \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))}  \nonumber \\
-		&\qquad \cdot \left(R\sqrt{\ln \left[(1 + C_\gamma n/(\lambda d))^d n \right] } + \sqrt{\lambda}\right) \nonumber \\
+		R^{\alpha}(n) &\le \frac{2\sqrt{2}B}{p^*} \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))}  \nonumber \\
+		&\qquad \cdot \left(R\sqrt{\ln \left[(1 + C_\gamma n/(\lambda d))^d n \right] } + \sqrt{\lambda}\right) + \sqrt{n}\nonumber \\
 		&=O\left(\frac{dBR}{p^*} \sqrt{nK} \ln(C_\gamma n) \right),
 	\end{align}
 	where $R$ is the sub-Gaussian constant and $C_{\gamma} = \sum_{k=1}^K \gamma_k^2 \leq K$.
@@ -637,8 +637,8 @@ We have the following corollary.
 	\label{cor:or}
 	In the problem of cascading recommendation, the expected reward function is defined in Eq.~\eqref{eq:OrRewardFunc}, where $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_K \geq 0$. Then the $\alpha$-regret of our algorithm, C$^3$-UCB, satisfies
 	\begin{align}
-		R^{\alpha}(n) &\le \frac{\sqrt{2}}{p^*} \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))}  \nonumber \\
-		&\qquad \cdot \left(\sqrt{d\ln[(1 + C_\gamma n/(\lambda d))^d n]} + \sqrt{\lambda}\right) \nonumber \\
+		R^{\alpha}(n) &\le \frac{2\sqrt{2}}{p^*} \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))}  \nonumber \\
+		&\qquad \cdot \left(\sqrt{d\ln[(1 + C_\gamma n/(\lambda d))^d n]} + \sqrt{\lambda}\right) + \sqrt{n}\nonumber \\
 		&=O\left(\frac{d}{p^*} \sqrt{nK} \ln (C_\gamma n) \right).
 	\end{align}
 \end{corollary}
@@ -676,11 +676,11 @@ then it is not hard to verify that $\br_{t} = f(\bA_t, \bw_t)$ and $\EE[\br_{t}]
 
 \begin{theorem} %main theorem
 	\label{thm:and}
-	Suppose $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_{K} \geq 0$ and $\gamma_K \geq 1 - \frac{1}{4} f^{\ast}$, where $f^* = \min_{t} f_t^{\ast}$. Then the $\alpha$-regret of our algorithm, C$^3$-UCB, for the conjunctive objective satisfies
+	Suppose $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_{K} \geq 0$ and $\gamma_K \geq 1 - \frac{\alpha}{4} f^{\ast}$, where $f^* = \min_{t} f_t^{\ast}$. Then the $\alpha$-regret of our algorithm, C$^3$-UCB, for the conjunctive objective satisfies
 	\begin{align}
-		R^{\alpha}(n) \le& \frac{\sqrt{128}}{f^{\ast}} \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))} \nonumber \\
-		&\qquad \cdot \left(\sqrt{d\ln[(1 + C_\gamma n/(\lambda d)^d n] } + \sqrt{\lambda}\right) \nonumber \\
-		=&O\left(\frac{d}{f^{\ast}}\sqrt{nK} \ln(n) \right).
+		R^{\alpha}(n) \le& \frac{\sqrt{128}}{\alpha f^{\ast}} \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))} \nonumber \\
+		&~~ \cdot \left(\sqrt{d\ln[(1 + C_\gamma n/(\lambda d)^d n] } + \sqrt{\lambda}\right) + \alpha \sqrt{n} \nonumber \\
+		=&O\left(\frac{d}{\alpha f^{\ast}}\sqrt{nK} \ln(C_{\gamma} n) \right).
 	\end{align}
 \end{theorem}
 \begin{proof}
@@ -949,18 +949,18 @@ Finally the last lemma bounds $\det(\bV_t)$.
 	Thus we have $\det(\bV_t) \leq (\lambda + C_\gamma t/d)^d.$
 \end{proof}
 
-Now we are ready to prove the main theorem.
+Lemma \ref{lem:SumXiEstimateInDet} and Lemma \ref{lem:detVt} combined imply Lemma \ref{lem:XNormSumEst}. Now we are ready to prove the main theorem.
 
 \begin{proof}[ of Theorem \ref{thm:main}]
-	Suppose inequality (\ref{eq:estimateTheta}) holds for all time $t$, which is true with probability $1-\delta$. Then we have
+	Suppose Ineq.~\eqref{eq:estimateTheta} holds for all time $t$, which is true with probability $1-\delta$. Then with probablity $1-\delta$, we have
 	\begin{align}
 	&R^{\alpha}(n) = \EE \left[\sum_{t=1}^{n} \EE[R^{\alpha}(t, \bA_t) | \cH_t] \right] \notag\\
-	&\leq \EE\left[\sum_{t=1}^{n} \frac{B}{p^*} \EE \left[ \left. \bbeta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}\right| \cH_t \right] \right] \label{eq:pfMdeltaEst}\\
-	&\leq \EE\left[\sum_{t=1}^{n} \frac{B}{p^*} \bbeta_{n}(\delta) \EE \left[ \left. \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right| \cH_t \right] \right] \label{eq:pfMbeta}\\
-	&\leq \EE \left[\frac{B}{p^*} \bbeta_n(\delta) \sqrt{\left(\sum_{t=1}^{n} \bO_t\right) \left( \sum_{t=1}^{n} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right)} \right ]  \label{eq:pfMmeanEq}\\
-	&\leq \EE\left[\frac{B}{p^*} \left( R \sqrt{ \ln \left( \frac{\det(\bV_n)}{\lambda^d / n} \right)} + \sqrt{\lambda} \right) \right. \notag\\
+	&\leq \EE\left[\sum_{t=1}^{n} \frac{2B}{p^*} \EE \left[ \left. \bbeta_{t-1}(\delta) \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}\right| \cH_t \right] \right] \label{eq:pfMdeltaEst}\\
+	&\leq \EE\left[\sum_{t=1}^{n} \frac{2B}{p^*} \bbeta_{n}(\delta) \EE \left[ \left. \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right| \cH_t \right] \right] \label{eq:pfMbeta}\\
+	&\leq \EE \left[\frac{2B}{p^*} \bbeta_n(\delta) \sqrt{\left(\sum_{t=1}^{n} \bO_t\right) \left( \sum_{t=1}^{n} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right)} \right ]  \label{eq:pfMmeanEq}\\
+	&\leq \EE\left[\frac{2B}{p^*} \left( R \sqrt{ \ln \left( \frac{\det(\bV_n)}{\lambda^d / n} \right)} + \sqrt{\lambda} \right) \right. \notag\\
 	& \left. \qquad \qquad \cdot \sqrt{nK \cdot 2\ln \left(\frac{\det(\bV_n)}{\lambda^d} \right)} \right] \label{eq:pfMsumXi}\\
-	&\leq \frac{\sqrt{2}B}{p^*} \left(R\sqrt{ \ln[ (1 + C_\gamma n/(\lambda d))^d n ]} + \sqrt{\lambda} \right) \notag\\
+	&\leq \frac{2\sqrt{2}B}{p^*} \left(R\sqrt{ \ln[ (1 + C_\gamma n/(\lambda d))^d n ]} + \sqrt{\lambda} \right) \notag\\
 	&\qquad \qquad \cdot \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))}. \label{eq:pfMdetEst}
 	\end{align}
 	Inequality \eqref{eq:pfMdeltaEst} is by Lemma \ref{lem:DeltaEsimateWithP*}. 
@@ -968,6 +968,12 @@ Now we are ready to prove the main theorem.
 	Inequality \eqref{eq:pfMmeanEq} is by the mean inequality. 
 	Inequality \eqref{eq:pfMsumXi} is because of the definition of $\bbeta_t(\delta)$ (Eq.\eqref{eq:definebeta}) and Lemma \ref{lem:SumXiEstimateInDet}. 
 	And the last inequality \eqref{eq:pfMdetEst} is because estimate of $\det(\bV_t)$ by Lemma \ref{lem:detVt}.
+	
+	Also $R^{\alpha}(n) \leq n$ and $\delta = \frac{1}{\sqrt{n}}$. We have 
+	\begin{align*}
+		R^{\alpha}(n) &\leq \frac{2\sqrt{2}B}{p^*} \left(R\sqrt{ \ln[ (1 + C_\gamma n/(\lambda d))^d n ]} + \sqrt{\lambda} \right) \\
+		&\qquad \cdot \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))} + \sqrt{n}.
+	\end{align*}
 \end{proof}
 
 \section{Proof of Corollary~\ref{cor:or}}
@@ -976,17 +982,17 @@ In this section, we prove the expected reward function
 $$
 f(A,w) = \sum_{k = 1}^{\abs{A}} \gamma_{k} \prod_{i=1}^{k-1} (1 - w(a_i)) w(a_k),
 $$
-where $A = (a_1, \ldots, a_{|A|})$, defined in~Eq.\eqref{eq:OrRewardFunc}, satisfies the properties of monotonicity and Lipschitz continuity.
+where $A = (a_1, \ldots, a_{|A|})$, defined in~Eq.\eqref{eq:OrRewardFunc}, satisfies the properties of monotonicity and $1$-Lipschitz continuity.
 
 \begin{lemma}[monotonicity]
 	\label{lem:orMonotonicity}
-	Suppose $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$. Then $f(A, w)$ is increasing with respect to $w$; that is, if $0 \leq w \leq w' \leq 1$ as column vectors in $\RR^L$, then for any $A \in \prod^{\leq K}$, it holds that
+	Suppose $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$. Then $f(A, w)$ is increasing with respect to $w$, that is, if $w \leq w' \in [0,1]^E$, then for any $A \in \prod^{\leq K}$, it holds that
 	$$
 	f(A, w) \leq f(A, w').
 	$$
 \end{lemma}
 \begin{proof}
-	Without the loss of generality, we prove for the case of $A = (1, \ldots, m)$, where $1 \leq m \leq K$. First, for $1 \leq k \leq m$, we have
+	Without the loss of generality, we prove for the case of $A = (1, \ldots, m)$, where $1 \leq m \leq K$. Denote $w = (w_a)_{a \in E}$ and $w' = (w'_a)_{a \in E}$. First, for $1 \leq k \leq m$, we have
 	\begin{align*}
 		&\gamma_{k} - \sum_{i=k+1}^m \gamma_i \prod_{j = k + 1}^{i - 1} (1 - w_j') w_i'\\
 		\geq &~\gamma_k [1 - \sum_{i=k+1}^m \prod_{j=k+1}^{i-1}(1 - w_j') w_i']\\
@@ -1010,14 +1016,14 @@ where $A = (a_1, \ldots, a_{|A|})$, defined in~Eq.\eqref{eq:OrRewardFunc}, satis
 
 \begin{lemma}[Lipschitz continuity]
 	\label{lem:orLip}
-	Suppose $0 \leq \gamma_k \leq 1, k \leq K$. Let $w, w'\in [0,1]^{L}$. Then
+	Suppose $0 \leq \gamma_k \leq 1, k \leq K$. Let $w, w'\in [0,1]^{E}$. Then
 	$$
 	|f(A, w) - f(A, w')| \leq \sum_{k=1}^{|A|} \gamma_k |w(a_k) - w'(a_k)|,
 	$$
 	where $A = (a_1, \ldots, a_{|A|})$.
 \end{lemma}
 \begin{proof}
-	Without the loss of generality, we prove for the case of $A = (1, \ldots, m)$, where $1 \leq m \leq K$. First, suppose $w \leq w'$ and $w' = w + v$.
+	Without the loss of generality, we prove for the case of $A = (1, \ldots, m)$, where $1 \leq m \leq K$. Denote $w = (w_a)_{a \in E}$ and $w' = (w'_a)_{a \in E}$. First, suppose $w \leq w'$ and $w' = w + v$.
 	
 	We prove this by induction. It holds obviously for $m = 1$. Suppose it holds for $m$. Then
 	\begin{align*}
@@ -1030,9 +1036,9 @@ where $A = (a_1, \ldots, a_{|A|})$, defined in~Eq.\eqref{eq:OrRewardFunc}, satis
 	\end{align*}
 	So it holds for $m+1$.
 	
-	For general $w,w' \in [0,1]^L$, by last lemma, we have
+	For general $w,w' \in [0,1]^L$, by Lemma \ref{lem:orMonotonicity}, we have
 	$$
-	f(A, w\wedge w') \leq f(A, w), f(A, w') \leq f(A, w\vee w'),
+	f(A, w\wedge w') \leq \{f(A, w), f(A, w') \}\leq f(A, w\vee w'),
 	$$
 	where 
 	$$
@@ -1046,7 +1052,7 @@ where $A = (a_1, \ldots, a_{|A|})$, defined in~Eq.\eqref{eq:OrRewardFunc}, satis
 	\end{align*}
 \end{proof}
 
-We have proved the monotonicity and Lipschitz continuity of expected reward function $f$. Then by Theorem \ref{thm:main}, the corollary can be obtained.
+We have proved the monotonicity and Lipschitz continuity of expected reward function $f$. Then the corollary follows Theorem \ref{thm:main}.
 
 \section{Proof of Theorem~\ref{thm:and}}
 
@@ -1054,11 +1060,11 @@ In this section, we prove Theorem \ref{thm:and}. Recall the expected reward func
 $$
 f(A,w) = \sum_{k = 1}^{\abs{A}} (1 - \gamma_k) \prod_{i = 1}^{k - 1} w(a_i)(1 - w(a_k)) + \prod_{i=1}^{\abs{A}}w(a_i),
 $$
-where $A = (a_1, \ldots, a_{|A|})$, as defined in~Eq.\eqref{eq:AndRewardFunc}. First, similar to last section, we prove this reward function satisfies the properties of monotonicity and Lipschitz continuity.
+where $A = (a_1, \ldots, a_{|A|})$, as defined in~Eq.\eqref{eq:AndRewardFunc}. First, similar to last section, we prove this reward function satisfies the properties of monotonicity and $1$-Lipschitz continuity.
 
 \begin{lemma}[monotonicity]
 	\label{lem:andMonotonicity}
-	Suppose $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$. Then $f(A, w)$ is increasing with respect to $w$; that is, if $0 \leq w \leq w' \leq 1$ as column vectors in $\RR^L$, then for any $A \in \prod^{\leq K}$, it holds that
+	Suppose $1 \geq \gamma_1 \geq \cdots \geq \gamma_K \geq 0$. Then $f(A, w)$ is increasing with respect to $w$; that is, if $w \leq w' \in [0,1]^E$, then for any $A \in \prod^{\leq K}$, it holds that
 	$$
 	f(A, w) \leq f(A, w').
 	$$
@@ -1082,7 +1088,7 @@ where $A = (a_1, \ldots, a_{|A|})$, as defined in~Eq.\eqref{eq:AndRewardFunc}. F
 	where $A = (a_1, \ldots, a_{|A|})$.
 \end{lemma}
 \begin{proof}
-	Similar to the proof of Lemma \ref{lem:orLip}. It is enough to prove when $w \leq w', w' = w + v $ and $A = (1, \ldots, m), m \leq K$.
+	Denote $w = (w_a)_{a \in E}$ and $w' = (w'_a)_{a \in E}$. Similar to the proof of Lemma \ref{lem:orLip}. It is enough to prove when $w \leq w', w' = w + v $ and $A = (1, \ldots, m), m \leq K$. 
 	
 	We prove this by induction. It holds obviously for $m = 1$. Suppose it holds for $m$. Then
 	\begin{align*}
@@ -1122,7 +1128,7 @@ The next lemma provides some properties about a prefix of action $A$ in the conj
 		&f(A,w) \\
 		=& \sum_{k = 1}^{\abs{A}} (1-\gamma_k) \prod_{i = 1}^{k - 1} w(a_i) (1 - w(a_k)) + \prod_{i=1}^{\abs{A}}w(a_i) \\
 		\leq& (1-\gamma_m)(1 - p_{A} w_m) + p_{A} w_m \\
-		\leq& (1-\gamma_m) + \gamma_m p_{\wedge, A};
+		\leq& (1-\gamma_m) + \gamma_m p_{A};
 		\end{align*}
 		
 		\item[(2)]
@@ -1150,13 +1156,13 @@ The next lemma provides some properties about a prefix of action $A$ in the conj
 	\CLemmaPrefixExi
 \end{lemma}
 \begin{proof}
-	$w_t = \theta_*^{\top} x_t$. If $f(A, w_t) \geq \frac{1}{2} f_{t}^{\ast}$, then by Lemma \ref{lem:prefixRelation} (1),
+	Recall $w_t = \theta_*^{\top} x_t$. If $f(A, w_t) \geq \frac{\alpha}{2} f_{t}^{\ast}$, then by Lemma \ref{lem:prefixRelation} (1),
 	$$
-	p_{t, A} \geq \frac{1}{2} f_{t}^{\ast} - 1 + \gamma_{\abs{A}}.
+	p_{t, A} \geq \frac{\alpha}{2} f_{t}^{\ast} - 1 + \gamma_{\abs{A}}.
 	$$
 	In this case, we set prefix $B = A$.
 	
-	Now suppose $f(A, w_t) \leq \frac{1}{2} f_{t}^{\ast}$. Let
+	Now suppose $f(A, w_t) \leq \frac{\alpha}{2} f_{t}^{\ast}$. Let
 	$$
 	x_k = f(B_k,w), ~~ y_k = 1 - \gamma_k + \gamma_k p_{t,B_k}, ~~I_k = [x_k, y_k]
 	$$
@@ -1164,28 +1170,35 @@ The next lemma provides some properties about a prefix of action $A$ in the conj
 	$$
 	[f(A,w), 1] = \bigcup_{k=1}^{\abs{A}} I_k.
 	$$
-	Then there exists a $k$ such that $\frac{1}{2}f_{t}^{\ast} \in I_k$:
+	Then there exists a $k$ such that $\frac{\alpha}{2}f_{t}^{\ast} \in I_k$:
 	$$
-	f(B_k,w) \leq \frac{1}{2}f_{t}^{\ast} \leq 1 - \gamma_k + \gamma_k p_{\wedge, t, B_k}
+	f(B_k,w) \leq \frac{\alpha}{2}f_{t}^{\ast} \leq 1 - \gamma_k + \gamma_k p_{t, B_k}
 	$$
-	Therefore, the results are derived.
+	Then 
+	$$
+	R^{\alpha}(t,B_k) = \alpha f_t^* - f(B_k, w_t) \geq \frac{\alpha}{2}f_t^* \geq \frac{1}{2} R^{\alpha}(A, w_t),
+	$$
+	and
+	$$
+	p_{t, B_k} \geq \frac{\alpha}{2}f_t^* - 1 + \gamma_{|B_k|}.
+	$$
 \end{proof}
 
 The key difference from the proof of Theorem \ref{thm:main} is the following lemma. This lemma corresponds to Lemma \ref{lem:DeltaEsimateWithP*} and uses $f^{\ast}$ to replace $p^{\ast}$.
 
 \begin{lemma}
-	If we have $\gamma_K \geq 1 -  \frac{1}{4} f^{\ast}$, where $f^{\ast} = \min_{1 \leq t \leq T} f_{t}^{\ast}$, then
+	If we have $\gamma_K \geq 1 -  \frac{\alpha}{4} f^{\ast}$, where $f^{\ast} = \min_{1 \leq t \leq T} f_{t}^{\ast}$, then
 	\CEqDeltaEstAnd
 \end{lemma}
 \begin{proof}
-	By Lemma~\ref{lem:prefixexists} there exists a prefix $\bB_t$ of $\bA_t$ such that $p_{t, \bB_t} \geq \frac{1}{2}f_{t}^* - 1 + \gamma_{|\bB_t|}$ and $R(t, \bB_t) \geq \frac{1}{2} R(t, \bA_t)$. By the assumption that $1-\gamma_{|\bB_t|} \leq 1-\gamma_K \leq \frac{1}{4} f^{\ast} \leq \frac{1}{4} f^*_{t}  $, we have $p_{t, \bB_t} \geq \frac{1}{4}f_{t}^*$. 
+	By Lemma~\ref{lem:prefixexists} there exists a prefix $\bB_t$ of $\bA_t$ such that $p_{t, \bB_t} \geq \frac{\alpha}{2}f_{t}^* - 1 + \gamma_{|\bB_t|}$ and $R(t, \bB_t) \geq \frac{1}{2} R(t, \bA_t)$. By the assumption that $1-\gamma_{|\bB_t|} \leq 1-\gamma_K \leq \frac{\alpha}{4} f^{\ast} \leq \frac{\alpha}{4} f^*_{t}  $, we have $p_{t, \bB_t} \geq \frac{\alpha}{4}f_{t}^*$. 
 	
 	Then, similar to the derivation from Eq.\eqref{eq:addOt} to Eq.\eqref{eq:relaxpstar}, we have
 	\begin{align}
-		&\EE[R(t, \bA_t) | \cH_t] \leq 2 \EE[R(t, \bB_t) \left. \right| \cH_t] \nonumber \\
-		=& 2 \EE \left[ \left. R(t, \bB_t) \EE \left[ \left. \frac{1}{p_{t, \bB_t}} \bOne\{\bO_t\geq\abs{\bB_t}\} \right| \bB_t \right]  \right| \cH_t \right] \nonumber \\
-		=& 2\EE \left[ \left. R(t, \bB_t) \frac{1}{p_{t, \bB_t}} \bOne\{\bO_t\geq\abs{\bB_t}\}  \right| \cH_t \right] \nonumber \\
-		\leq &\frac{8}{f_{t}^{\ast}} \EE \left[ \left. R(t, \bB_t) \bOne\{\bO_t\geq\abs{\bB_t}\}  \right| \cH_t \right]. \label{eq:btOneotbt}
+		&\EE[R^{\alpha}(t, \bA_t) | \cH_t] \leq 2 \EE[R^{\alpha}(t, \bB_t) \left. \right| \cH_t] \nonumber \\
+		=& 2 \EE \left[ \left. R^{\alpha}(t, \bB_t) \EE \left[ \left. \frac{1}{p_{t, \bB_t}} \bOne\{\bO_t\geq\abs{\bB_t}\} \right| \bB_t \right]  \right| \cH_t \right] \nonumber \\
+		=& 2\EE \left[ \left. R^{\alpha}(t, \bB_t) \frac{1}{p_{t, \bB_t}} \bOne\{\bO_t\geq\abs{\bB_t}\}  \right| \cH_t \right] \nonumber \\
+		\leq &\frac{8}{\alpha f_{t}^{\ast}} \EE \left[ \left. R^{\alpha}(t, \bB_t) \bOne\{\bO_t\geq\abs{\bB_t}\}  \right| \cH_t \right]. \label{eq:btOneotbt}
 	\end{align}
 	Next, we have
 	\begin{equation} \label{eq:andstarbt}
@@ -1200,31 +1213,36 @@ The key difference from the proof of Theorem \ref{thm:main} is the following lem
 	\end{equation}
 	Therefore, combining Eq.\eqref{eq:andstarbt} and \eqref{eq:btuttrue}, we have
 	\begin{align}
-		R(t, \bB_t) & = f_{t}^{\ast} - f(\bB_t, \theta_{\ast}^{\top}x_t) \nonumber \\
+		R^{\alpha}(t, \bB_t) & = f_{t}^{\ast} - f(\bB_t, \theta_{\ast}^{\top}x_t) \nonumber \\
 		& \leq \sum_{k=1}^{\abs{\bB_t}}\bbeta_{t-1}(\delta)\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}. \label{eq:sumbetax}
 	\end{align}
 	Finally from Inequalities~\eqref{eq:btOneotbt} and \eqref{eq:sumbetax}， we can derive the result
 	\begin{align*}
-		&\EE_t[R(t, \bA_t)] \\
-		\leq& \frac{8}{f_{t}^*} \EE \left[\bOne\{ \bO_t \geq \abs{\bB_t} \}\sum_{k=1}^{\abs{\bB_t}}\bbeta_{t-1}(\delta)\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right]\\
-		\leq& \frac{8}{f^*} \EE \left[ \sum_{k=1}^{ \bO_t } \bbeta_{t-1}(\delta) \norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right].
+		&\EE_t[R^{\alpha}(t, \bA_t)] \\
+		\leq& \frac{8}{\alpha f_{t}^*} \EE \left[\bOne\{ \bO_t \geq \abs{\bB_t} \}\sum_{k=1}^{\abs{\bB_t}}\bbeta_{t-1}(\delta)\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right]\\
+		\leq& \frac{8}{\alpha f^*} \EE \left[ \sum_{k=1}^{ \bO_t } \bbeta_{t-1}(\delta) \norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right].
 	\end{align*}
 \end{proof}
 
 Then we have the proof of Theorem \ref{thm:and}.
 
 \begin{proof}[of Theorem \ref{thm:and}]
-	Similar to the proof of Theorem \ref{thm:main}, we have the following derivation:
+	Similar to the proof of Theorem \ref{thm:main}, we have the following derivation. Suppose Ineq.\eqref{eq:estimateTheta} holds for all time $t$, then
 	\begin{align}
-	&R(n) = \EE \left[ \sum_{t=1}^{n} \EE_{t}[R(t, \bA_t)] \right] \notag\\
-	\leq& \EE \left[\sum_{t=1}^{n} \frac{8}{f^{\ast}} \EE_t\left[\bbeta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right] \right] \label{eq:pfMCdeltaEst}\\
-	\leq& \EE\left[\frac{8}{f^{\ast}} \bbeta_{n}(\delta) \sum_{t=1}^{n} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right] \label{eq:pfMCbeta}\\
-	\leq& \EE\left[\frac{8}{f^{\ast}} \bbeta_{n}(\delta) \sqrt{ \left(\sum_{t=1}^{n} \bO_t \right) \EE_t \left[\sum_{t=1}^{n} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right]} \right] \label{eq:pfMCmeaneq}\\
-	\leq& \EE \left[\frac{\sqrt{128}}{f^{\ast}} \left(\sqrt{\ln\left(\frac{\det(\bV_n)}{\lambda^d /n}\right) } + \sqrt{\lambda} \right) \right. \notag\\
+	&R^{\alpha}(n) = \EE \left[ \sum_{t=1}^{n} \EE_{t}[R^{\alpha}(t, \bA_t)] \right] \notag\\
+	\leq& \EE \left[\sum_{t=1}^{n} \frac{8}{\alpha f^{\ast}} \EE_t\left[\bbeta_{t-1}(\delta)\sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right] \right] \label{eq:pfMCdeltaEst}\\
+	\leq& \EE\left[\frac{8}{\alpha f^{\ast}} \bbeta_{n}(\delta) \sum_{t=1}^{n} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}} \right] \label{eq:pfMCbeta}\\
+	\leq& \EE\left[\frac{8}{\alpha f^{\ast}} \bbeta_{n}(\delta) \sqrt{ \left(\sum_{t=1}^{n} \bO_t \right) \EE_t \left[\sum_{t=1}^{n} \sum_{k=1}^{\bO_t}\norm{\gamma_k x_{t,\ba_k^t}}_{\bV_{t-1}^{-1}}^2 \right]} \right] \label{eq:pfMCmeaneq}\\
+	\leq& \EE \left[\frac{\sqrt{128}}{\alpha f^{\ast}} \left(\sqrt{\ln\left(\frac{\det(\bV_n)}{\lambda^d /n}\right) } + \sqrt{\lambda} \right) \right. \notag\\
 	&\qquad \qquad \left. \cdot \sqrt{nK \cdot 2\ln \left(\frac{\det(\bV_n)}{\lambda^d} \right)} \right] \label{eq:pfMCsumXi}\\
-	\leq& \frac{\sqrt{128}}{f_{\wedge}^{\ast}} \left(\sqrt{ \ln [ (1 + C_\gamma n/(\lambda d))^d n]} + \sqrt{\lambda} \right) \notag\\
+	\leq& \frac{\sqrt{128}}{\alpha f^{\ast}} \left(\sqrt{ \ln [ (1 + C_\gamma n/(\lambda d))^d n]} + \sqrt{\lambda} \right) \notag\\
 	&\qquad \qquad \cdot \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))}. \label{eq:pfMCdetEst}
 	\end{align}
+	By Lemma \ref{thm:theta_estimate}, $R^{\alpha}(n) \leq \alpha n$ and $\delta = \frac{1}{\sqrt{n}}$, we have
+	\begin{align*}
+		&R^{\alpha}(n) \leq \frac{\sqrt{128}}{\alpha f^{\ast}} \left(\sqrt{ \ln [ (1 + C_\gamma n/(\lambda d))^d n]} + \sqrt{\lambda} \right) \notag\\
+		&\qquad \qquad \cdot \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))} + \alpha \sqrt{n}.
+	\end{align*}
 \end{proof}
 	
 \end{document} 
