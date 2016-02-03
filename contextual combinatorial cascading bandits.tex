@@ -454,7 +454,7 @@ where $A = (a_1, \ldots, a_{|A|})$.
 
 The assumption of Lipschitz continuity gives an estimate of changes in reward function. To obtain a good estimation of reward function, the position $k$ with large $\gamma_k$ needs a good estimation of $w(a_k)$. This means the positions with large $\gamma_k$ are more important to the reward function. For example in website recommendations, the learning agent will receive highest reward if the user selects the first item, so the first position is most important. 
 
-Notice that we do not require the knowledge how $f(A, w)$ is defined. We only assume that the agent has access to an oracle $\cO_{\cS}(w)$ that outputs recommended action $A$. More precisely, an oracle $\cO_{\cS}(w)$ is called an $\alpha$-approximation oracle for some $\alpha \leq 1$, if on given input $w$, the oracle returns an action $A = \cO_{\cS}(w) \in \cS$ satisfying $f(A,w) \geq \alpha f(A^*,w)$ where $A^* = \argmax_{A\in\cS} f(A, w)$.
+Notice that we do not require the knowledge how $f(A, w)$ is defined. We only assume that the agent has access to an oracle $\cO_{\cS}(w)$ that outputs recommended action $A$. In applications, the oracle $\cO_{\cS}(w)$ is often what the best offline algorithm can achieve. For this reason, in the regret defined next, we compare our online algorithm with the best offline algorithm generates, $\alpha f_t^{\ast}$. More precisely, an oracle $\cO_{\cS}(w)$ is called an $\alpha$-approximation oracle for some $\alpha \leq 1$, if on given input $w$, the oracle returns an action $A = \cO_{\cS}(w) \in \cS$ satisfying $f(A,w) \geq \alpha f(A^*,w)$ where $A^* = \argmax_{A\in\cS} f(A, w)$.
 
 The $\alpha$-regret of action $A$ on time $t$ is
 $$
@@ -574,7 +574,7 @@ To state our main theorem, we need some definitions. Let $p_{t, A}$ be the {\em 
 	Suppose the expected reward function $f(A, w)$ is a function of expected weights and satisfies the requirements of monotonicity and $B$-Lipschitz continuity. Assume there is an $\alpha$-approximation oracle $\cO_{\cS}$. Then the $\alpha$-regret of our algorithm, C$^3$-UCB, satisfies
 	\begin{align}
 		R^{\alpha}(n) &\le \frac{2\sqrt{2}B}{p^*} \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))}  \nonumber \\
-		&\qquad \cdot \left(R\sqrt{\ln \left[(1 + C_\gamma n/(\lambda d))^d n \right] } + \sqrt{\lambda}\right) + \sqrt{n}\nonumber \\
+		&~~ \cdot \left(R\sqrt{\ln \left[(1 + C_\gamma n/(\lambda d))^d n \right] } + \sqrt{\lambda}\right) + \alpha \sqrt{n}\nonumber \\
 		&=O\left(\frac{dBR}{p^*} \sqrt{nK} \ln(C_\gamma n) \right),
 	\end{align}
 	where $R$ is the sub-Gaussian constant and $C_{\gamma} = \sum_{k=1}^K \gamma_k^2 \leq K$.
@@ -638,7 +638,7 @@ We have the following corollary.
 	In the problem of cascading recommendation, the expected reward function is defined in Eq.~\eqref{eq:OrRewardFunc}, where $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_K \geq 0$. Then the $\alpha$-regret of our algorithm, C$^3$-UCB, satisfies
 	\begin{align}
 		R^{\alpha}(n) &\le \frac{2\sqrt{2}}{p^*} \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))}  \nonumber \\
-		&\qquad \cdot \left(\sqrt{d\ln[(1 + C_\gamma n/(\lambda d))^d n]} + \sqrt{\lambda}\right) + \sqrt{n}\nonumber \\
+		&~~ \cdot \left(\sqrt{d\ln[(1 + C_\gamma n/(\lambda d))^d n]} + \sqrt{\lambda}\right) + \alpha \sqrt{n}\nonumber \\
 		&=O\left(\frac{d}{p^*} \sqrt{nK} \ln (C_\gamma n) \right).
 	\end{align}
 \end{corollary}
@@ -648,9 +648,9 @@ We have the following corollary.
 
 The above formulation is on the disjunctive objective, that is, at each time step the user stops once she selects one item or has checked all recommended items. Similarly, we could also consider the case of conjunctive objective. In this case, we derive a slightly better result.
 
-The Bernoulli random variable $\bw_{t}(a) \in \{0,1\}$ indicate the weight of item $a$ at time $t$ satisfying Eq.~\eqref{eq:expectation}. The learning agent observes all items until the first one with weight $0$. We also consider partial rewards: if the $k$-th item is the first item with weight $0$, then the learning agent receives reward $1-\gamma_k$; if all items have weight $1$, the learning agent receives reward $1$. 
+The Bernoulli random variables $\bw_{t}(a) \in \{0,1\}$ indicate the weight of item $a$ at time $t$ satisfying Eq.~\eqref{eq:expectation}. The learning agent observes the first position $k$ in the given action $\bA_t = (\ba_1^t, \ldots, \ba_{|\bA_t|}^t)$ with $w_t(\ba_k^t)=0$. We also consider partial rewards: if the $k$-th item is the first item with weight $0$, then the learning agent receives reward $1-\gamma_k$; if all items have weight $1$, the learning agent receives reward $1$. 
 
-The more items reveals, the more reward the agent should receive. Based on this, we assume that
+The more items reveals, the more reward the agent should receive. This can be used to model scenarios such as online surveys, where questions are adaptively given, and the more questions observed, the more helpful to the survey conductor. Based on this, we assume that
 $$
 1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_K \geq 0.
 $$
@@ -661,22 +661,21 @@ At the end of time $t$, the learning agent observes $\bO_{t}, \bw_t(\ba_k^t), k 
 		1 &\text{if } \bw_t(\ba_{\bO_{t}}^t) = 1,
 	\end{cases}\\
 	&=\begin{cases}
-		1-\gamma_{k}  &\text{if } \bw_t(\ba_{i}^t) = 1, i < k, \bw_t(\ba_{k}^t) = 0,\\
-		1 &\text{if } \bw_t(\ba_{i}^t) = 1, i\leq \abs{\bA_t}.
+		1-\gamma_{k}  &\text{if } \bw_t(\ba_{i}^t) = 1, \forall i < k, \text{and } \bw_t(\ba_{k}^t) = 0,\\
+		1 &\text{if } \bw_t(\ba_{i}^t) = 1, \forall i\leq \abs{\bA_t}.
 	\end{cases}
 \end{align*}
 
-If we define a function $f$ on $A = (a_1, \ldots, a_{\abs{A}}) \in \cS, w = (w(1), \ldots, w(L))$ by
-\begin{align}
-	&f: \cS \times [0,1]^E \to [0,1] \nonumber \\
-	&f(A,w) = \sum_{k = 1}^{\abs{A}} (1 - \gamma_k) \prod_{i = 1}^{k - 1} w(a_i)(1 - w(a_k)) + \prod_{i=1}^{\abs{A}}w(a_i),
-\label{eq:AndRewardFunc}
-\end{align}
-then it is not hard to verify that $\br_{t} = f(\bA_t, \bw_t)$ and $\EE[\br_{t}] = f(\bA_t, \theta_{\ast}^{\top}x_t)$. Next is our result for the conjunctive objective with a slightly improved bound than Theorem \ref{thm:main}.
+If we define a function $f : \cS \times [0,1]^E \to [0,1]$ on $A = (a_1, \ldots, a_{\abs{A}}) \in \cS \text{ and } w = (w(1), \ldots, w(L))$ by
+\begin{equation}
+	\label{eq:AndRewardFunc}
+	f(A,w) = \sum_{k = 1}^{\abs{A}} (1 - \gamma_k) \prod_{i = 1}^{k - 1} w(a_i)(1 - w(a_k)) + \prod_{i=1}^{\abs{A}}w(a_i),
+\end{equation}
+then it is not hard to verify that $\br_{t} = f(\bA_t, \bw_t)$ and $\EE[\br_{t}] = f(\bA_t, w_t) = f(\bA_t, \theta_{\ast}^{\top}x_t)$. Next is our result for the conjunctive objective with a slightly improved bound than Theorem \ref{thm:main}.
 
 \begin{theorem} %main theorem
 	\label{thm:and}
-	Suppose $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_{K} \geq 0$ and $\gamma_K \geq 1 - \frac{\alpha}{4} f^{\ast}$, where $f^* = \min_{t} f_t^{\ast}$. Then the $\alpha$-regret of our algorithm, C$^3$-UCB, for the conjunctive objective satisfies
+	Suppose $1 = \gamma_1 \geq \gamma_2 \geq \cdots \geq \gamma_{K} \geq 1 - \frac{\alpha}{4} f^{\ast}$, where $f^* = \min_{t} f_t^{\ast}$ with $f_t^{\ast} = \max_{A \in \cS} f(A, w_t)$. Then the $\alpha$-regret of our algorithm, C$^3$-UCB, for the conjunctive objective satisfies
 	\begin{align}
 		R^{\alpha}(n) \le& \frac{\sqrt{128}}{\alpha f^{\ast}} \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))} \nonumber \\
 		&~~ \cdot \left(\sqrt{d\ln[(1 + C_\gamma n/(\lambda d)^d n] } + \sqrt{\lambda}\right) + \alpha \sqrt{n} \nonumber \\
@@ -684,7 +683,7 @@ then it is not hard to verify that $\br_{t} = f(\bA_t, \bw_t)$ and $\EE[\br_{t}]
 	\end{align}
 \end{theorem}
 \begin{proof}
-	We will prove it in the Appendix. The main idea is that we prove the expected reward function satisfies the properties of monotonicity and Lipschitz continuity first. And then use the following lemma to replace $\bA_t$ with a prefix of $\bA_t$.
+	(sketch) First, we prove the expected reward function satisfies the properties of monotonicity and Lipschitz continuity first. And then we use the following lemma to replace $\bA_t$ with a prefix of $\bA_t$.
 	\begin{lemma}
 		\CLemmaPrefixExi
 	\end{lemma}
@@ -692,7 +691,7 @@ then it is not hard to verify that $\br_{t} = f(\bA_t, \bw_t)$ and $\EE[\br_{t}]
 	Therefore we can get
 	\CEqDeltaEstAnd
 	
-	Then similar to the proof of Theorem \ref{thm:main} and by the Lemma \ref{lem:XNormSumEst}, we can prove this theorem.
+	Then similar to the proof of Theorem \ref{thm:main} and by the Lemma \ref{lem:XNormSumEst}, we can prove this theorem. See the Appendix for the complete proof.
 \end{proof}
 
 
@@ -701,9 +700,9 @@ then it is not hard to verify that $\br_{t} = f(\bA_t, \bw_t)$ and $\EE[\br_{t}]
 
 In the above, we formulate the general setting of contextual combinatorial cascading bandit with position discounts. This setting generalizes several existing results. 
 
-If our setting restricts to the setting of combinatorial cascading bandit \cite{kveton2015combinatorial} which coincides with our Section \ref{sec:conj} without contextual information and with position discounts $\gamma_k = 1$, our regret bound is of order $O\left(\frac{L}{f^*}\sqrt{nK}\ln(n)\right)$ which has an additional term $\sqrt{\frac{L\ln(n)}{f^*}}$ than their result. The reason is that the best regret bound for stochastic MAB is $O(\frac{\ln(n)}{\Delta})$, which has been achieved by a lot of methods, while the best regret bound for linear bandits is $O\left(\frac{\ln^2(n)}{\Delta}\right)$ by \cite{abbasi2011improved} and we use the technique of linear bandits to derive a confidence ellipsoid of $\theta_{\ast}$. A similar comparison exists between our Section \ref{sec:disj} and Section 2.3 of \cite{kveton2015combinatorial}.
+The combinatorial cascading bandit \cite{kveton2015combinatorial} has a setting similar to ours in Section \ref{sec:conj}, but theirs has no context information or position discounts (i.e. all $\gamma_k = 1$). So our setting in Section \ref{sec:conj} is more general, but our regret bound is of order $O\left(\frac{L}{f^*}\sqrt{nK}\ln(n)\right)$, which has an additional term $\sqrt{\frac{L\ln(n)}{f^*}}$ compared to their result. The loss is because to handle the context information and obtain a confidence ellipsoid of $\theta_{\ast}$, we used the technique of linear bandits \cite{abbasi2011improved}, whose regret bound has an additional term of $O(\ln(n))$ than the standard stochastic MAB bound $O(\frac{\ln(n)}{\Delta})$. A similar comparison can be made between our Section \ref{sec:disj} and Section 2.3 of \cite{kveton2015combinatorial}.
 
-If our setting restricts to contextual combinatorial bandits \cite{qin2014contextual}, where there are no triggering and no position discounts, so every base arm in action $\bA_t$ will be observed. The random variable $\bO_t$ of observed base arms should be $|\bA_t|$. The probability of full observation of $A$, $p_{t, A}$, should be $1$, so $p^{\ast} = 1$. And the position discounts $\gamma_k$ are all $1$. Then our regret bound of Theorem \ref{thm:main} is of the same order with theirs. Notice that the Lipschitz bound $C$ in their setting is $\sqrt{K}$.
+We can also compare to the work \cite{qin2014contextual}, where there are no triggering and no position discounts, and all base arms in action $\bA_t$ will be observed. The random variable $\bO_t$ of observed base arms should be $|\bA_t|$. The probability of full observation of $A$, $p_{t, A}$, should be $1$, so $p^{\ast} = 1$. And the position discounts $\gamma_k$ are all $1$. Then our regret bound of Theorem \ref{thm:main} is of the same order with theirs. Notice that the Lipschitz bound $C$ in their setting is $\sqrt{K}$.
 
 Our algorithm can also apply to the setting of \cite{chen2013combinatorial} with context information. However, the probability $p^{\ast}$ in our results should be the probability that all base arms in $\tilde{S}$ (in their notations) will be triggered.
 
