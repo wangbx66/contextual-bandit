@@ -172,16 +172,14 @@
 	
 \begin{abstract} 
 	
-We propose the {\it contextual combinatorial cascading bandits}, an online partial monitoring game where at each time step a learning agent is given a set of context information, then selects a list of items, and observes stochastic outcomes of the selected items
-	sequentially following the list order
-	until some problem-specific stopping criterion happens.
+We propose the {\it contextual combinatorial cascading bandits}, an online partial monitoring game where at each time step a learning agent is given a set of context information, then selects a list of items, and observes stochastic outcomes of a prefix in the selected items by some stopping criterion.
 In online recommendation, the stopping criterion might be the first item a user selects; in network routing, the stopping criterion might be the first edge blocked in a path. 
 We further consider position discounts in the list order, which means the agent's reward is discounted depending on the position where the stopping criterion is met.
 We formulate this problem in a general contextual combinatorial cascading bandit setting.
 We then propose a UCB-type algorithm to solve our problem, C$^3$-UCB, and prove an $n$-step regret bound $\tilde{O}(\sqrt{n})$ in both the general setting and two special cases. 
 Our work generalizes existing studies in several directions, including contextual information,
 	position discounts, and a more general cascading bandit model.
-Our experiments on synthetic and real datasets demonstrate the advantage of involving contextual information and position discounts.
+Our experiments on synthetic and real datasets demonstrate the advantage of involving context information and position discounts.
 
 \end{abstract} 
 	
@@ -702,11 +700,11 @@ In the above, we formulate the general setting of contextual combinatorial casca
 
 The combinatorial cascading bandit \cite{kveton2015combinatorial} has a setting similar to ours in Section \ref{sec:conj}, but theirs has no context information or position discounts (i.e. all $\gamma_k = 1$). So our setting in Section \ref{sec:conj} is more general, but our regret bound is of order $O\left(\frac{L}{f^*}\sqrt{nK}\ln(n)\right)$, which has an additional term $\sqrt{\frac{L\ln(n)}{f^*}}$ compared to their result. The loss is because to handle the context information and obtain a confidence ellipsoid of $\theta_{\ast}$, we used the technique of linear bandits \cite{abbasi2011improved}, whose regret bound has an additional term of $O(\ln(n))$ than the standard stochastic MAB bound $O(\frac{\ln(n)}{\Delta})$. A similar comparison can be made between our Section \ref{sec:disj} and Section 2.3 of \cite{kveton2015combinatorial}.
 
-We can also compare to the work \cite{qin2014contextual}, where there are no triggering and no position discounts, and all base arms in action $\bA_t$ will be observed. The random variable $\bO_t$ of observed base arms should be $|\bA_t|$. The probability of full observation of $A$, $p_{t, A}$, should be $1$, so $p^{\ast} = 1$. And the position discounts $\gamma_k$ are all $1$. Then our regret bound of Theorem \ref{thm:main} is of the same order with theirs. Notice that the Lipschitz bound $C$ in their setting is $\sqrt{K}$.
+We can also compare to the work \cite{qin2014contextual}, where there are no triggering and no position discounts, and all base arms in action $\bA_t$ can be observed. So in their setting, our random variable $\bO_t$ becomes a deterministic value $|\bA_t|$ and the probability, $p_{t, \bA_t}$, is $1$. Thus $p^{\ast} = 1$. Also all position discounts $\gamma_k = 1$. Then our regret bound of Theorem \ref{thm:main} is of the same order with theirs. Notice that the Lipschitz bound $C$ in their setting is $\sqrt{K}$.
 
-Our algorithm can also apply to the setting of \cite{chen2013combinatorial} with context information. However, the probability $p^{\ast}$ in our results should be the probability that all base arms in $\tilde{S}$ (in their notations) will be triggered.
+Our algorithm also applies to the setting of \cite{chen2013combinatorial} by allowing context information. Note the probability $p^{\ast}$ in our results should be the probability that all base arms in $\tilde{S}$ (in their notations) will be triggered.
 
-Our setting generalizes several existing works but does not limit to them. Consider in network routing problem, the observed information would be the latency on specific edges. The latency, or {\it weight}, on an edge is an exponential variable with mean $\theta_{\ast}^{\top}x$. Suppose we treat an edge as blocked if the latency on it is larger than some tolerance $\tau$. And we wait the edge to respond for at most $2\tau$ time. Then the real observed latency is new random variable from a cut-off exponential distribution with mean $\theta_{\ast}^{\top}x$. Then the edge is unblocked, or with reward $1$, if the new random vairable is less than the tolerance $\tau$ and the expectation is a function, say $g$, of $\theta_{\ast}^{\top}x$. It is not difficult to check that $g$ satisfies the properties of monotonicity and Lipschitz continuity. And the expected reward of a path is a composition of the expected reward function of conjunctive objective, defined in Eq.~\eqref{eq:AndRewardFunc}, and the function $g$. (In original formulation, $g$ is the identity function, where $g(w) = w$.) Such an expected reward function satisfies the properties of monotonicity and Lipschitz continuity and can not be represented in conjunctive/disjunctive objectives, like in \cite{kveton2015cascading,kveton2015combinatorial}.
+Our setting generalizes several existing works on cascading feedback but covers more cases. Consider in network routing problem, the observed information is the latency on edges. The latency, or {\it weight}, on an edge follows the exponential distribution with mean $\theta_{\ast}^{\top}x$. Suppose we treat an edge as blocked if its latency is larger than some tolerance $\tau$. And we wait the edge to respond for at most $2\tau$ time. Then the real observed latency is a new random variable from a cut-off exponential distribution with mean $\theta_{\ast}^{\top}x$. The edge has reward $1$ if it is unblocked; otherwise, the reward is $0$. Then the expectation of the reward is a function, say $g$, of $\theta_{\ast}^{\top}x$. It is not difficult to check that $g$ satisfies the properties of monotonicity and Lipschitz continuity. A path has reward $1$ only when all its edges have rewards $1$. So the expected reward of a path is the expected reward function of conjunctive objective, defined in Eq.\eqref{eq:AndRewardFunc}, by replacing $w$ with $g(\theta_{\ast}^{\top}x)$. Such an expected reward function satisfies the properties of monotonicity and Lipschitz continuity, and can not be represented in conjunctive/disjunctive objectives as in \cite{kveton2015cascading,kveton2015combinatorial}.
 
 \begin{figure*}
 	\centering
@@ -726,14 +724,14 @@ Our setting generalizes several existing works but does not limit to them. Consi
 
 \section{Experiments}
 
-We evaluated $C^3$-UCB in three experiments. In the following experiments, we let the position discounts $\gamma_k$ have the form of $\gamma^{k-1}$ for some $\gamma$. 
+We evaluated $C^3$-UCB in three experiments and compare our algorithm to {\it CombCascade}, the most related one to ours. And we set the position discounts $\gamma_k$ to be $\gamma^{k-1}$ for some $\gamma$. 
 
 \subsection{Synthetic Data}
 \label{sec:ExpSyn}
 
-In the first experiment, we compared $C^3$-UCB to CombCascade on synthetic problems. This problem is a contextual cascading bandit with $L=100$ items and $K=4$, where at each time $t$ the agent recommends $K$ items to the user. At first, we randomly chose $\theta \in \RR^{d-1}$ with $\|\theta \|_2 = 1$ and let $\theta_* = (\frac{\theta}{2}, \frac{1}{2})$. Then at each time $t$, we randomly assigned $x'_{t,a} \in \RR^{d-1}$ with $\|x_{t,a}\|_2 = 1$ to arm $a$ and use $x_{t,a} = (x'_{t,a}, 1)$ to be the context information for arm $a$. This processing will guarantee the inner product $\theta_*^{\top}x_{t,a} = \frac{\theta^{\top}x + 1}{2} \in [0,1]$. Next we generated the weight for arm $a$ at time $t$ by a random sample from Bernoulli distribution with mean $\theta_*^{\top}x_{t,a}$.
+In the first experiment, we compared $C^3$-UCB to CombCascade on synthetic problems. This problem is a contextual cascading bandit with $L=100$ items and $K=4$, where at each time $t$ the agent recommends $K$ items to the user. At first, we randomly chose a $\theta \in \RR^{d-1}$ with $\|\theta \|_2 = 1$ and let $\theta_* = (\frac{\theta}{2}, \frac{1}{2})$. Then at each time $t$, we randomly assigned $x'_{t,a} \in \RR^{d-1}$ with $\|x'_{t,a}\|_2 = 1$ to arm $a$ and use $x_{t,a} = (x'_{t,a}, 1)$ to be the context information for arm $a$. This processing will guarantee the inner product $\theta_*^{\top}x_{t,a} = \frac{1}{2}(\theta^{\top}x'_{t,a} + 1) \in [0,1]$. Next we generated the weight for arm $a$ at time $t$ by a random sample from the Bernoulli distribution with mean $\theta_*^{\top}x_{t,a}$.
 
-We experimented on four settings. Under each setting, the learning agent chooses a set of $K$ items out of $L$ ground items. The first two are of disjunctive objective where the learning agent observes a prefix of the chosen $K$ items until the first one with weight $1$; the last two are of conjunctive objective where the learning agent observes from the first item until the first one with weight $0$. Notice that with $\gamma \leq 1$, the oracle selects a set of $K$ items with highest UCBs in their decreasing order. The results are shown in Fig.~\ref{fig:synthetic} and our algorithm outperforms {\it CombCascade} algorithm because they do not make use of the context information.
+We conducted experiments in four settings. Under each setting, the learning agent chooses a set of $K$ items out of $L$ ground items. The first two are of disjunctive objective where the learning agent observes a prefix of the chosen $K$ items until the first one with weight $1$; the last two are of conjunctive objective where the learning agent observes from the first item until the first one with weight $0$. Notice that with $\gamma \leq 1$, the oracle selects a set of $K$ items with highest UCBs in their decreasing order. The results are shown in Fig.~\ref{fig:synthetic} and our algorithm outperforms {\it CombCascade} algorithm because they do not make use of the context information.
 
 \begin{figure}
 	\centering
@@ -751,9 +749,9 @@ We experimented on four settings. Under each setting, the learning agent chooses
 		\includegraphics[height = 3 cm, width = 4 cm]{isp1239-T5-k100-1.eps}}
 	\subfigure[Network 3356, $\gamma = 0.9$]{
 		\includegraphics[height = 3 cm, width = 4 cm]{isp3356-T5-k100-9.eps}}
-	\subfigure[reward on network 1755 with latency, $\gamma = 0.9$ ]{
+	\subfigure[Rewards on network 1755 with latency, $\gamma = 0.9$ ]{
 		\includegraphics[height = 3 cm, width = 4 cm]{isp1755-T300000-gamma9-latency.eps}}
-	\subfigure[Comparison of different $\gamma$ ]{
+	\subfigure[Comparison of different $\gamma$ with true $\gamma^{\ast} = 0.9$, $n = 10000$ ]{
 		\includegraphics[height = 3 cm, width = 4 cm]{network-gamma-with-point.eps}}
 	\caption{Network, $d=10$}
 	\label{fig:network} % 用于交叉引用
@@ -763,19 +761,20 @@ We experimented on four settings. Under each setting, the learning agent chooses
 
 In this experiment, we evaluated $C^3$-UCB on movie recommendation with data set {\it MovieLens} \cite{lam2013movie} of 2015.
 
-The Learning problem is formulated as follows. There is a big sparse matrix $A \in \{0,1\}^{N_1 \times N_2}$ where $A(i,j) = 1$ denotes user $i$ has watched movie $j$. Next, we split $A$ as $H + F$ by putting $1$-entry in $A$ to $H$ and $F$ with probability $\sim \mathrm{Ber}(p)$ for some fixed $p$. We regard $H$ as known information about history "what users have watched" and regard $F$ as future criterion. We use $H$ to derive feature vectors of both users and movies by SVD decomposition, $H = USM^{\top}$ where $U = (u_1; ...;u_{N_1})$ and $M = (m_1;...;m_{N_2})$. At every time $t$, we randomly choose a user $I_t \in [N_1]$. Then in the same spirit of \cite{li2010contextual}, use $x_{t,j} = u_{I_t}m_j^{\top}$, the outer product of $u_{i}$ and $m_{j}$, as the context information for each movie $j$. The real weight of movie $j$ at time $t$, $\bw_t(j)$, is $F(I_t,m)$.
+The Learning problem is formulated as follows. There is a big sparse matrix $A \in \{0,1\}^{N_1 \times N_2}$ where $A(i,j) = 1$ denotes user $i$ has watched movie $j$. Next, we split $A$ as $H + F$ by putting $1$-entry in $A$ to $H$ or $F$ according to a Bernoulli distribution $\sim \mathrm{Ber}(p)$ for some fixed $p$. We regard $H$ as known information about history "what users have watched" and regard $F$ as future criterion. We use $H$ to derive feature vectors of both users and movies by SVD decomposition, $H = USM^{\top}$ where $U = (u_1; ...;u_{N_1})$ and $M = (m_1;...;m_{N_2})$. At every time $t$, we randomly choose a user $I_t \in [N_1]$. Then in the same spirit of \cite{li2010contextual}, use $x_{t,j} = u_{I_t}m_j^{\top}$, the outer product of $u_{I_t}$ and $m_{j}$, as the context information for each movie $j$. The real weight of movie $j$ at time $t$, $\bw_t(j)$, is $F(I_t,m)$.
 
-For this experiment, we randomly chose $L=200$ movies and recommended $K=4$ movies at each time. We experimented with both $\gamma=1$ (no position discount) and $\gamma=0.9$, and compared our algorithm with {\it CombCascade}. The results are shown in Fig.~\ref{fig:movielens} and demonstrate the advantage to involve context information in real applications.
+For this experiment, we randomly chose $L=200$ movies and recommended $K=4$ movies at each time. We experimented with both $\gamma=1$ (no position discount) and $\gamma=0.9$, and compared our algorithm with {\it CombCascade}. The results for rewards are shown in Fig.~\ref{fig:movielens} and demonstrate the advantage to involve context information in real applications.
 
 \subsection{Network Routing Data}
 
 In the last experiment, we evaluated $C^3$-UCB on network routing problem with {\it RocketFuel} dataset \cite{spring2004measuring}.
 
-The ground set $E$ is the set of links in the network. Before learning, the environment randomly chooses a $d$-dimensional vector $\theta_* \in [0,1]^d$. At each time $t$, a pair of source and destination nodes are randomly chosen and the feasible action set $\cS_t$ at time $t$ is all simple paths between the source and destination nodes. Any edge $a$ in the set $\cS$ is assigned with a random $d$-dimensional context vector $x_{t,a}$. Notice here both $\theta$ and $x$ have been processed like section \ref{sec:ExpSyn} so that $\theta_*^{\top}x \in [0,1]$. The weight for each edge $a$ is a sample from Bernoulli distribution with mean $\theta_*^{\top}x_{t,a}$. Then the learning agent recommends a feasible path $A = (a_1,...,a_{|A|})$ between source and destination nodes to maximize the expected reward in the conjunctive objective. We experimented with different position discounts and different networks. The results are shown in Fig.~\ref{fig:network} (a) (b). 
+The ground set $E$ is the set of links in the network. Before learning, the environment randomly chooses a $d$-dimensional vector $\theta_* \in [0,1]^d$. At each time $t$, a pair of source and destination nodes are randomly chosen and the feasible action set $\cS_t$ at time $t$ is all simple paths between the source and destination nodes. Any edge $a$ in the set $\cS$ is assigned with a random $d$-dimensional context vector $x_{t,a}$. Notice here both $\theta$ and $x$ have been processed like Section \ref{sec:ExpSyn} so that $\theta_*^{\top}x \in [0,1]$. The weight for each edge $a$ is a sample from Bernoulli distribution with mean $\theta_*^{\top}x_{t,a}$. Then the learning agent recommends a feasible path $A = (a_1,...,a_{|A|})$ between source and destination nodes to maximize the expected reward in the conjunctive objective. We experimented with different position discounts and different networks. The results are shown in Fig.~\ref{fig:network} (a) (b). 
 
 We also experimented on the network with latency, where the latency on an edge is an exponential random variable with mean $\theta_{\ast}^{\top}x$ and the reward is $1$ if the latency is less than a tolerance $\tau = 0.75$. The comparison of rewards of our algorithm with {\it CombCascade} is shown in Fig.~\ref{fig:network} (c).
 
-We also experimented on the influence of different $\gamma$'s to the regret. In recommendations, the position discounts represent users' satisfaction and the learning agent may not know its true value. Suppose the true position discount $\gamma = 0.9$ and the learning agent sets $\gamma$ by her experience. We experiment on different setting $\gamma \in \{0.8, 0.82, \ldots, 0.98, 1.0\}$ with the true criterion $\gamma = 0.9$. The regrets with different $\gamma$'s are illustrated in Figure~\ref{fig:network}(d). The setting $\gamma$ is more close to the true $\gamma$, the regret is tending to be smaller. This experiment shows when there are position discounts in real application, it is better to represent this information to the model.
+We also experimented on the influence of different $\gamma$'s to the regret. In recommendations, the position discounts represent users' satisfaction and the learning agent may not know its true value. Suppose the true position discount $\gamma^{\ast} = 0.9$ and the learning agent sets $\gamma$ by her experience. We experiment on different setting $\gamma \in \{0.8, 0.82, \ldots, 0.98, 1.0\}$ with the true criterion $\gamma^{\ast} = 0.9$. The regrets with different $\gamma$'s are illustrated in Figure~\ref{fig:network}(d), from which it can be seen that the regret is minimized around the true $\gamma^{\ast}$. The big gap between the regret at $\gamma = 1$ and $\gamma^{\ast} = 0.9$ shows that it significantly benefits by exploiting position discounts in the model when such discounts indeed exist in applications.
+
 
 % we randomly generate a pair of starting and ending nodes, and the learning agent chooses a routing path between the two nodes to maximize the expected reward with position discount.
 
@@ -785,11 +784,10 @@ We also experimented on the influence of different $\gamma$'s to the regret. In 
 % $$
 % Notice that the expression is not of the form $\prod_{k=1}^{|A|}\theta_*^{\top}x_{t,a_k}$ in our model. However, our algorithm could also apply to it.
 
-% the environment randomly choose 
 
 \section{Conclusions}
 
-In this paper, we propose contextual combinatorial cascading bandits with position discounts, where each action is an ordered list and only a prefix of the action can be observed each time. We propose a C$^3$-UCB algorithm and prove a cumulative regret bound for general reward functions and two special reward functions. The experiments conducted demonstrate the advantage to involve context information and position discounts. In the next, we want to derive a lower bound for this problem.
+In this paper, we propose contextual combinatorial cascading bandits with position discounts, where each action is an ordered list and only a prefix of the action is observed each time. We propose a C$^3$-UCB algorithm and prove a cumulative regret bound for a general reward function and two special reward functions. The experiments conducted demonstrate the advantage to involve context information and position discounts. A matching lower bound on the regret bound is left for a future study.
 
 
 % In the unusual situation where you want a paper to appear in the
@@ -968,10 +966,10 @@ Lemma \ref{lem:SumXiEstimateInDet} and Lemma \ref{lem:detVt} combined imply Lemm
 	Inequality \eqref{eq:pfMsumXi} is because of the definition of $\bbeta_t(\delta)$ (Eq.\eqref{eq:definebeta}) and Lemma \ref{lem:SumXiEstimateInDet}. 
 	And the last inequality \eqref{eq:pfMdetEst} is because estimate of $\det(\bV_t)$ by Lemma \ref{lem:detVt}.
 	
-	Also $R^{\alpha}(n) \leq n$ and $\delta = \frac{1}{\sqrt{n}}$. We have 
+	Also $R^{\alpha}(n) \leq \alpha n$ and $\delta = \frac{1}{\sqrt{n}}$. We have 
 	\begin{align*}
 		R^{\alpha}(n) &\leq \frac{2\sqrt{2}B}{p^*} \left(R\sqrt{ \ln[ (1 + C_\gamma n/(\lambda d))^d n ]} + \sqrt{\lambda} \right) \\
-		&\qquad \cdot \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))} + \sqrt{n}.
+		&\qquad \cdot \sqrt{nKd\ln(1 + C_\gamma n/(\lambda d))} + \alpha \sqrt{n}.
 	\end{align*}
 \end{proof}
 
