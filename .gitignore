@@ -1,5 +1,6 @@
 # [Bandit project ignores]
 
+experiment_results/*
 experiment/isp-trace/*
 experiment/isp-weight/*
 *log
