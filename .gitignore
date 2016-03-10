@@ -18,7 +18,9 @@ exploit*
 # standard tex ignore
 *.aux
 *.bbl
+*.blg
 *.log
+*.out
 
 # [Common Python ignore]
 # Byte-compiled / optimized / DLL files
