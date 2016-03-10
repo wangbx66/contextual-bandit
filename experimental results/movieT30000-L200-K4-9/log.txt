@@ -1,0 +1,22 @@
+Main-INFO: ===== Numpy/Python random seed = 289
+Main-INFO: Movielens flowtest
+Main-INFO: Require rng initialization
+Main-INFO: d 5
+    K 4
+    portion 0.2
+    disj True
+    h 60
+    L 200
+    gamma 0.9
+Movielens-INFO: Initializing random settings "Contextual Movielens" complete
+Movielens-INFO: gamma 0.9
+    K 4
+    disj True
+    L 200
+    d 5
+Environment-INFO: Initializing environment "Contextual Movielens"| cascade:True rgamma:True sort:False
+Environment-INFO: Initializing environment "Contextual Movielens" done
+Agent-INFO: Sherry play score 27331.484000001543/30000, gamma=0.9
+Environment-INFO: Initializing environment "Contextual Movielens"| cascade:True rgamma:False sort:False
+Environment-INFO: Initializing environment "Contextual Movielens" done
+Agent-INFO: Absolute play score 23213.229000001917/30000

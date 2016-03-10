@@ -1,0 +1,31 @@
+Main-INFO: ===== Numpy/Python random seed = 294
+Main-INFO: Monkey flowtest
+Main-INFO: Require rng initialization
+Main-INFO: b 0
+    v 0.35
+    disj False
+    L 100
+    eps 0.1
+    K 4
+    gamma 0.9
+    d 10
+Environment-INFO: Initializing random settings "Contextual Monkey"
+Environment-INFO: disj False
+    v 0.35
+    eps 0.1
+    theta [-0.60976648  0.34678993 -0.24518023 -0.19425483  0.31614848 -0.13248346
+ -0.50488485 -0.11460277  0.10891078 -0.11255003]
+    name c3synthetic-monkey
+    d 10
+    b 0
+    gamma 0.9
+    L 100
+    K 4
+    regret_avl True
+Environment-INFO: Initializing environment "c3synthetic-monkey"| cascade:True rgamma:True descend:False
+Agent-INFO: Sherry play reward 47957.30599999368/100000
+Agent-INFO: theta cosine similarity 0.9961758762449352
+Agent-INFO: regret 2398.828146006071/100000
+Environment-INFO: Initializing environment "c3synthetic-monkey"| cascade:True rgamma:False descend:False
+Agent-INFO: Absolute play reward 26410.64999999225/100000
+Agent-INFO: regret 23821.090877823368/100000

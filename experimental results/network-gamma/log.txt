@@ -1,0 +1,67 @@
+Main-INFO: ===== Numpy/Python random seed = 221
+Main-INFO: Gamma ISP flowtest
+Main-INFO: Require rng initialization
+Main-INFO: v 0.35
+    k 100
+    gamma 0.9
+    d 5
+    isp 6461
+ISP-INFO: Initializing random settings "Contextual Synthetic ISP"
+ISP-INFO: disj False
+    gamma 0.9
+    v 0.35
+    L 1343
+    theta [-0.33483625 -0.73516116  0.57512724 -0.12901169 -0.00272057]
+    k 100
+    name c3synthetic-isp
+    isp 6461
+    regret_avl True
+    d 5
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 1853.7791656999657/10000, gamma=0.84
+Agent-INFO: theta cosine similarity 0.9969991575420137
+Agent-INFO: regret 12.654761348110748/10000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 2063.945316080956/10000, gamma=1.0
+Agent-INFO: theta cosine similarity 0.9990334967565947
+Agent-INFO: regret 75.40301350745894/10000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 2050.3900842699595/10000, gamma=0.98
+Agent-INFO: theta cosine similarity 0.9980064355569684
+Agent-INFO: regret 41.14669299784523/10000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 2029.47918735186/10000, gamma=0.96
+Agent-INFO: theta cosine similarity 0.9957470531742846
+Agent-INFO: regret 41.63328616613417/10000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 2107.583838879953/10000, gamma=0.94
+Agent-INFO: theta cosine similarity 0.9988828940353482
+Agent-INFO: regret 18.116092306737634/10000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 2080.4530763899575/10000, gamma=0.92
+Agent-INFO: theta cosine similarity 0.9990491701137467
+Agent-INFO: regret 7.840354008563545/10000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 2071.2372584909554/10000, gamma=0.9
+Agent-INFO: theta cosine similarity 0.9981998220764144
+Agent-INFO: regret 9.33868451228841/10000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 2099.1487273198572/10000, gamma=0.88
+Agent-INFO: theta cosine similarity 0.9987787347645591
+Agent-INFO: regret 14.225566468781789/10000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 2165.3183285699565/10000, gamma=0.86
+Agent-INFO: theta cosine similarity 0.9990511498996976
+Agent-INFO: regret 17.037036058789813/10000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 2106.323565689961/10000, gamma=0.84
+Agent-INFO: theta cosine similarity 0.9966553430849283
+Agent-INFO: regret 28.06642065327448/10000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 2081.8792301119597/10000, gamma=0.82
+Agent-INFO: theta cosine similarity 0.9971530310065724
+Agent-INFO: regret 30.173629361521765/10000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 2068.9451236799587/10000, gamma=0.8
+Agent-INFO: theta cosine similarity 0.9986309808636622
+Agent-INFO: regret 26.861232487654906/10000

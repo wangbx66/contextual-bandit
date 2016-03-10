@@ -21,7 +21,11 @@ unzip ml-20m.zip -d movielens
 
 ```
 wget http://research.cs.washington.edu/networking/rocketfuel/maps/rocketfuel_maps_cch.tar.gz
+wget http://research.cs.washington.edu/networking/rocketfuel/maps/weights-dist.tar.gz
+wget http://research.cs.washington.edu/networking/rocketfuel/maps/rocketfuel-traces.tgz
 tar -xvf rocketfuel_maps_cch.tar.gz -C isp
+tar -xvf weights-dist.tar.gz -C isp-weight
+tar -xvf rocketfuel-traces.tgz -C isp-trace
 ```
 
 ## Experiment

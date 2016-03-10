@@ -1,0 +1,27 @@
+Main-INFO: ===== Numpy/Python random seed = 54
+Main-INFO: ISP flowtest
+Main-INFO: Require rng initialization
+Main-INFO: d 10
+    gamma 0.9
+    k 100
+    isp 3356
+    v 0.35
+ISP-INFO: Initializing random settings "Contextual Synthetic ISP"
+ISP-INFO: disj False
+    isp 3356
+    theta [ 0.01474076  0.25347711 -0.16154495  0.09042064 -0.58765173  0.58742522
+ -0.25233242 -0.02945803  0.37480605 -0.07640324]
+    gamma 0.9
+    k 100
+    L 6921
+    regret_avl True
+    v 0.35
+    d 10
+    name c3synthetic-isp
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 18561.787539345125/100000
+Agent-INFO: theta cosine similarity 0.9969492308220482
+Agent-INFO: regret 142.34755470234333/100000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:False descend:None
+Agent-INFO: Absolute play reward 10220.362010074372/100000
+Agent-INFO: regret 8403.839383996816/100000
