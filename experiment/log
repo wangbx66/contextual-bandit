@@ -2268,3 +2268,614 @@ Agent-INFO: Absolute play score 160.50882419999837/1500
 Environment-INFO: Initializing environment "Contextual ISP"| cascade:True rgamma:False
 Environment-INFO: Initializing environment "Contextual ISP" done
 Agent-INFO: Absolute play score 171.2212449999984/1500
+Main-INFO: ===== Numpy/Python random seed = 16
+Main-INFO: ISP flowtest
+Main-INFO: Require rng initialization
+Main-INFO: k 10
+    v 0.35
+    gamma 0.9
+    d 5
+    isp 6461
+ISP-INFO: Initializing random settings "Contextual Synthetic ISP"
+ISP-INFO: disj False
+    L 1343
+    name c3synthetic-isp
+    regret_avl True
+    gamma 0.9
+    d 5
+    theta [-0.19209116 -0.97316401  0.09342985 -0.07442574  0.04224296]
+    k 10
+    isp 6461
+    v 0.35
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 179.11332899999903/1000
+Agent-INFO: theta cosine similarity 0.9848136661309274
+Agent-INFO: regret 5.363765244108746/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:False descend:None
+Agent-INFO: Sherry play reward 171.09351699999874/1000
+Agent-INFO: theta cosine similarity 0.9890563697395401
+Agent-INFO: regret 4.951195384594077/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:False rgamma:False descend:None
+Agent-INFO: Lijing play reward 175.0595579999987/1000
+Agent-INFO: theta cosine similarity 0.9988470040382963
+Agent-INFO: regret 2.4714650469963337/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Absolute play reward 101.93271799999953/1000
+Agent-INFO: regret 79.1410482039583/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:False descend:None
+Agent-INFO: Absolute play reward 104.08633299999939/1000
+Agent-INFO: regret 76.20412995705519/1000
+Main-INFO: ===== Numpy/Python random seed = 110
+Main-INFO: Gamma ISP flowtest
+Main-INFO: Require rng initialization
+Main-INFO: gamma 0.9
+    isp 6461
+    d 5
+    k 10
+    v 0.35
+ISP-INFO: Initializing random settings "Contextual Synthetic ISP"
+ISP-INFO: d 5
+    regret_avl True
+    name c3synthetic-isp
+    isp 6461
+    gamma 0.9
+    disj False
+    theta [-0.20057275 -0.16578535  0.64755208 -0.60134585 -0.38903117]
+    L 1343
+    k 10
+    v 0.35
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 170.91662009999882/1000, gamma=1
+Agent-INFO: theta cosine similarity 0.9804343168288748
+Agent-INFO: regret 9.086592705072709/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 180.56368729999878/1000, gamma=0.98
+Agent-INFO: theta cosine similarity 0.9935527796613718
+Agent-INFO: regret 5.758781612000603/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 178.57962799999882/1000, gamma=0.96
+Agent-INFO: theta cosine similarity 0.9920332068591354
+Agent-INFO: regret 3.545652732343628/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 174.2952259999989/1000, gamma=0.94
+Agent-INFO: theta cosine similarity 0.9737169510502428
+Agent-INFO: regret 7.453687434131272/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 173.36166609999879/1000, gamma=0.92
+Agent-INFO: theta cosine similarity 0.993822012766297
+Agent-INFO: regret 1.2496577908647717/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 180.5215819999987/1000, gamma=0.9
+Agent-INFO: theta cosine similarity 0.9980992632520433
+Agent-INFO: regret 3.0488713011041733/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 185.34930599999865/1000, gamma=0.88
+Agent-INFO: theta cosine similarity 0.988345248601563
+Agent-INFO: regret 4.832606423387373/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 195.2385910999988/1000, gamma=0.86
+Agent-INFO: theta cosine similarity 0.9952481435558149
+Agent-INFO: regret 3.3848410395284656/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 165.4201849999988/1000, gamma=0.84
+Agent-INFO: theta cosine similarity 0.9822894516857167
+Agent-INFO: regret 4.749330473135125/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 199.50070909999852/1000, gamma=0.82
+Agent-INFO: theta cosine similarity 0.9725671455167288
+Agent-INFO: regret 5.046121704926699/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 199.29886709999855/1000, gamma=0.8
+Agent-INFO: theta cosine similarity 0.997215743766215
+Agent-INFO: regret 2.293410123856206/1000
+Main-INFO: ===== Numpy/Python random seed = 136
+Main-INFO: ISP flowtest
+Main-INFO: Require rng initialization
+Main-INFO: isp 6461
+    v 0.35
+    gamma 0.9
+    k 10
+    d 5
+ISP-INFO: Initializing random settings "Contextual Synthetic ISP"
+ISP-INFO: regret_avl True
+    L 1343
+    k 10
+    isp 6461
+    v 0.35
+    gamma 0.9
+    name c3synthetic-isp
+    disj False
+    theta [-0.42496186 -0.07909274 -0.0025512  -0.89369671  0.12021415]
+    d 5
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Main-INFO: ===== Numpy/Python random seed = 208
+Main-INFO: ISP flowtest
+Main-INFO: Require rng initialization
+Main-INFO: d 5
+    isp 6461
+    k 10
+    gamma 0.9
+    v 0.35
+ISP-INFO: Initializing random settings "Contextual Synthetic ISP"
+ISP-INFO: L 1343
+    v 0.35
+    d 5
+    isp 6461
+    theta [ 0.3802104  -0.91335167  0.04921317  0.09501476  0.09888902]
+    regret_avl True
+    name c3synthetic-isp
+    k 10
+    disj False
+    gamma 0.9
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Main-INFO: ===== Numpy/Python random seed = 89
+Main-INFO: ISP flowtest
+Main-INFO: Require rng initialization
+Main-INFO: v 0.35
+    isp 6461
+    k 10
+    d 5
+    gamma 0.9
+ISP-INFO: Initializing random settings "Contextual Synthetic ISP"
+ISP-INFO: v 0.35
+    isp 6461
+    k 10
+    name c3synthetic-isp
+    theta [-0.70710887  0.16635414 -0.10127706  0.09410519 -0.67320911]
+    gamma 0.9
+    L 1343
+    disj False
+    regret_avl True
+    d 5
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Main-INFO: ===== Numpy/Python random seed = 328
+Main-INFO: ISP flowtest
+Main-INFO: Require rng initialization
+Main-INFO: isp 6461
+    d 5
+    gamma 0.9
+    v 0.35
+    k 10
+ISP-INFO: Initializing random settings "Contextual Synthetic ISP"
+ISP-INFO: name c3synthetic-isp
+    theta [-0.26308357 -0.05026483  0.13076205  0.68353214  0.66629242]
+    regret_avl True
+    v 0.35
+    disj False
+    isp 6461
+    k 10
+    L 1343
+    gamma 0.9
+    d 5
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Main-INFO: ===== Numpy/Python random seed = 252
+Main-INFO: ISP flowtest
+Main-INFO: Require rng initialization
+Main-INFO: isp 6461
+    d 5
+    k 10
+    v 0.35
+    gamma 0.9
+ISP-INFO: Initializing random settings "Contextual Synthetic ISP"
+ISP-INFO: d 5
+    k 10
+    v 0.35
+    L 1343
+    isp 6461
+    disj False
+    theta [ 0.26272446  0.62241691 -0.54879879 -0.46580943 -0.15941931]
+    gamma 0.9
+    regret_avl True
+    name c3synthetic-isp
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Main-INFO: ===== Numpy/Python random seed = 213
+Main-INFO: ISP flowtest
+Main-INFO: Require rng initialization
+Main-INFO: gamma 0.9
+    isp 6461
+    k 10
+    v 0.35
+    d 5
+ISP-INFO: Initializing random settings "Contextual Synthetic ISP"
+ISP-INFO: k 10
+    v 0.35
+    theta [ 0.18341593 -0.86407187 -0.21543505 -0.33700218 -0.24444974]
+    isp 6461
+    L 1343
+    regret_avl True
+    gamma 0.9
+    disj False
+    d 5
+    name c3synthetic-isp
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Main-INFO: ===== Numpy/Python random seed = 288
+Main-INFO: ISP flowtest
+Main-INFO: Require rng initialization
+Main-INFO: isp 6461
+    d 5
+    gamma 0.9
+    v 0.35
+    k 10
+ISP-INFO: Initializing random settings "Contextual Synthetic ISP"
+ISP-INFO: theta [-0.50864186  0.42846024  0.33884856  0.05966628  0.66281738]
+    regret_avl True
+    v 0.35
+    isp 6461
+    disj False
+    gamma 0.9
+    name c3synthetic-isp
+    L 1343
+    k 10
+    d 5
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Main-INFO: ===== Numpy/Python random seed = 16
+Main-INFO: ISP flowtest
+Main-INFO: Require rng initialization
+Main-INFO: k 10
+    v 0.35
+    isp 6461
+    gamma 0.9
+    d 5
+ISP-INFO: Initializing random settings "Contextual Synthetic ISP"
+ISP-INFO: theta [-0.19209116 -0.97316401  0.09342985 -0.07442574  0.04224296]
+    k 10
+    L 1343
+    v 0.35
+    name c3synthetic-isp
+    disj False
+    regret_avl True
+    gamma 0.9
+    isp 6461
+    d 5
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Main-INFO: ===== Numpy/Python random seed = 102
+Main-INFO: Gamma ISP flowtest
+Main-INFO: Require rng initialization
+Main-INFO: d 5
+    k 10
+    isp 6461
+    v 0.35
+    gamma 0.9
+Main-INFO: ===== Numpy/Python random seed = 180
+Main-INFO: Gamma ISP flowtest
+Main-INFO: Require rng initialization
+Main-INFO: d 5
+    k 10
+    isp 6461
+    v 0.35
+    gamma 0.9
+ISP-INFO: Initializing random settings "Contextual Synthetic ISP"
+ISP-INFO: disj False
+    k 10
+    name c3synthetic-isp
+    regret_avl True
+    v 0.35
+    gamma 0.9
+    isp 6461
+    d 5
+    theta [-0.37460842 -0.13088021  0.41895581 -0.00904826 -0.8166597 ]
+    L 1343
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Main-INFO: ===== Numpy/Python random seed = 3
+Main-INFO: Gamma ISP flowtest
+Main-INFO: Require rng initialization
+Main-INFO: d 5
+    k 10
+    isp 6461
+    gamma 0.9
+    v 0.35
+ISP-INFO: Initializing random settings "Contextual Synthetic ISP"
+ISP-INFO: theta [ 0.08246164  0.03478126 -0.31342528 -0.02421679  0.94507591]
+    L 1343
+    disj False
+    gamma 0.9
+    name c3synthetic-isp
+    regret_avl True
+    k 10
+    d 5
+    isp 6461
+    v 0.35
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 191.10812319999872/1000, gamma=1
+Agent-INFO: theta cosine similarity 0.9866300043032289
+Agent-INFO: regret 7.309504560954945/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 173.5074300999988/1000, gamma=0.98
+Agent-INFO: theta cosine similarity 0.9932799373326485
+Agent-INFO: regret 5.899696847275334/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 176.44880809999893/1000, gamma=0.96
+Agent-INFO: theta cosine similarity 0.9926312647486699
+Agent-INFO: regret 4.899163552930394/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 202.66748499999872/1000, gamma=0.94
+Agent-INFO: theta cosine similarity 0.9851251073039607
+Agent-INFO: regret 4.69141919836582/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 173.89994899999877/1000, gamma=0.92
+Agent-INFO: theta cosine similarity 0.9732726849258985
+Agent-INFO: regret 5.685781380507475/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 176.85862799999873/1000, gamma=0.9
+Agent-INFO: theta cosine similarity 0.9922161193636407
+Agent-INFO: regret 1.759100763282283/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 185.8484260999988/1000, gamma=0.88
+Agent-INFO: theta cosine similarity 0.971087994692402
+Agent-INFO: regret 7.260820476215067/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 184.2348349999988/1000, gamma=0.86
+Agent-INFO: theta cosine similarity 0.9924562151032684
+Agent-INFO: regret 2.35269115047124/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 171.2887690999989/1000, gamma=0.84
+Agent-INFO: theta cosine similarity 0.9847163517151226
+Agent-INFO: regret 9.063034601477542/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 170.31708209999897/1000, gamma=0.82
+Agent-INFO: theta cosine similarity 0.9990074938773067
+Agent-INFO: regret 1.5370543793755345/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 168.30197799999902/1000, gamma=0.8
+Agent-INFO: theta cosine similarity 0.9719605884983314
+Agent-INFO: regret 9.602657254476634/1000
+Main-INFO: ===== Numpy/Python random seed = 187
+Main-INFO: Gamma ISP flowtest
+Main-INFO: Require rng initialization
+Main-INFO: isp 6461
+    d 5
+    k 10
+    gamma 0.9
+    v 0.35
+ISP-INFO: Initializing random settings "Contextual Synthetic ISP"
+ISP-INFO: d 5
+    regret_avl True
+    theta [ 0.01086489  0.90864307  0.15183907 -0.22727369 -0.31550166]
+    L 1343
+    k 10
+    disj False
+    isp 6461
+    name c3synthetic-isp
+    gamma 0.9
+    v 0.35
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 170.619116999999/1000, gamma=1
+Agent-INFO: theta cosine similarity 0.9790067805625802
+Agent-INFO: regret 10.604249939389142/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 170.7547679999989/1000, gamma=0.98
+Agent-INFO: theta cosine similarity 0.9857511560251347
+Agent-INFO: regret 6.505723682456604/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 162.64668499999897/1000, gamma=0.96
+Agent-INFO: theta cosine similarity 0.9790872230058018
+Agent-INFO: regret 4.372631973127452/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 168.5934569999989/1000, gamma=0.94
+Agent-INFO: theta cosine similarity 0.9822422030118091
+Agent-INFO: regret 5.285660729444922/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 177.00831699999893/1000, gamma=0.92
+Agent-INFO: theta cosine similarity 0.9767190355335333
+Agent-INFO: regret 7.172473668011418/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 194.55181299999876/1000, gamma=0.9
+Agent-INFO: theta cosine similarity 0.990377598017283
+Agent-INFO: regret 4.257210369668745/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 184.79495699999876/1000, gamma=0.88
+Agent-INFO: theta cosine similarity 0.9851860462432498
+Agent-INFO: regret 2.9338176072284052/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 185.7627959999985/1000, gamma=0.86
+Agent-INFO: theta cosine similarity 0.9927276691939912
+Agent-INFO: regret 2.366639453624053/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 185.1832190999985/1000, gamma=0.84
+Agent-INFO: theta cosine similarity 0.986128009224867
+Agent-INFO: regret 4.338336368578711/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 186.74615499999888/1000, gamma=0.82
+Agent-INFO: theta cosine similarity 0.9869556348610805
+Agent-INFO: regret 5.412973430973476/1000
+Environment-INFO: Initializing environment "c3synthetic-isp"| cascade:True rgamma:True descend:None
+Agent-INFO: Sherry play reward 183.60110009999872/1000, gamma=0.8
+Agent-INFO: theta cosine similarity 0.9842720562924143
+Agent-INFO: regret 4.632936737505115/1000
+Main-INFO: ===== Numpy/Python random seed = 301
+Main-INFO: Movielens flowtest
+Main-INFO: Require rng initialization
+Main-INFO: kw {'d': 25, 'disj': True, 'K': 4, 'portion': 0.2, 'n_movies': 100, 'n_users': 60, 'gamma': 0.95}
+Main-INFO: ===== Numpy/Python random seed = 36
+Main-INFO: Movielens flowtest
+Main-INFO: Require rng initialization
+Main-INFO: gamma 0.95
+    n_movies 100
+    n_users 60
+    disj True
+    portion 0.2
+    K 4
+    d 25
+Movielens-INFO: Initializing random settings "Contextual Movielens"
+Main-INFO: ===== Numpy/Python random seed = 315
+Main-INFO: Movielens flowtest
+Main-INFO: Require rng initialization
+Main-INFO: portion 0.2
+    d 25
+    n_movies 100
+    n_users 60
+    K 4
+    gamma 0.95
+    disj True
+Movielens-INFO: Initializing random settings "Contextual Movielens"
+Main-INFO: ===== Numpy/Python random seed = 87
+Main-INFO: Movielens flowtest
+Main-INFO: Require rng initialization
+Main-INFO: portion 0.2
+    K 4
+    n_users 60
+    n_movies 100
+    d 25
+    gamma 0.95
+    disj True
+Movielens-INFO: Initializing random settings "Contextual Movielens"
+Main-INFO: ===== Numpy/Python random seed = 257
+Main-INFO: Movielens flowtest
+Main-INFO: Require rng initialization
+Main-INFO: portion 0.2
+    gamma 0.95
+    d 25
+    disj True
+    K 4
+    n_users 60
+    n_movies 100
+Movielens-INFO: Initializing random settings "Contextual Movielens"
+Environment-INFO: Initializing environment "c3synthetic-movielens"| cascade:True rgamma:True descend:False
+Main-INFO: ===== Numpy/Python random seed = 327
+Main-INFO: Movielens flowtest
+Main-INFO: Require rng initialization
+Main-INFO: d 25
+    n_users 60
+    portion 0.2
+    gamma 0.95
+    n_movies 100
+    disj True
+    K 4
+Movielens-INFO: Initializing random settings "Contextual Movielens"
+Environment-INFO: Initializing environment "c3synthetic-movielens"| cascade:True rgamma:True descend:False
+Main-INFO: ===== Numpy/Python random seed = 161
+Main-INFO: Movielens flowtest
+Main-INFO: Require rng initialization
+Main-INFO: portion 0.2
+    n_movies 100
+    K 4
+    d 25
+    gamma 0.95
+    disj True
+    n_users 60
+Movielens-INFO: Initializing random settings "Contextual Movielens"
+Environment-INFO: Initializing environment "c3synthetic-movielens"| cascade:True rgamma:True descend:False
+Main-INFO: ===== Numpy/Python random seed = 92
+Main-INFO: Movielens flowtest
+Main-INFO: Require rng initialization
+Main-INFO: n_movies 100
+    n_users 60
+    gamma 0.95
+    d 25
+    K 4
+    disj True
+    portion 0.2
+Movielens-INFO: Initializing random settings "Contextual Movielens"
+Environment-INFO: Initializing environment "c3synthetic-movielens"| cascade:True rgamma:True descend:False
+Main-INFO: ===== Numpy/Python random seed = 20
+Main-INFO: Movielens flowtest
+Main-INFO: Require rng initialization
+Main-INFO: K 4
+    d 25
+    n_users 60
+    portion 0.2
+    gamma 0.95
+    n_movies 100
+    disj True
+Movielens-INFO: Initializing random settings "Contextual Movielens"
+Movielens-INFO: K 4
+    regret_avl False
+    d 625
+    L 100
+    n_movies 100
+    n_users 60
+    name c3synthetic-movielens
+    portion 0.2
+    disj True
+    theta None
+    S [  201.81169128   203.6217804    209.09761047   214.5428772    217.84719849
+   218.70031738   226.96018982   232.032547     237.70848083   244.57872009
+   249.21530151   267.93029785   268.74365234   288.59222412   304.11727905
+   316.43435669   321.55352783   340.38894653   372.16207886   404.91772461
+   478.22579956   503.18261719   589.96704102   685.78973389  1681.52258301]
+    gamma 0.95
+Environment-INFO: Initializing environment "c3synthetic-movielens"| cascade:True rgamma:True descend:False
+Main-INFO: ===== Numpy/Python random seed = 26
+Main-INFO: ===== Numpy/Python random seed = 76
+Main-INFO: Movielens flowtest
+Main-INFO: Require rng initialization
+Main-INFO: n_users 60
+    train_portion 0.5
+    gamma 1.0
+    disj True
+    d 5
+    n_movies 100
+    K 4
+Movielens-INFO: Initializing random settings "Contextual Movielens"
+Movielens-INFO: n_users 60
+    L 100
+    name c3synthetic-movielens
+    theta None
+    regret_avl False
+    d 25
+    K 4
+    train_portion 0.5
+    gamma 1.0
+    disj True
+    n_movies 100
+Environment-INFO: Initializing environment "c3synthetic-movielens"| cascade:True rgamma:True descend:False
+Agent-INFO: Sherry play reward 999.0/1000
+Environment-INFO: Initializing environment "c3synthetic-movielens"| cascade:True rgamma:True descend:True
+Agent-INFO: Sherry play reward 999.0/1000
+Environment-INFO: Initializing environment "c3synthetic-movielens"| cascade:False rgamma:True descend:False
+Agent-INFO: Lijing play reward 999.0/1000
+Environment-INFO: Initializing environment "c3synthetic-movielens"| cascade:True rgamma:True descend:False
+Main-INFO: ===== Numpy/Python random seed = 297
+Main-INFO: Movielens flowtest
+Main-INFO: Require rng initialization
+Main-INFO: train_portion 0.7
+    K 4
+    d 3
+    n_users 1500
+    gamma 1.0
+    n_movies 20
+    disj True
+Movielens-INFO: Initializing random settings "Contextual Movielens"
+Movielens-INFO: train_portion 0.7
+    K 4
+    n_users 1500
+    L 20
+    d 9
+    gamma 1.0
+    theta None
+    regret_avl False
+    n_movies 20
+    name c3-movielens
+    disj True
+Environment-INFO: Initializing environment "c3-movielens"| cascade:True rgamma:True descend:False
+Main-INFO: ===== Numpy/Python random seed = 248
+Main-INFO: Movielens flowtest
+Main-INFO: Require rng initialization
+Main-INFO: n_movies 20
+    d 3
+    K 4
+    disj True
+    n_users 1500
+    train_portion 0.7
+    gamma 1.0
+Movielens-INFO: Initializing random settings "Contextual Movielens"
+Movielens-INFO: L 20
+    name c3-movielens
+    n_users 1500
+    K 4
+    regret_avl False
+    n_movies 20
+    disj True
+    d 9
+    theta None
+    train_portion 0.7
+    gamma 1.0
+Environment-INFO: Initializing environment "c3-movielens"| cascade:True rgamma:True descend:False
+Agent-INFO: Sherry play reward 1164.0/1500
+Environment-INFO: Initializing environment "c3-movielens"| cascade:True rgamma:True descend:True
+Agent-INFO: Sherry play reward 1118.0/1500
+Environment-INFO: Initializing environment "c3-movielens"| cascade:False rgamma:True descend:False
+Agent-INFO: Lijing play reward 1134.0/1500
+Environment-INFO: Initializing environment "c3-movielens"| cascade:True rgamma:True descend:False
+Agent-INFO: Absolute play reward 1470.0/1500
+Environment-INFO: Initializing environment "c3-movielens"| cascade:True rgamma:True descend:True

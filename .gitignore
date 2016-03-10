@@ -1,5 +1,9 @@
 # [Bandit project ignores]
 
+experiment/isp-trace/*
+experiment/isp-weight/*
+*log
+
 # cache
 *~
 exploit*

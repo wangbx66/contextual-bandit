@@ -85,35 +85,6 @@ For $A\in S$, denote $\hat{\mu}(A)_i=1-\hat{\theta}^{\top}x_{k(A)_i,t},$ we have
 Let $\alpha(\tau, G)=(1-e^{-\tau/|V|})/(1-e^{-\tau})^{|V|}$, the above inequality shows that we can realize the $\alpha(\tau, G)$-approximation oracle using shortest path algorithm.
 After the agent chooses the shortest path as the superarm, the reward and the first ever edge with high latency, if any, is feedbacked.
 
-\section{Disjunctive case}
-
-\subsection{Need to involve Contextual information}
-
-We experiment both on synthetic data and MovieLens. We compare our method with $\gamma_k = 1$ to the algorithm in Cascading Bandits(ICML'2015) with $L= , K= ,$
-
-\subsection{Need to involve position discount parameter $\gamma$}
-
-We experiment both on synthetic data and MovieLens. We compare our method with $\gamma_k = \gamma^{k-1}$ to the algorithm in Cascading Bandits(ICML'2015) with $L= , K= , \gamma_k=1$.
-
-\subsection{Cascading Information}
-
-We experiment both on synthetic data and MovieLens. We compare our method with $\gamma_k = \gamma^{k-1}$ to the algorithm in Qin Lijing(2014) with $L= , K= , \gamma_k=1$.
-
-
-\section{Conjunctive case}
-
-\subsection{Need to involve Contextual information}
-
-We experiment on synthetic data. We compare our method with $\gamma_k = 1$ to the algorithm in Cascading Bandits(ICML'2015) with $L= , K= ,$
-
-\subsection{Need to involve position discount parameter $\gamma$}
-
-We experiment on synthetic data. We compare our method with $\gamma_k = \gamma^{k-1}$ to the algorithm in Cascading Bandits(ICML'2015) with $L= , K= , \gamma_k=1$.
-
-\subsection{Cascading Information}
-
-We experiment on synthetic data. We compare our method with $\gamma_k = \gamma^{k-1}$ to the algorithm in Qin Lijing(2014) with $L= , K= , \gamma_k=1$.
-
 \section{Results}
 
 Example results, with $T=10000$ and $T=30000$ seperately, are listed on Table~\ref{movielens} and Table~\ref{isp}.
