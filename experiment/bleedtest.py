@@ -83,10 +83,11 @@ def flowtest_gisp(T, **kw):
 
 #kw = {'L':20, 'd':5, 'b':0, 'K':4, 'gamma':0.9, 'eps':0.1, 'v':0.35, 'disj':True}
 #kw = {'L':100, 'd':10, 'b':0, 'K':10, 'gamma':0.95, 'eps':0.1, 'v':0.35, 'disj':False}
-#flowtest_monkey(500, **kw)
+kw = {'L':1000, 'd':500, 'b':0, 'K':10, 'gamma':0.95, 'eps':0.1, 'v':0.35, 'disj':False}
+flowtest_monkey(500, **kw)
 
-kw = {'n_movies':20, 'train_portion':0.7, 'd':3, 'K':4, 'n_users':1500, 'gamma':1.00, 'disj':True}
-flowtest_movielens(1500, **kw)
+#kw = {'n_movies':20, 'train_portion':0.7, 'd':3, 'K':4, 'n_users':1500, 'gamma':1.00, 'disj':True}
+#flowtest_movielens(1500, **kw)
 
 #kw = {'isp':6461, 'd':5, 'v':0.35, 'k':10, 'gamma':0.90}
 #flowtest_isp(1000, **kw)
