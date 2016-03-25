@@ -14,6 +14,7 @@ from utils import ereward
 from utils import ucb_settings
 from utils import serialize
 from utils import argmax_oracle
+from utils import sparse_suni
 
 class c3synthetic_monkey_rng:
 
@@ -24,7 +25,7 @@ class c3synthetic_monkey_rng:
         self.__dict__.update(kwarg)
         self.name = 'c3synthetic-monkey'
         self.arms = list(range(self.L))
-        self.x = {arm: suni(self.d) for arm in self.arms}
+        self.x = {arm: sparse_suni(self.d) for arm in self.arms}
         self.theta = suni(self.d)
         self.oracle = argmax_oracle
         self.regret_avl = True
