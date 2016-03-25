@@ -20,7 +20,7 @@ def suni(d):
     x = np.random.normal(0, 1, d)
     return uni(x)
 
-def sparse_uni(d, z):
+def sparse_suni(d, z):
     x = np.random.normal(0, 1, d)
     i = set(np.random.randint(d, size=z))
     p = np.array([idx in i for idx in range(d)], dtype=np.int_)
