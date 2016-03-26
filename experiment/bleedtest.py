@@ -35,12 +35,13 @@ def flowtest_monkey(T, **kw):
     logger.info('\n    '.join(str(k) + ' ' + str(v) for k, v in kw.items()))
     s = c3synthetic_monkey_rng(**kw)
     reward, regret, similarity = contextual_cascading_sherry(contextual(s, cascade=True, rgamma=True, descend=False), T=T)
-    reward, regret, similarity = contextual_cascading_sherry(contextual(s, cascade=True, rgamma=False, descend=False), T=T)
-    reward, regret, similarity = contextual_cascading_sherry(contextual(s, cascade=True, rgamma=False, descend=True), T=T)
-    reward, regret, similarity = contextual_full_lijing(contextual(s, cascade=False, rgamma=False, descend=False), T=T)
-    reward, regret, similarity = absolute_cascading_ucb(contextual(s, cascade=True, rgamma=True, descend=False), T=T)
-    reward, regret, similarity = absolute_cascading_ucb(contextual(s, cascade=True, rgamma=False, descend=False), T=T)
-    reward, regret, similarity = absolute_cascading_ucb(contextual(s, cascade=True, rgamma=False, descend=True), T=T)
+    #reward, regret, similarity = contextual_cascading_sherry(contextual(s, cascade=True, rgamma=False, descend=False), T=T)
+    #reward, regret, similarity = contextual_cascading_sherry(contextual(s, cascade=True, rgamma=False, descend=True), T=T)
+    #reward, regret, similarity = contextual_full_lijing(contextual(s, cascade=False, rgamma=False, descend=False), T=T)
+    #reward, regret, similarity = absolute_cascading_ucb(contextual(s, cascade=True, rgamma=True, descend=False), T=T)
+    #reward, regret, similarity = absolute_cascading_ucb(contextual(s, cascade=True, rgamma=False, descend=False), T=T)
+    #reward, regret, similarity = absolute_cascading_ucb(contextual(s, cascade=True, rgamma=False, descend=True), T=T)
+    return reward, regret
 
 def flowtest_movielens(T, **kw):
     logger.info('Movielens flowtest')
@@ -48,10 +49,11 @@ def flowtest_movielens(T, **kw):
     logger.info('\n    '.join(str(k) + ' ' + str(v) for k, v in kw.items()))
     s = c3_movielens_rng(**kw)
     reward, regret, similarity = contextual_cascading_sherry(contextual(s, cascade=True, rgamma=True, descend=False), T=T)
-    reward, regret, similarity = contextual_cascading_sherry(contextual(s, cascade=True, rgamma=True, descend=True), T=T)
-    reward, regret, similarity = contextual_full_lijing(contextual(s, cascade=False, rgamma=True, descend=False), T=T)
-    reward, regret, similarity = absolute_cascading_ucb(contextual(s, cascade=True, rgamma=True, descend=False), T=T)
-    reward, regret, similarity = absolute_cascading_ucb(contextual(s, cascade=True, rgamma=True, descend=True), T=T)
+    #reward, regret, similarity = contextual_cascading_sherry(contextual(s, cascade=True, rgamma=True, descend=True), T=T)
+    #reward, regret, similarity = contextual_full_lijing(contextual(s, cascade=False, rgamma=True, descend=False), T=T)
+    #reward, regret, similarity = absolute_cascading_ucb(contextual(s, cascade=True, rgamma=True, descend=False), T=T)
+    #reward, regret, similarity = absolute_cascading_ucb(contextual(s, cascade=True, rgamma=True, descend=True), T=T)
+    return reward, regret
 
 def flowtest_isp(T, **kw):
     logger.info('ISP flowtest')
@@ -83,11 +85,16 @@ def flowtest_gisp(T, **kw):
 
 #kw = {'L':20, 'd':5, 'b':0, 'K':4, 'gamma':0.9, 'eps':0.1, 'v':0.35, 'disj':True}
 #kw = {'L':100, 'd':10, 'b':0, 'K':10, 'gamma':0.95, 'eps':0.1, 'v':0.35, 'disj':False}
-kw = {'L':1000, 'd':500, 'b':0, 'K':10, 'gamma':0.95, 'eps':0.1, 'v':0.35, 'disj':False}
-flowtest_monkey(500, **kw)
+#kw = {'L':200, 'd':20, 'b':0, 'K':2, 'gamma':0.95, 'eps':0.1, 'v':0.35, 'disj':False}
+#reward, regret = flowtest_monkey(500000, **kw)
+#plt.plot(regret)
+#plt.show()
 
-#kw = {'n_movies':20, 'train_portion':0.7, 'd':3, 'K':4, 'n_users':1500, 'gamma':1.00, 'disj':True}
-#flowtest_movielens(1500, **kw)
+
+kw = {'n_movies':200, 'train_portion':0.7, 'd':10, 'K':2, 'n_users':300, 'gamma':1.00, 'disj':True}
+reward, regret = flowtest_movielens(1200, **kw)
+plt.plot(reward)
+plt.show()
 
 #kw = {'isp':6461, 'd':5, 'v':0.35, 'k':10, 'gamma':0.90}
 #flowtest_isp(1000, **kw)

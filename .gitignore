@@ -4,6 +4,7 @@ experiment_results/*
 experiment/isp-trace/*
 experiment/isp-weight/*
 *log
+experiment/log
 
 # cache
 *~

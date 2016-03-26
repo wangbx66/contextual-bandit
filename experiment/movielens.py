@@ -1,4 +1,5 @@
 from itertools import chain
+from collections import Counter
 import csv
 import random
 import logging
@@ -44,7 +45,10 @@ class c3_movielens_rng:
     def slot(self):
         self.user = random.sample(self.users, 1)[0]
         exc = self.A.getrow(self.user)
-        return {arm: np.outer(self.U[self.user], self.V[arm]).flatten() for arm in self.arms if exc[0, arm] == 0} if len([arm for arm in self.arms if exc[0, arm] == 0]) < self.K + 2 else self.slot()
+        #print(len([arm for arm in self.arms if exc[0, arm] == 0]))
+        current = [arm for arm in self.arms if exc[0, arm] == 0]
+        print(len(current), sum([arm in self.ctrh[self.user] for arm in current]))
+        return {arm: np.outer(self.U[self.user], self.V[arm]).flatten() for arm in self.arms if exc[0, arm] == 0} if len([arm for arm in self.arms if exc[0, arm] == 0]) > self.K + 2 else self.slot()
 
     def realize(self, action):
         return [arm in self.ctrh[self.user] for arm in action]
@@ -90,10 +94,15 @@ class c3_movielens_rng:
         if self.n_users is None:
             self.n_users = len(self.ctrh)
         self.arms = set([x[1] for x in sorted([(movies[movie], movie) for movie in movies])[-self.L:]])
-        self.users = [x[1] for x in sorted([(overlap(self.ctrh[user], self.arms), user) for user in self.ctrh])[-self.n_users:]]
+        self.users = [x[1] for x in sorted([(overlap(self.ctrh[user], self.arms), user) for user in self.ctrh if self.L*0.04 < overlap(self.ctrh[user], self.arms) < self.L*0.06])]#[-self.n_users:]]
+        logging.info('total {0} users involved'.format(len(self.users)))
         self.d = self.d ** 2
 
-class c3_Lmvielens_rng(c3_movielens_rng):
+    def ctrh_hist(self):
+        hist = {user: len([movie for movie in self.ctrh[user] if movie in self.arms]) for user in self.ctrh}
+        return Counter([v for k, v in hist.items()])
+
+class c3_Lmovielens_rng(c3_movielens_rng):
     def __init__(self, **kwarg):
         logger.info('Initializing random settings "Contextual L-Movielens"')
         self.__dict__.update(kwarg)

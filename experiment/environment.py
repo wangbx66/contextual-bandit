@@ -32,7 +32,7 @@ class c3synthetic_monkey_rng:
         logger.info(self)
 
     def __str__(self):
-        return serialize(self, 'arms', 'x')
+        return serialize(self, 'arms', 'x', 'theta')
 
     def slot(self):
         self.xt = {arm: disturb(self.x[arm], self.v) for arm in self.arms}
