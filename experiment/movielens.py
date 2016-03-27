@@ -27,7 +27,7 @@ def movielens_data():
 
 class c3_movielens_rng:
 
-    # c3synthetic_movielens_rng(n_movies=None, train_portion=0.5, d=15, K=6, n_users=None, gamma=0.95, disj=False)
+    # c3synthetic_movielens_rng(n_movies=None, train_portion=0.5, d=15, K=6, baseline=(0.02, 0.04), gamma=0.95, disj=False)
 
     def __init__(self, **kwarg):
         logger.info('Initializing random settings "Contextual Movielens"')
@@ -47,7 +47,7 @@ class c3_movielens_rng:
         exc = self.A.getrow(self.user)
         #print(len([arm for arm in self.arms if exc[0, arm] == 0]))
         current = [arm for arm in self.arms if exc[0, arm] == 0]
-        print(len(current), sum([arm in self.ctrh[self.user] for arm in current]))
+        #print(len(current), sum([arm in self.ctrh[self.user] for arm in current]))
         return {arm: np.outer(self.U[self.user], self.V[arm]).flatten() for arm in self.arms if exc[0, arm] == 0} if len([arm for arm in self.arms if exc[0, arm] == 0]) > self.K + 2 else self.slot()
 
     def realize(self, action):
@@ -91,10 +91,8 @@ class c3_movielens_rng:
             self.L = len(movies)
         else:
             self.L = self.n_movies
-        if self.n_users is None:
-            self.n_users = len(self.ctrh)
         self.arms = set([x[1] for x in sorted([(movies[movie], movie) for movie in movies])[-self.L:]])
-        self.users = [x[1] for x in sorted([(overlap(self.ctrh[user], self.arms), user) for user in self.ctrh if self.L*0.04 < overlap(self.ctrh[user], self.arms) < self.L*0.06])]#[-self.n_users:]]
+        self.users = [x[1] for x in sorted([(overlap(self.ctrh[user], self.arms), user) for user in self.ctrh if self.L * self.baseline[0] < overlap(self.ctrh[user], self.arms) < self.L * self.baseline[1]])]
         logging.info('total {0} users involved'.format(len(self.users)))
         self.d = self.d ** 2
 
