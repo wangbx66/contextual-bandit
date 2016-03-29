@@ -89,15 +89,14 @@ def flowtest_gisp(T, **kw):
 
 #kw = {'L':20, 'd':5, 'b':0, 'K':4, 'gamma':0.9, 'eps':0.1, 'v':0.35, 'disj':True}
 #kw = {'L':100, 'd':10, 'b':0, 'K':10, 'gamma':0.95, 'eps':0.1, 'v':0.35, 'disj':False}
-#kw = {'L':200, 'd':20, 'b':0, 'K':2, 'gamma':0.95, 'eps':0.1, 'v':0.35, 'disj':False}
-#reward, regret = flowtest_monkey(500000, **kw)
-#plt.plot(regret)
-#plt.show()
+kw = {'L':200, 'd':20, 'b':0, 'K':2, 'gamma':0.95, 'eps':0.1, 'v':0.35, 'disj':False}
+reward, regret = flowtest_monkey(500000, **kw)
+plt.plot(regret)
+plt.show()
 
 
-kw = {'n_movies':200, 'train_portion':0.7, 'd':10, 'K':2, 'baseline':(0.02, 0.04), 'gamma':1.00, 'disj':True}
-reward, regret = flowtest_movielens(7000, **kw)
-#plt.plot(reward)
+#kw = {'n_movies':200, 'train_portion':0.7, 'd':10, 'K':2, 'baseline':(0.02, 0.04), 'gamma':1.00, 'disj':True}
+#reward, regret = flowtest_movielens(7000, **kw)
 plt.show()
 
 #kw = {'isp':6461, 'd':5, 'v':0.35, 'k':10, 'gamma':0.90}

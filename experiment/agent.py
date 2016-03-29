@@ -56,6 +56,7 @@ def contextual_cascading_sherry(s, T, delta=0.9, lamb=0.1):
     timestamp = time.time()
     for t in range(1, T):
         #print(t)
+        #delta = t ** (-0.5)
         x, params = s.new()
         U = {arm: theta.dot(x[arm]) + beta * x[arm].dot(np.linalg.inv(V)).dot(x[arm]) for arm in x}
         recc = s.oracle(U, *params)
