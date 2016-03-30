@@ -1,27 +1,31 @@
-- All reviewers: seemingly linear regret/reward curves
+-Reviewers: seemingly linear regret/reward curves
 
-The learning curves will show a good concave/convex shape when n, the number of rounds, is small. For example, the curve in Fig.1(b) shows a good concave shape when n <= 2000, during which the cosine similarity between \theta_* and its estimate \hat{\theta} increases to 0.995. This means that our algorithm learns quickly, because the learning task is relatively easy with a small d=10, the dimension of \theta_*. When n>2000, due to the randomness, the accuracy of $\hat{\theta}$ increases very slowly. Thus there is a small probability that $\hat{\theta}$ leads to a wrong action choice. Such a small probability is decreasing very slowly, resulting in the almost linear shape of the curves when n is large. We will test harder learning tasks with larger d to make the curves exhibit more obvious concave shape.
+The learning curves will show a good concave/convex shape when n, the number of rounds, is small. For example, the curve in Fig.1(b) shows a good concave shape when n <= 2000, during which the cosine similarity between \theta* and its estimate \hat{\theta} increases to 0.995. This means that our algorithm learns quickly, because the learning task is relatively easy with a small d=10, the dimension of \theta*. When n>2000, due to the randomness, the accuracy of \hat{\theta} increases very slowly. Thus there is a small probability that \hat{\theta} leads to a wrong action choice. Such a small probability is decreasing very slowly, resulting in the almost linear shape of the curves when n is large. We will test harder learning tasks with larger d to make curves exhibit more obvious concave shape.
 
-- Reviewer 1: on an example of a more general reward function, and unclear last paragraph of Sec. 4.3
+-Reviewer 1: examples of a more general reward function, and last paragraph of Sec. 4.3
 
-We indeed provided an example of a more general reward function in Sec. 4.3 (last paragraph) and experimented it in Sec. 5.3 with Figure 3(c). Perhaps our explanation is unclear, so we provide further details here.
+We indeed provided an example of a more general reward function in Sec. 4.3 (last paragraph) and experimented it in Sec. 5.3 with Fig. 3(c). Perhaps our explanation is unclear, so we provide further details here.
 
-This example considers a network routing problem with edge latency. The latency of each edge follows an exponential distribution with a cutoff value, say 2\tau. That is, after time 2\tau, we do not wait for the actual delay and just use 2\tau as the feedback. The cutoff exponential distribution satisfies the R-sub-Gaussian property. We regard an edge as blocked if its latency is larger than threshold \tau (say as an application requirement). An action is a routing path. The reward of the action is 1 if no edge on the path is blocked, and 0 if some edge on the path is blocked. After an action is played, the observed feedback is the delays of edges up to the first blocked edge (this delay of this blocked edge is observed if it is less than 2\tau). The mean delay of an edge e is determined by the linear combination of the context of the round x_{t,e} and the latent vector \theta_*. 
+This example considers a network routing problem with edge latency. The latency of each edge follows an exponential distribution with a cutoff value, say 2\tau. That is, after time 2\tau, we do not wait for the actual delay and just use 2\tau as the feedback. The cutoff exponential distribution satisfies the R-sub-Gaussian property. We regard an edge as blocked if its latency is larger than threshold \tau (say as an application requirement). An action is a routing path. The reward of the action is 1 if no edge on the path is blocked, and 0 if some edge on the path is blocked. After an action is played, the observed feedback is the delays of edges up to the first blocked edge (this delay of this blocked edge is observed if it is less than 2\tau). The mean delay of an edge e is determined by the linear combination of the context of the round x_{t,e} and the latent vector \theta*. 
 
-In this example, we can use observed delays and contexts and apply linear regression to estimate \theta_*, as given in the paper. However, the expected reward as a function of mean edge delays is a complicated function without a closed-form: we need to transform the mean delay of a cutoff exponential distribution to the blocking probability with threshold \tau. Thus it is not covered by existing cascading bandit studies. Yet we can still argue that this function is monotone and Lipschitz continuous, and thus obtain regret bound from Theorem 4.3. In contrast, if we treat edge blocked or unblocked as the feedback in order to fit into the existing cascading bandit framework, we cannot apply linear regression to learn the latent vector \theta_*, because the probability of edge being blocked is not a linear combination of contexts and \theta_*. 
+In this example, we can use observed delays and contexts and apply linear regression to estimate \theta*, as given in the paper. However, the expected reward as a function of mean edge delays is a complicated function without a closed-form: we need to transform the mean delay of a cutoff exponential distribution to the blocking probability with threshold \tau. Thus it is not covered by existing cascading bandit studies. Yet we can still argue that this function is monotone and Lipschitz continuous, and thus obtain regret bound from Theorem 4.3. In contrast, if we treat edge blocked or unblocked as the feedback in order to fit into the existing cascading bandit framework, we cannot apply linear regression to learn the latent vector \theta*, because the probability of edge being blocked is not a linear combination of contexts and \theta*. 
 
-- Reviewer 1: 1/p* may be arbitrarily large and not tied to the reward function 
+-Reviewer 1: 1/p* may be arbitrarily large and not tied to the reward function 
 
 Our understanding is that p* is always tied to the reward function. In general, if the probability of observing a base arm i is very small causing 1/p* large while observing i is not tied to the reward function, we can ignore arm i so that it does not affect p*. In the other extreme, when observing arm i indeed could make a difference in the optimal action selection, one has to observe arm i, no matter how small its observation probability, which means in this case a regret with 1/p* is reasonable. In other cases when p* is tied with the reward function but not the optimal reward, one may add some condition similar to the one in Lemma 4.7 to detach p* from the regret. We will add discussions in the paper to clarify this point. 
 
-- Reviewer 1: unclear last paragraph of Sec. 5.3
+-Reviewer 1: last paragraph of Sec. 5.3
 
 This experiment is to demonstrate that position discount \gamma could significantly affect the learning result. The intuition behind is that, for network routing, a position discount will guide the selection towards selecting paths that are likely to be reliable initially, while no position discount will guide the selection towards globally reliable paths. Essentially, in network routing different position discounts lead to different optimal solutions. This is not the case for the top-k disjunctive/conjunctive cascading bandit --- with all position discounts, the top k choices are the same. 
 
-- Reviewer 4: unclear Line 657-663
+-Reviewer 1: monotonicity
 
-We intend to say that, using the same approach as in Abbasi-Yadkori et al. 2011, we can obtain matching regret bound as cascading bandits after removing the contextual information. 
+This assumption can be removed if the problem can easily find A_t = argmax_{A, w in confidence ellipsoid} f(A,w).
 
-- Reviewer 4: unclear context in Sec. 5.3
+-Reviewer 4: Line 657-663
 
-Context is generated randomly. Without context, CombCascade only selects the action that performs well for the *average* context, which is certainly much worse than C^3-UCB, which uses context to learn latent \theta_* and selects much better actions on *every* context after the learning period.
+We intend to say that, using the same approach as in Abbasi-Yadkori 2011, we can obtain matching regret bound as cascading bandits after removing the contextual information. 
+
+-Reviewer 4: context in Sec. 5.3
+
+Context is generated randomly. Without context, CombCascade only selects the action that performs well for the *average* context, which is certainly much worse than C^3-UCB, which uses context to learn latent \theta* and selects much better actions on *every* context after the learning period.
