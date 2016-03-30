@@ -20,7 +20,7 @@ This experiment is to demonstrate that position discount \gamma could significan
 
 -Reviewer 1: monotonicity
 
-This assumption can be removed if the problem can easily find A_t = argmax_{A, w in confidence ellipsoid} f(A,w).
+This assumption (together with the offline oracle assumption) can be removed if the problem can easily find A_t = argmax_{A, w in confidence ellipsoid} f(A,w).
 
 -Reviewer 4: Line 657-663
 
