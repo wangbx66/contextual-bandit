@@ -1,6 +1,6 @@
--Reviewers: seemingly linear regret/reward curves
+-Reviewers: experiments
 
-The learning curves will show a good concave/convex shape when n, the number of rounds, is small. For example, the curve in Fig.1(b) shows a good concave shape when n <= 2000, during which the cosine similarity between \theta* and its estimate \hat{\theta} increases to 0.995. This means that our algorithm learns quickly, because the learning task is relatively easy with a small d=10, the dimension of \theta*. When n>2000, due to the randomness, the accuracy of \hat{\theta} increases very slowly. Thus there is a small probability that \hat{\theta} leads to a wrong action choice. Such a small probability is decreasing very slowly, resulting in the almost linear shape of the curves when n is large. We will test harder learning tasks with larger d to make curves exhibit more obvious concave shape.
+The learning curves will show a good concave/convex shape when n, the number of rounds, is small. For example, the curve in Fig.1(b) shows a good concave shape when n <= 2000, during which the cosine similarity between \theta* and its estimate \hat{\theta} increases to 0.995. This means that our algorithm learns quickly, because the learning task is relatively easy with a small d=10, the dimension of \theta*. When n>2000, the small probability of \hat{\theta} leading to a wrong action choice is decreasing very slowly, resulting in the almost linear shape of the curves when n is large. We will test harder learning tasks with larger d to make curves exhibit more obvious concave shape.
 
 -Reviewer 1: examples of a more general reward function, and last paragraph of Sec. 4.3
 
