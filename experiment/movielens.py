@@ -27,7 +27,7 @@ def movielens_data():
 
 class c3_movielens_rng:
 
-    # c3synthetic_movielens_rng(n_movies=None, train_portion=0.5, d=15, K=6, baseline=(0.02, 0.04), gamma=0.95, disj=False)
+    # kw = {'n_movies':200, 'train_portion':0.7, 'd':10, 'K':2, 'baseline':(0.02, 0.04), 'gamma':1.00, 'disj':True}
 
     def __init__(self, **kwarg):
         logger.info('Initializing random settings "Contextual Movielens"')
