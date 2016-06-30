@@ -1,4 +1,16 @@
-# Bandit Experiment
+# Contextual Bandit 
+
+The repo features the experimental analysis on [Contextual Combinatorial Cascading Bandits](http://icml.cc/2016/?page_id=1839#581). We highly recommend cite the the paper, using the following bib
+
+```
+@inproceedings{li2016contextual,
+  title={Contextual Combinatorial Cascading Bandits},
+  author={Li, Shuai and Wang, Baoxiang and Zhang, Shengyu and Chen, Wei},
+  booktitle={Proceedings of The 33rd International Conference on Machine Learning},
+  pages={1245--1253},
+  year={2016}
+}
+```
 
 ## Experiment Dependency
 
