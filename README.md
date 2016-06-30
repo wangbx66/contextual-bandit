@@ -42,10 +42,10 @@ tar -xvf rocketfuel-traces.tgz -C isp-trace
 
 ## Experiment
 
-* Before running, please modify "flowtest.py" accordingly, then
+* Before running, please modify the code *bleedtest.py* accordingly, then
 
 ```
-python3 flowtest.py
+python3 bleedtest.py
 ```
 
-* Logs in human-understandable format are attached in "log"
+* Logs in human-understandable format are attached in *log*
